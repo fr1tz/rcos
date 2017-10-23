@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=1]
+
+[ext_resource path="res://rcos/rcos.gd" type="Script" id=1]
+[ext_resource path="res://rcos/lib/window.tscn" type="PackedScene" id=2]
+
+[node name="rcos" type="Panel"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 240.0
+margin/bottom = 400.0
+script/script = ExtResource( 1 )
+__meta__ = {
+"__editor_plugin_screen__": "2D"
+}
+
+[node name="modules" type="Node" parent="."]
+
+[node name="root_window" parent="." instance=ExtResource( 2 )]
+
+root_window = true
+
+

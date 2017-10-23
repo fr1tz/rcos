@@ -1,1 +1,1 @@
-# reso_controller_core
+# RESO Controller core
