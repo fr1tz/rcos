@@ -22,13 +22,25 @@ func _ready():
 	set_process_input(true)
 	spawn_module("res://rcos/shell/shell.tscn")
 	spawn_module("res://rcos/connector/connector.tscn")
+#	---------------------------------------------------------------------------------------
+#	RLib Test TODO: Move this into rlib/
+#	---------------------------------------------------------------------------------------
+#	var line = 'command --attribute1=wee --attribute2 arg1 " argument num\\"ber two " arg3'
+#	var cmdline = rlib.parse_cmdline(line)
+#	print(cmdline.command)
+#	print(cmdline.attributes)
+#	prints("[",cmdline.arguments[1],"]")
+#	---------------------------------------------------------------------------------------
+#	VRC Host Status Screen Test TODO: Move this into vrc_host/
+#	---------------------------------------------------------------------------------------
 #	var info = {
 #		addr = "localhost",
 #		name = "test",
 #		port = 1234,
 #		type = "vrc"
 #	}
-#	open_connection(info)
+#	var vrc_host = open_connection(info)
+#	vrc_host.get_node("main_canvas/main_gui/status_screen").set_connection_count(3)
 
 func _input(event):
 	var group = "_canvas_input"+str(get_viewport().get_instance_ID())
@@ -164,5 +176,7 @@ func open_connection(info):
 	if info.type == "vrc":
 		var vrc_host = rcos.spawn_module("res://vrc_host/vrc_host.tscn")
 		vrc_host.connect_to_interface(info.addr, info.port)
+		return vrc_host
 	else:
 		print("open_connection() Unknown type: ", info.type)
+		return null

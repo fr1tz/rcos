@@ -106,29 +106,54 @@ func tl(string):
 func parse_cmdline(args):
 	var cmdline = {
 		"raw": args,
-		"tag": "",
 		"command": "",
 		"attributes": {},
-		"arguments": ""
+		"arguments": [],
+		"arguments_raw": ""
 	}
-	if !hd(args).begins_with("/"):
-		cmdline.tag = hd(args)
-		args = tl(args)
-	var command = hd(args)
-	if !hd(args).begins_with("/"):
-		return null
-	cmdline.command = hd(args).right(1)
+	cmdline.command = hd(args)
 	if cmdline.command == "":
 		return null
 	args = tl(args)
 	while(hd(args).begins_with("--")):
-		var s = hd(args).right(2)
+		var s = hd(args)
+		if s == "--":
+			args = tl(args)
+			break
+		s = s.right(2)
 		var idx = s.find("=")
 		if idx == -1:
-			return null
-		var name = s.left(idx)
-		var value = s.right(idx+1)
-		cmdline.attributes[name] = value
+			var name = s
+			var value = ""
+			cmdline.attributes[name] = value
+		else:
+			var name = s.left(idx)
+			var value = s.right(idx+1)
+			cmdline.attributes[name] = value
 		args = tl(args)
-	cmdline.arguments = args
+	cmdline.arguments_raw = args
+	var quotes = "\""
+	var backslash = "\\"
+	while(args != ""):
+		if args.begins_with(quotes):
+			var opening_quotes_idx = 0
+			var closing_quotes_idx = args.find(quotes, opening_quotes_idx+1)
+			while closing_quotes_idx != -1:
+				if args[closing_quotes_idx-1] != backslash:
+					break
+				closing_quotes_idx = args.find(quotes, closing_quotes_idx+1)
+			if closing_quotes_idx == -1:
+				return null
+			var arg_start_idx = opening_quotes_idx+1
+			var arg_end_idx = closing_quotes_idx-1
+			var arg_length = arg_end_idx - arg_start_idx + 1
+			var arg = args.substr(arg_start_idx, arg_length)
+			arg = arg.replace(backslash+quotes, quotes)
+			cmdline.arguments.append(arg)
+			args = args.right(closing_quotes_idx+1)
+			while args.begins_with(" "):
+				args.erase(0, 1)
+		else:
+			cmdline.arguments.append(hd(args))
+			args = tl(args)
 	return cmdline
