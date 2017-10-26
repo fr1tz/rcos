@@ -9,9 +9,11 @@ func join_array(array, spacer = ""):
 
 func join_array_tree(array, fsl, depth = 0):
 	var s = ""
-	var fs = " "
+	var fs
 	if depth < fsl.size():
-		fs = " " + fsl[depth] + " "
+		fs = fsl[depth]
+	else:
+		fs = fsl.back()
 	for i in range(0, array.size()):
 		var e = array[i]
 		if typeof(e) == TYPE_ARRAY:

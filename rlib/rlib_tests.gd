@@ -6,19 +6,6 @@ var mFailCounter
 func _ready():
 	mFailCounter = 0
 	base64_test1()
-	var msg = {
-		"button": 1,
-		"pressed": true,
-		"text": "yay\nwoo\nSWAG",
-		"args": [ "[,\"1\",]", 2, 3, 4 ]
-	}
-	print(msg.text)
-	var obj = {
-		"level": "debug",
-		"source": "vrc_host/tcp_connections/tcp!127.0.0.1!1234",
-		"msg": msg
-	}
-	print(obj.to_json())
 	if mFailCounter > 0:
 		prints(mFailCounter, "FAILURES!")
 	else:
