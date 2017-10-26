@@ -1,5 +1,13 @@
 extends Panel
 
+const PORT_TYPE_TCP = 0
+const PORT_TYPE_UDP = 1
+
+var mNextPort = {
+	PORT_TYPE_TCP: 22000,
+	PORT_TYPE_UDP: 22000
+}
+
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
 var mCanvasStack = []
@@ -22,14 +30,6 @@ func _ready():
 	set_process_input(true)
 	spawn_module("res://rcos/shell/shell.tscn")
 	spawn_module("res://rcos/connector/connector.tscn")
-#	---------------------------------------------------------------------------------------
-#	RLib Test TODO: Move this into rlib/
-#	---------------------------------------------------------------------------------------
-#	var line = 'command --attribute1=wee --attribute2 arg1 " argument num\\"ber two " arg3'
-#	var cmdline = rlib.parse_cmdline(line)
-#	print(cmdline.command)
-#	print(cmdline.attributes)
-#	prints("[",cmdline.arguments[1],"]")
 #	---------------------------------------------------------------------------------------
 #	VRC Host Status Screen Test TODO: Move this into vrc_host/
 #	---------------------------------------------------------------------------------------
@@ -134,6 +134,19 @@ func get_task(task_id):
 
 func get_task_list():
 	return mTasks
+
+func listen(object, port_type):
+	if !mNextPort.has(port_type):
+		error("[rlib] listen(): Invalid port type: ", port_type)
+		return -1
+	var port_begin = mNextPort[port_type]
+	var port_end = 49151
+	for port in range(port_begin, port_end+1):
+		var error = object.listen(port)
+		if error == 0:
+			mNextPort[port_type] = port+1
+			return port
+	return -2
 
 func push_canvas(canvas):
 	if mCanvasStack.has(canvas):
