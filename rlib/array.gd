@@ -7,7 +7,7 @@ func join_array(array, spacer = ""):
 			ret = ret + spacer
 	return ret
 
-func join_array_tree(array, fsl, depth = 0):
+func join_array_tree(array, fsl, ef = false, depth = 0):
 	var s = ""
 	var fs
 	if depth < fsl.size():
@@ -17,8 +17,10 @@ func join_array_tree(array, fsl, depth = 0):
 	for i in range(0, array.size()):
 		var e = array[i]
 		if typeof(e) == TYPE_ARRAY:
-			s += join_array_tree(e, fsl, depth+1)
+			s += join_array_tree(e, fsl, ef, depth+1)
 		elif typeof(e) == TYPE_STRING:
+			if ef:
+				e = e.xml_escape()
 			s += e
 		else:
 			continue

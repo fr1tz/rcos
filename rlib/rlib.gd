@@ -9,8 +9,8 @@ var _cmdline = preload("cmdline.gd").new()
 func join_array(array, spacer = ""):
 	return _array.join_array(array, spacer)
 
-func join_array_tree(array, fsl, depth = 0):
-	return _array.join_array_tree(array, fsl, depth)
+func join_array_tree(array, field_separator_list, escape_fields = false,  depth = 0):
+	return _array.join_array_tree(array, field_separator_list, escape_fields, depth)
 
 func ws(char):
 	# *** Returns whether char is whitespace

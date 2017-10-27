@@ -30,9 +30,6 @@ func _ready():
 	set_process_input(true)
 	spawn_module("res://rcos/shell/shell.tscn")
 	spawn_module("res://rcos/connector/connector.tscn")
-#	---------------------------------------------------------------------------------------
-#	VRC Host Status Screen Test TODO: Move this into vrc_host/
-#	---------------------------------------------------------------------------------------
 #	var info = {
 #		addr = "localhost",
 #		name = "test",
@@ -40,6 +37,11 @@ func _ready():
 #		type = "vrc"
 #	}
 #	var vrc_host = open_connection(info)
+#	var file = File.new()
+#	file.open("res://vrc_host/output_module.xml", File.READ)
+#	vrc_host.set_variable("OUTPUT_MODULE_DATA", file.get_as_text())
+#	file.close()
+#	print(vrc_host.add_module("OUTPUT_MODULE_DATA"))
 #	vrc_host.get_node("main_canvas/main_gui/status_screen").set_connection_count(3)
 
 func _input(event):
