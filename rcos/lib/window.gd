@@ -72,3 +72,6 @@ func show_canvas(canvas):
 		elif was_displayed && !is_displayed:
 			canvas.set_render_target_update_mode(Viewport.RENDER_TARGET_UPDATE_DISABLED)
 			canvas.emit_signal("conceal")
+
+func has_canvas():
+	return mCanvas != null

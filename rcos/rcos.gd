@@ -23,13 +23,14 @@ func _notification(what):
 func _init():
 	#OS.set_low_processor_usage_mode(true)
 	add_user_signal("task_list_changed")
-	add_user_signal("new_log_entry")
+	add_user_signal("new_log_entry3")
 
 func _ready():
 	get_tree().set_auto_accept_quit(false)
 	set_process_input(true)
 	spawn_module("res://rcos/shell/shell.tscn")
 	spawn_module("res://rcos/connector/connector.tscn")
+	spawn_module("res://rcos/logger/logger.tscn")
 #	var info = {
 #		addr = "localhost",
 #		name = "test",
@@ -56,34 +57,17 @@ func _set_task_property(task_id, prop_name, prop_value):
 			call_deferred("emit_signal", "task_list_changed")
 			return
 
-func _add_log_entry(node, level, msg):
-	return
-#	var source_id = str(source.get_instance_ID())
-#	if source extends Node:
-#		if source.is_inside_tree():
-#			source = str(source.get_path())
-#		else:
-#			source = "["+source_id+"]"
-#	else:
-#		source = "["+source_id+"]"
-#	if typeof(msg) == TYPE_ARRAY:
-#		msg = rlib.join_array(msg, " ")
-#	if is_inside_tree():
-#		var self_path = str(get_path())
-#		if source.begins_with(self_path):
-#			source = source.right(self_path.length())
-#	var entry = source+" : "+level+" : "+msg
-#	emit_signal("new_log_entry", entry)
-#	prints(">", entry)
+func _add_log_entry(source_node, level, content):
+	emit_signal("new_log_entry3", source_node, level, content)
 
-func log_debug(source, msg):
-	_add_log_entry(source, "debug", msg)
+func log_debug(source_node, content):
+	_add_log_entry(source_node, "debug", content)
 
-func log_notice(source, msg):
-	_add_log_entry(source, "notice", msg)
+func log_notice(source_node, content):
+	_add_log_entry(source_node, "notice", content)
 
-func log_warning(source, msg):
-	_add_log_entry(source, "warning", msg)
+func log_error(source_node, content):
+	_add_log_entry(source_node, "error", content)
 
 func is_canvas_visible(canvas):
 	var visible = false
