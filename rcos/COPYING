@@ -1,3 +1,9 @@
+The following copyright notices cover the contents of this directory and its
+subdirectories, unless otherwise specified by a given file, directory, or 
+directory tree (which might have their own COPYING file).
+
+--------------------------------------------------------------------------------
+
 RCOS
 	
 Copyright © 2017 Michael Goldener <mg@wasted.ch>
@@ -14,3 +20,5 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+--------------------------------------------------------------------------------
