@@ -28,9 +28,9 @@ func _init():
 func _ready():
 	get_tree().set_auto_accept_quit(false)
 	set_process_input(true)
+#	spawn_module("res://rcos/logger/logger.tscn")
 	spawn_module("res://rcos/shell/shell.tscn")
 	spawn_module("res://rcos/connector/connector.tscn")
-	spawn_module("res://rcos/logger/logger.tscn")
 #	var info = {
 #		addr = "localhost",
 #		name = "test",
@@ -171,11 +171,6 @@ func spawn_module(scene_path, name = null):
 	get_node("modules").add_child(node)
 	return module
 
-func open_connection(info):
-	if info.type == "vrc":
-		var vrc_host = rcos.spawn_module("res://vrc_host/vrc_host.tscn")
-		vrc_host.connect_to_interface(info.addr, info.port)
-		return vrc_host
-	else:
-		print("open_connection() Unknown type: ", info.type)
-		return null
+func open_connection(todo):
+	#TODO
+	pass
