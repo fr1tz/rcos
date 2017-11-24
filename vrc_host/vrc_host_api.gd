@@ -1,0 +1,149 @@
+#-------------------------------------------------------------------------------
+# VRC Host API
+#-------------------------------------------------------------------------------
+
+var mVrcHost = null
+var mApiExtensions = {}
+var mVhcpExtensions = {}
+
+func _init(vrc_host):
+	mVrcHost = vrc_host
+	add_user_signal("new_log_entry3")
+	add_user_signal("vrc_displayed")
+	add_user_signal("vrc_concealed")
+	add_user_signal("var_changed1")
+	add_user_signal("var_changed2")
+	add_user_signal("var_changed3")
+	mVrcHost.connect("new_log_entry3", self, "_emit_new_log_entry3")
+	mVrcHost.connect("vrc_displayed", self, "_emit_vrc_displayed")
+	mVrcHost.connect("vrc_concealed", self, "_emit_vrc_concealed")
+	mVrcHost.connect("var_changed1", self, "_emit_var_changed1")
+	mVrcHost.connect("var_changed2", self, "_emit_var_changed2")
+	mVrcHost.connect("var_changed3", self, "_emit_var_changed3")
+
+func _emit_new_log_entry3(level, source_node, content):
+	emit_signal("new_log_entry3", level, source_node, content)
+
+func _emit_vrc_displayed(vrc):
+	emit_signal("vrc_displayed", vrc)
+
+func _emit_vrc_concealed(vrc):
+	emit_signal("vrc_concealed", vrc)
+
+func _emit_var_changed1(var_name):
+	emit_signal("var_changed1", var_name)
+
+func _emit_var_changed2(var_name, new_value):
+	emit_signal("var_changed2", var_name, new_value)
+
+func _emit_var_changed3(var_name, new_value, old_value):
+	emit_signal("var_changed3", var_name, new_value, old_value)
+
+#-------------------------------------------------------------------------------
+# Core API
+#-------------------------------------------------------------------------------
+
+func add_module(var_name):
+	return mVrcHost.add_module(var_name)
+
+func add_vrc(var_name, vrc_name):
+	return mVrcHost.add_vrc(var_name, vrc_name)
+
+func disable_canvas_input(node):
+	rcos.disable_canvas_input(node)
+
+func enable_canvas_input(node):
+	rcos.enable_canvas_input(node)
+
+func get_node_from_path(path_string):
+	return mVrcHost.get_node_from_path(path_string)
+
+func get_path_from_node(node):
+	return mVrcHost.get_path_from_node(node)
+
+func get_var(var_name):
+	return mVrcHost.get_variable(var_name)
+
+func get_var_list():
+	return mVrcHost.get_variables()
+
+func log_debug(source_node, content):
+	return mVrcHost.add_log_entry(source_node, "debug", content)
+
+func log_notice(source_node, content):
+	return mVrcHost.add_log_entry(source_node, "notice", content)
+
+func log_error(source_node, content):
+	return mVrcHost.add_log_entry(source_node, "error", content)
+
+func send(data, to, from = null):
+	return mVrcHost.send(data, to, from)
+
+func set_icon(image):
+	return mVrcHost.set_icon(image)
+
+func set_var(var_name, var_value):
+	return mVrcHost.set_variable(var_name, var_value)
+
+func show_vrc(vrc_name, fullscreen = false):
+	return mVrcHost.show_vrc(vrc_name, fullscreen)
+
+#-------------------------------------------------------------------------------
+# API Extensions
+#-------------------------------------------------------------------------------
+
+func add_api_extension(method_name, object, method):
+	if mApiExtensions.has(method_name):
+		return "API extension " + method_name + " already exists"
+	mApiExtensions[method_name] = funcref(object, method)
+	return ""
+
+func has_api_extension(method_name):
+	return mApiExtensions.has(method_name)
+
+func remove_api_extension(method_name):
+	if !mApiExtensions.has(method_name):
+		return "API extension " + method_name + " does not exist"
+	mApiExtensions.erase(method_name)
+	return ""
+
+func call_api_extension(method_name, arg0=null, arg1=null, arg2=null, arg3=null, arg4=null, arg5=null, arg6=null, arg7=null, arg8=null, arg9=null):
+	if !mApiExtensions.has(method_name):
+		return "API extension " + method_name + " does not exist"
+	mApiExtensions[method_name].call_func(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) 
+
+func get_api_extensions():
+	var extensions = []
+	for method_name in mApiExtensions:
+		extensions.append(method_name)
+	return extensions
+
+#-------------------------------------------------------------------------------
+# VHCP (VRC Host Control Protocol) Extensions
+#-------------------------------------------------------------------------------
+
+func add_vhcp_extension(command_name, object, method):
+	if mVhcpExtensions.has(command_name):
+		return "VHCP extension " + command_name + " already exists"
+	mVhcpExtensions[command_name] = funcref(object, method)
+	return ""
+
+func has_vhcp_extension(command_name):
+	return mVhcpExtensions.has(command_name)
+
+func remove_vhcp_extension(command_name):
+	if !mVhcpExtensions.has(command_name):
+		return "VHCP extension " + command_name + " does not exist"
+	mVhcpExtensions.erase(command_name)
+	return ""
+
+func call_vhcp_extension(command_name, cmdline, source):
+	if !mVhcpExtensions.has(command_name):
+		return "VHCP extension " + command_name + " does not exist"
+	mVhcpExtensions[command_name].call_func(cmdline, source) 
+
+func get_vhcp_extensions():
+	var extensions = []
+	for command_name in mVhcpExtensions:
+		extensions.append(command_name)
+	return extensions
