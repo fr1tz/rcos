@@ -5,6 +5,10 @@ var _net = preload("net.gd").new()
 var _string = preload("string.gd").new()
 var _base64 = preload("base64.gd").new()
 var _cmdline = preload("cmdline.gd").new()
+var _misc = preload("misc.gd").new()
+
+func instance_scene(scene_path):
+	return _misc.instance_scene(scene_path)
 
 func join_array(array, spacer = ""):
 	return _array.join_array(array, spacer)
