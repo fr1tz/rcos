@@ -21,8 +21,8 @@ func _init(vrc_host):
 	mVrcHost.connect("var_changed2", self, "_emit_var_changed2")
 	mVrcHost.connect("var_changed3", self, "_emit_var_changed3")
 
-func _emit_new_log_entry3(level, source_node, content):
-	emit_signal("new_log_entry3", level, source_node, content)
+func _emit_new_log_entry3(source_node, level, content):
+	emit_signal("new_log_entry3", source_node, level, content)
 
 func _emit_vrc_displayed(vrc):
 	emit_signal("vrc_displayed", vrc)
@@ -46,8 +46,8 @@ func _emit_var_changed3(var_name, new_value, old_value):
 func add_module(var_name):
 	return mVrcHost.add_module(var_name)
 
-func add_vrc(var_name, vrc_name):
-	return mVrcHost.add_vrc(var_name, vrc_name)
+func add_vrc(var_name, instance_name):
+	return mVrcHost.add_vrc(var_name, instance_name)
 
 func disable_canvas_input(node):
 	rcos.disable_canvas_input(node)
@@ -85,8 +85,8 @@ func set_icon(image):
 func set_var(var_name, var_value):
 	return mVrcHost.set_variable(var_name, var_value)
 
-func show_vrc(vrc_name, fullscreen = false):
-	return mVrcHost.show_vrc(vrc_name, fullscreen)
+func show_vrc(instance_name, fullscreen = false):
+	return mVrcHost.show_vrc(instance_name, fullscreen)
 
 #-------------------------------------------------------------------------------
 # API Extensions

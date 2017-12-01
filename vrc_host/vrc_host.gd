@@ -153,8 +153,10 @@ func add_module(var_name):
 	get_node("modules").add_child(module)
 	return ""
 
-func add_vrc(var_name, vrc_name):
-	_log_debug(["add_vrc()", var_name, vrc_name])
+func add_vrc(var_name, instance_name):
+	_log_debug(["add_vrc()", var_name, instance_name])
+	if get_node("vrc_instances").has_node(instance_name):
+		return "VRC instance already exists: "+instance_name
 	var vrc_data = get_variable(var_name)
 	if vrc_data == null:
 		return var_name+": no such variable"
@@ -171,13 +173,14 @@ func add_vrc(var_name, vrc_name):
 	if vrc == null:
 		_log_debug("	Failed to instance VRC")
 		return "Failed to instance VRC"
+	vrc.set_meta("vrc_instance_name", instance_name)
 	vrc.set_meta("vrc_host_api", mVrcHostApi)
 	var vrc_canvas = preload("res://rcos/lib/canvas.tscn").instance()
 	var vrc_canvas_size = vrc.get_end()
 	if vrc_canvas_size.x > vrc_canvas_size.y:
 		vrc_canvas_size = Vector2(vrc_canvas_size.y, vrc_canvas_size.x)
 	var canvas_rect = Rect2(Vector2(0,0), vrc_canvas_size)
-	vrc_canvas.set_name(vrc_name+"_canvas")
+	vrc_canvas.set_name(instance_name)
 	vrc_canvas.set_rect(canvas_rect)
 	vrc_canvas.connect("display", self, "_on_vrc_canvas_displayed", [vrc_canvas])
 	vrc_canvas.connect("conceal", self, "_on_vrc_canvas_concealed", [vrc_canvas])
@@ -203,13 +206,25 @@ func connect_to_interface(addr, port):
 	_log_notice("Listening on TCP port " + str(mNetInterface.tcp_server_port))
 	_log_notice("Listening on UDP port " + str(mNetInterface.udp_port))
 	_log_notice("Sending service request to\n\t" + str(addr) + ":" + str(port))
-	var msg = rlib.join_array([
-		"service_request",
+	var msg_txt = rlib.join_array([
+		"#service_request",
 		mNetInterface.tcp_server_port,
 		mNetInterface.udp_port,
 		"default"
-	], " ")
-	mNetInterface.udp.put_packet(msg.to_ascii())
+	], " ").to_ascii()
+	msg_txt.append(0)
+	var msg_bin = RawArray()
+	msg_bin.append(0)
+	msg_bin.append(2)
+	msg_bin.append_array(rlib.encode_uint16(mNetInterface.tcp_server_port))
+	msg_bin.append_array(rlib.encode_uint16(mNetInterface.udp_port))
+	while(msg_bin.size() < 16):
+		msg_bin.append(0)
+	msg_bin.append_array("default".left(16).to_ascii())
+	while(msg_bin.size() < 32):
+		msg_bin.append(0)
+	mNetInterface.udp.put_packet(msg_txt)
+	mNetInterface.udp.put_packet(msg_bin)
 
 func exit():
 	_log_debug(["exit()"])
@@ -334,11 +349,29 @@ func remove_vrc(vrc_name):
 	return "Not yet implemented"
 
 func send(data, to, from = null):
-	for conn in mNetInterface.connections.get_children():
-		if conn.get_remote_address_string() == to:
-			conn.send_data(data)
-			return ""
-	return "connection "+to+" not found"
+	var tokens = to.split("!")
+	if tokens.size() != 3:
+		return str(to)+": invalid address"
+	var protocol = tokens[0]
+	var host = tokens[1]
+	var service = tokens[2]
+	if protocol == "tcp":
+		for conn in mNetInterface.connections.get_children():
+			if conn.get_remote_address_string() == to:
+				conn.send_data(data)
+				return ""
+		return "connection "+to+" not found"
+	elif protocol == "udp":
+		if host.begins_with("$"):
+			var idx = int(host.right(1))
+			var conn = mNetInterface.connections.get_child(idx)
+			if conn == null:
+				return host+": host not found"
+			host = conn.get_remote_address_string().split("!")[1]
+		var port = int(service)
+		mNetInterface.udp.set_send_address(host, port)
+		mNetInterface.udp.put_packet(data)
+	return protocol+": invalid protocol"
 
 func set_icon(texture):
 	_log_debug(["set_icon()", texture])
@@ -362,10 +395,10 @@ func set_variable(name, value):
 	emit_signal("var_changed3", name, value, old_value)
 	return ""
 
-func show_vrc(vrc_name, fullscreen):
-	_log_debug(["show_vrc()", vrc_name, fullscreen])
+func show_vrc(instance_name, fullscreen):
+	_log_debug(["show_vrc()", instance_name, fullscreen])
 	for canvas in get_node("vrc_instances").get_children():
-		if canvas.get_name() == vrc_name+"_canvas":
+		if canvas.get_name() == instance_name:
 			if fullscreen:
 				rcos.push_canvas(canvas)
 			else:
