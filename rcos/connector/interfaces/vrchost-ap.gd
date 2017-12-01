@@ -1,6 +1,7 @@
 extends Node
 
 var mConnector = null
+var mName = null
 var mAddr = null
 var mPort = null
 var mLastHeartbeatTime = -1
@@ -33,12 +34,18 @@ func init(connector, addr, port):
 func process_packet(data):
 	rcos.log_debug(self, ["process_packet()", data])
 	var msg = data.get_string_from_ascii()
-	if msg.to_lower().begins_with("vrchost-ap.hb"):
+	if msg.to_lower().begins_with("#vrchost-ap.hb"):
 		if mLastHeartbeatTime == -1:
-			var data = "info_request".to_ascii()
-			mConnector.send_packet(data, mAddr, mPort)
+			var msg_txt = "#service_info_request".to_ascii()
+			msg_txt.append(0)
+			var msg_bin = RawArray()
+			msg_bin.append(0)
+			msg_bin.append(1)
+			mConnector.send_packet(msg_txt, mAddr, mPort)
+			mConnector.send_packet(msg_bin, mAddr, mPort)
 		mLastHeartbeatTime = OS.get_unix_time()
-	elif msg.to_lower().begins_with("vrchost-ap.info"):
+	elif msg.to_lower().begins_with("#service"):
+		var name = "default"
 		var host = "Unknown"
 		var desc = "No description"
 		var icon = null
@@ -50,20 +57,20 @@ func process_packet(data):
 				continue
 			if name == "host:":
 				host = value
-				prints("found host:", host)
+				#prints("found host:", host)
 			elif name == "desc:":
 				desc = value
-				prints("found desc:", desc)
+				#prints("found desc:", desc)
 			elif name == "icon:":
 				icon = _decode_icon(value)
 				if icon == null:
 					rcos.log_error(self, "unable to decode icon")
 					continue
-				prints("found icon:", icon)
+				#prints("found icon:", icon)
 		mInterfaceWidget = mConnector.gui.add_interface_widget(host)
 		var info = rlib.join_array([
 			desc,
-			"VRC Host Access Point",
+			"VrcHost Interface Access Point",
 			mAddr+":"+str(mPort)
 		], "\n")
 		mInterfaceWidget.set_info(info)

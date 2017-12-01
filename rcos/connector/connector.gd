@@ -36,7 +36,7 @@ func _process_udp_datagram():
 	if interface == null:
 		var string = data.get_string_from_ascii()
 		#print("connector: _process_udp_datagram(): ", string, "\n")
-		if string.to_lower().begins_with("vrchost-ap.hb"):
+		if string.to_lower().begins_with("#vrchost-ap.hb"):
 			interface = rlib.instance_scene("res://rcos/connector/interfaces/vrchost-ap.tscn")
 			interface.set_name(interface_name)
 			interface.init(self, addr, port)
