@@ -61,7 +61,6 @@ func _encode_uint16(val):
 	var b2 = (val & 0x00FF)
 	bytes.append(b1)
 	bytes.append(b2)
-	prints(b1, b2)
 	return bytes
 
 func _instance_scene(scene_path):

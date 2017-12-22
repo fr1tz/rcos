@@ -85,7 +85,7 @@ func process_packet(data):
 		mInterfaceWidget = mConnector.gui.add_interface_widget(host)
 		var info = rlib.join_array([
 			desc,
-			"VrcHost Interface Access Point",
+			"VrcHost Service Access Point",
 			mAddr+":"+str(mPort)
 		], "\n")
 		mInterfaceWidget.set_info(info)
