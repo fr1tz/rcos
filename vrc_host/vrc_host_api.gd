@@ -69,11 +69,17 @@ func add_module(var_name):
 func add_vrc(var_name, instance_name):
 	return mVrcHost.add_vrc(var_name, instance_name)
 
+func call(method_name, arg0=null, arg1=null, arg2=null, arg3=null, arg4=null, arg5=null, arg6=null, arg7=null, arg8=null, arg9=null):
+	mVrcHost.call(method_name, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+
 func disable_canvas_input(node):
 	rcos.disable_canvas_input(node)
 
 func enable_canvas_input(node):
 	rcos.enable_canvas_input(node)
+
+func get_module(module_name):
+	return mVrcHost.get_module(module_name)
 
 func get_node_from_path(path_string):
 	return mVrcHost.get_node_from_path(path_string)

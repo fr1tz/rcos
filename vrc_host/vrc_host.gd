@@ -250,6 +250,11 @@ func exit():
 func get_connections():
 	return mNetInterface.connections.get_children()
 
+func get_module(module_name):
+	_log_debug(["get_module()", module_name])
+	var module = get_node("modules").get_node(module_name)
+	return module
+
 func get_node_from_path(path_string):
 	var self_path = str(get_path())
 	if !path_string.begins_with(self_path):
