@@ -22,6 +22,7 @@ const NET_INTERFACE_STATE_OPEN = 2
 var mTaskId = -1
 var mMainGui = null
 var mStatusScreen = null
+var mDatablocks = Dictionary()
 var mVariables = Dictionary()
 var mVrcHostApi = null
 var mNetInterface = {
@@ -146,14 +147,14 @@ func add_log_entry(source_node, level, content):
 		rcos.log_error(source_node, content)
 	return ""
 
-func add_module(var_name):
-	_log_debug(["add_module()", var_name])
-	var module_data = get_variable(var_name)
+func add_module(datablock_name):
+	_log_debug(["add_module()", datablock_name])
+	var module_data = get_datablock(datablock_name)
 	if module_data == null:
-		return var_name+": no such variable"
+		return datablock_name+": no such datablock"
 	var file = File.new()
 	file.open("user://tmpdata.xml", file.WRITE)
-	file.store_string(module_data)
+	file.store_buffer(module_data)
 	file.close()
 	var module_packed = load("user://tmpdata.xml")
 	Directory.new().remove("user://tmpdata.xml")
@@ -168,16 +169,16 @@ func add_module(var_name):
 	get_node("modules").add_child(module)
 	return ""
 
-func add_vrc(var_name, instance_name):
-	_log_debug(["add_vrc()", var_name, instance_name])
+func add_vrc(datablock_name, instance_name):
+	_log_debug(["add_vrc()", datablock_name, instance_name])
 	if get_node("vrc_instances").has_node(instance_name):
 		return "VRC instance already exists: "+instance_name
-	var vrc_data = get_variable(var_name)
+	var vrc_data = get_datablock(datablock_name)
 	if vrc_data == null:
-		return var_name+": no such variable"
+		return datablock_name+": no such variable"
 	var file = File.new()
 	file.open("user://tmpdata.xml", file.WRITE)
-	file.store_string(vrc_data)
+	file.store_buffer(vrc_data)
 	file.close()
 	var vrc_packed = load("user://tmpdata.xml")
 	Directory.new().remove("user://tmpdata.xml")
@@ -249,6 +250,17 @@ func exit():
 
 func get_connections():
 	return mNetInterface.connections.get_children()
+
+func get_datablock(name):
+	_log_debug(["get_datablock()", name])
+	name = name.to_upper()
+	if !mDatablocks.has(name):
+		return null
+	return mDatablocks[name]
+
+func get_datablocks():
+	_log_debug(["get_datablocks()"])
+	return mDatablocks.keys()
 
 func get_module(module_name):
 	_log_debug(["get_module()", module_name])
@@ -392,6 +404,11 @@ func send(data, to, from = null):
 		mNetInterface.udp.set_send_address(host, port)
 		mNetInterface.udp.put_packet(data)
 	return protocol+": invalid protocol"
+
+func set_datablock(name, data):
+	_log_debug(["set_datablock()", name, data])
+	name = name.to_upper()
+	mDatablocks[name] = data
 
 func set_icon(texture):
 	_log_debug(["set_icon()", texture])
