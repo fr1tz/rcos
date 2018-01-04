@@ -26,20 +26,32 @@ func _decode_icon(string):
 	var data = rlib.base64_decode(string)
 	if data == null:
 		return null
-	var img = Image(40, 40, false, Image.FORMAT_GRAYSCALE_ALPHA)
-	var p = 0
-	for c in data:
-		for b in range(0, 8):
-			var x = p % 40
-			var y = (p-x) / 40
-			var color = Color(1, 1, 1, 1)
-			if (c & 128>>b) > 0:
-				color = Color(1, 1, 1, 0)
-			img.put_pixel(x, y, color)
-			p += 1
-	var tex = ImageTexture.new()
-	tex.create_from_image(img, 0)
-	return tex
+	var file = File.new()
+	file.open("user://tmpdata.png", file.WRITE)
+	file.store_buffer(data)
+	file.close()
+	var res = load("user://tmpdata.png")
+	if res == null:
+		return null
+	if typeof(res) != TYPE_OBJECT:
+		return null
+	if res.get_type() != "ImageTexture":
+		return null
+	return res
+#	var img = Image(40, 40, false, Image.FORMAT_GRAYSCALE_ALPHA)
+#	var p = 0
+#	for c in data:
+#		for b in range(0, 8):
+#			var x = p % 40
+#			var y = (p-x) / 40
+#			var color = Color(1, 1, 1, 1)
+#			if (c & 128>>b) > 0:
+#				color = Color(1, 1, 1, 0)
+#			img.put_pixel(x, y, color)
+#			p += 1
+#	var tex = ImageTexture.new()
+#	tex.create_from_image(img, 0)
+#	return tex
 
 func init(connector, addr, port):
 	mConnector = connector
