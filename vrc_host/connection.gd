@@ -23,40 +23,31 @@ var mRemotePort = -1
 var mReceiveBuffer = RawArray()
 var mSendBuffer = RawArray()
 var mCurrentDatablockName = ""
-var mCurrentDatablockSize = 0
-var mCurrentDatablockData = null;
+var mVrcDataSize = 0
+var mVrcData = null;
 var mLastCommandError = ""
 var mCommands = {
-	"add_module": funcref(self, "_cmd_add_module"),
-	"add_vrc": funcref(self, "_cmd_add_vrc"),
+	"load_vrc": funcref(self, "_cmd_load_vrc"),
 	"log_debug": funcref(self, "_cmd_log_debug"),
 	"log_notice": funcref(self, "_cmd_log_notice"),
 	"log_error": funcref(self, "_cmd_log_error"),
-	"receive_datablock": funcref(self, "_cmd_receive_datablock"),
 	"remove_vrc": funcref(self, "_cmd_remove_vrc"),
-	"set_var": funcref(self, "_cmd_set_var"),
-	"show_vrc": funcref(self, "_cmd_show_vrc")
+	"set_var": funcref(self, "_cmd_set_var")
 }
 
-func _cmd_add_module(cmdline):
+func _cmd_load_vrc(cmdline):
 	if cmdline.arguments.size() == 0:
-		return "missing arguments: VAR_NAME"
+		return "missing arguments: VRC_DATA_SIZE"
 	elif cmdline.arguments.size() > 1:
 		return "got more than 1 arguments"
-	var var_name = cmdline.arguments[0]
-	return mVrcHostApi.add_module(var_name)
-
-func _cmd_add_vrc(cmdline):
-	if cmdline.arguments.size() == 0:
-		return "missing arguments: VAR_NAME, VRC_VALUE"
-	elif cmdline.arguments.size() == 1:
-		return "missing argument: VRC_NAME"
-	elif cmdline.arguments.size() > 2:
-		return "got more than 2 arguments"
-	var var_name = cmdline.arguments[0]
-	var vrc_name = cmdline.arguments[1]
-	return mVrcHostApi.add_vrc(var_name, vrc_name)
-
+# TODO:
+#	var from = source.get_remote_address_string()
+#	if cmdline.attributes.has("from"):
+#		from = cmdline.attributes["from"]
+	mVrcDataSize = int(cmdline.arguments[0])
+	mVrcData = RawArray();
+	return ""
+	
 func _cmd_log_debug(cmdline):
 	var msg = cmdline.arguments_raw
 	return mVrcHostApi.log_debug(self, msg)
@@ -69,32 +60,6 @@ func _cmd_log_error(cmdline):
 	var msg = cmdline.arguments_raw
 	return mVrcHostApi.log_error(self, msg)
 
-func _cmd_receive_datablock(cmdline):
-	if cmdline.arguments.size() == 0:
-		return "missing arguments: DATABLOCK_NAME, DATABLOCK_SIZE"
-	elif cmdline.arguments.size() == 1:
-		return "missing argument: DATABLOCK_SIZE"
-	elif cmdline.arguments.size() > 2:
-		return "got more than 2 arguments"
-# TODO:
-#	var from = source.get_remote_address_string()
-#	if cmdline.attributes.has("from"):
-#		from = cmdline.attributes["from"]
-	var datablock_name = cmdline.arguments[0]
-	var datablock_size = int(cmdline.arguments[1])
-	mCurrentDatablockName = datablock_name;
-	mCurrentDatablockSize = datablock_size;
-	mCurrentDatablockData = RawArray();
-	return ""
-
-func _cmd_remove_vrc(cmdline):
-	if cmdline.arguments.size() == 0:
-		return "missing argument: VRC_NAME"
-	elif cmdline.arguments.size() > 1:
-		return "got more than 1 argument"
-	var vrc_name = cmdline.arguments[0]
-	return mVrcHostApi.remove_vrc(vrc_name)
-
 func _cmd_set_var(cmdline):
 	if cmdline.arguments.size() == 0:
 		return "missing arguments: VAR_NAME, VAR_VALUE"
@@ -105,17 +70,6 @@ func _cmd_set_var(cmdline):
 	var var_name = cmdline.arguments[0]
 	var var_value = cmdline.arguments[1]
 	return mVrcHostApi.set_var(var_name, var_value)
-
-func _cmd_show_vrc(cmdline):
-	if cmdline.arguments.size() == 0:
-		return "missing argument: VRC_NAME"
-	elif cmdline.arguments.size() > 1:
-		return "got more than 1 argument"
-	var fullscreen = false
-	if cmdline.attributes.has("fullscreen"):
-		fullscreen = true
-	var name = cmdline.arguments[0]
-	return mVrcHostApi.show_vrc(name, fullscreen)
 
 func _process_network_io():
 	_receive_data()
@@ -128,7 +82,7 @@ func _process_data():
 		if mReceiveBuffer.size() == 0:
 			return
 		n -= 1
-		if mCurrentDatablockSize == 0: # Reading VHCP messages
+		if mVrcData == null: # Reading VHCP messages
 			var msg_size = -1
 			for i in range(0, mReceiveBuffer.size()):
 				if mReceiveBuffer[i] == 10: # Line feed
@@ -144,22 +98,23 @@ func _process_data():
 			mReceiveBuffer.invert()
 			mReceiveBuffer.resize(mReceiveBuffer.size()-msg_size-1)
 			mReceiveBuffer.invert()
-		else: # Reading datablock data
-			if mCurrentDatablockSize >= mReceiveBuffer.size():
-				mCurrentDatablockData.append_array(mReceiveBuffer)
-				mCurrentDatablockSize -= mReceiveBuffer.size()
+		else: # Reading VRC data
+			var remaining_bytes = mVrcDataSize - mVrcData.size()
+			if remaining_bytes >= mReceiveBuffer.size():
+				mVrcData.append_array(mReceiveBuffer)
 				mReceiveBuffer.resize(0)
 			else:
-				var nbytes = mCurrentDatablockSize
-				var datablock_data = RawArray(mReceiveBuffer)
-				datablock_data.resize(mCurrentDatablockSize)
-				mCurrentDatablockData.append_array(datablock_data)
+				var buf = RawArray(mReceiveBuffer)
+				buf.resize(remaining_bytes)
+				mVrcData.append_array(buf)
 				mReceiveBuffer.invert()
-				mReceiveBuffer.resize(mReceiveBuffer.size()-mCurrentDatablockSize)
+				mReceiveBuffer.resize(mReceiveBuffer.size()-buf.size())
 				mReceiveBuffer.invert()
-				mCurrentDatablockSize = 0
-			if mCurrentDatablockSize == 0:
-				mVrcHostApi.set_datablock(mCurrentDatablockName, mCurrentDatablockData)
+			var progress = float(mVrcData.size()) / float(mVrcDataSize)
+			mVrcHostApi.update_setup_progress(progress)
+			if mVrcData.size() == mVrcDataSize:
+				mVrcHostApi.load_vrc(mVrcData)
+				mVrcData = null
 
 func _process_vhcp_msg(msg):
 	mVrcHostApi.log_debug(self, ["_process_vhcp_msg()", msg])

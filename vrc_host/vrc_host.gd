@@ -22,7 +22,6 @@ const NET_INTERFACE_STATE_OPEN = 2
 var mTaskId = -1
 var mMainGui = null
 var mStatusScreen = null
-var mDatablocks = Dictionary()
 var mVariables = Dictionary()
 var mVrcHostApi = null
 var mNetInterface = {
@@ -147,61 +146,33 @@ func add_log_entry(source_node, level, content):
 		rcos.log_error(source_node, content)
 	return ""
 
-func add_module(datablock_name):
-	_log_debug(["add_module()", datablock_name])
-	var module_data = get_datablock(datablock_name)
-	if module_data == null:
-		return datablock_name+": no such datablock"
-	var file = File.new()
-	file.open("user://tmpdata.xml", file.WRITE)
-	file.store_buffer(module_data)
-	file.close()
-	var module_packed = load("user://tmpdata.xml")
-	Directory.new().remove("user://tmpdata.xml")
-	if module_packed == null:
-		_log_debug("Loading module data failed")
-		return "Loading VRC data failed"
-	var module = module_packed.instance()
-	if module == null:
-		_log_debug("Failed to instance module")
-		return "failed to instance module"
-	module.set_meta("vrc_host_api", mVrcHostApi)
-	get_node("modules").add_child(module)
-	return ""
-
-func add_vrc(datablock_name, instance_name):
-	_log_debug(["add_vrc()", datablock_name, instance_name])
-	if get_node("vrc_instances").has_node(instance_name):
-		return "VRC instance already exists: "+instance_name
-	var vrc_datablock = get_datablock(datablock_name)
-	if vrc_datablock == null:
-		return datablock_name+": no such datablock"
-	var vrc_data_dir = get_tmp_dir() + "vrc_data_" + instance_name
-	var vrc_data = preload("res://vrc_host/vrc_data.gd").new(vrc_data)
-	vrc_data.unpack(vrc_data_dir)
+func load_vrc(vrc_data):
+	_log_debug(["load_vrc()", vrc_data])
+	if get_node("vrc_canvas").get_child_count() != 0:
+		return "VRC already loaded"
+	var vrc_data_dir = get_tmp_dir() + "vrc_data"
+	preload("res://vrc_host/vrc_data.gd").new(vrc_data).unpack(vrc_data_dir)
 	var vrc_packed = load(vrc_data_dir + "/vrc.tscn")
 	if vrc_packed == null:
-		print("Loading VRC data failed")
-		_log_debug("	Loading VRC data failed")
+		_log_error("Loading VRC data failed")
 		return "Loading VRC data failed"
 	var vrc = vrc_packed.instance()
 	if vrc == null:
-		print("Failed to instance VRC")
-		_log_debug("	Failed to instance VRC")
+		_log_error("Failed to instance VRC")
 		return "Failed to instance VRC"
-	vrc.set_meta("vrc_instance_name", instance_name)
 	vrc.set_meta("vrc_host_api", mVrcHostApi)
-	var vrc_canvas = preload("res://rcos/lib/canvas.tscn").instance()
+	var vrc_canvas = get_node("vrc_canvas")
 	var vrc_canvas_size = vrc.get_end()
 	if vrc_canvas_size.x > vrc_canvas_size.y:
 		vrc_canvas_size = Vector2(vrc_canvas_size.y, vrc_canvas_size.x)
 	var canvas_rect = Rect2(Vector2(0,0), vrc_canvas_size)
-	vrc_canvas.set_name(instance_name)
 	vrc_canvas.set_rect(canvas_rect)
 	vrc_canvas.connect("display", self, "_on_vrc_canvas_displayed", [vrc_canvas])
 	vrc_canvas.connect("conceal", self, "_on_vrc_canvas_concealed", [vrc_canvas])
 	vrc_canvas.add_child(vrc)
-	get_node("vrc_instances").add_child(vrc_canvas)
+	get_node("vrc_canvas").add_child(vrc)
+	mMainGui.get_node("window").show_canvas(vrc_canvas)
+	mStatusScreen.hide()	
 	return ""
 
 func connect_to_interface(addr, port):
@@ -250,22 +221,6 @@ func exit():
 
 func get_connections():
 	return mNetInterface.connections.get_children()
-
-func get_datablock(name):
-	_log_debug(["get_datablock()", name])
-	name = name.to_upper()
-	if !mDatablocks.has(name):
-		return null
-	return mDatablocks[name]
-
-func get_datablocks():
-	_log_debug(["get_datablocks()"])
-	return mDatablocks.keys()
-
-func get_module(module_name):
-	_log_debug(["get_module()", module_name])
-	var module = get_node("modules").get_node(module_name)
-	return module
 
 func get_node_from_path(path_string):
 	var self_path = str(get_path())
@@ -408,22 +363,17 @@ func send(data, to, from = null):
 		mNetInterface.udp.put_packet(data)
 	return protocol+": invalid protocol"
 
-func set_datablock(name, data):
-	_log_debug(["set_datablock()", name, data])
-	name = name.to_upper()
-	mDatablocks[name] = data
-
 func set_icon(texture):
 	_log_debug(["set_icon()", texture])
 	rcos.set_task_icon(mTaskId, texture)
 	return ""
 
+func update_setup_progress(value):
+	mMainGui.get_node("status_screen").set_setup_progress(float(value))
+
 func set_variable(name, value):
 	_log_debug(["set_variable()", name, value])
 	name = name.to_upper()
-	if name == "VRCHOST/SETUP_PROGRESS":
-		mMainGui.get_node("status_screen").set_setup_progress(float(value))
-		return
 	var old_value = ""
 	if mVariables.has(name):
 		if mVariables[name] == value:

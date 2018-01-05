@@ -63,8 +63,8 @@ func _emit_var_changed3(var_name, new_value, old_value):
 # Core API
 #-------------------------------------------------------------------------------
 
-func add_module(datablock_name):
-	return mVrcHost.add_module(datablock_name)
+func load_vrc(vrc_data):
+	return mVrcHost.load_vrc(vrc_data)
 
 func add_vrc(datablock_name, instance_name):
 	return mVrcHost.add_vrc(datablock_name, instance_name)
@@ -77,12 +77,6 @@ func disable_canvas_input(node):
 
 func enable_canvas_input(node):
 	rcos.enable_canvas_input(node)
-
-func get_datablock(datablock_name):
-	return mVrcHost.get_datablock(datablock_name)
-
-func get_datablock_list():
-	return mVrcHost.get_datablocks()
 
 func get_module(module_name):
 	return mVrcHost.get_module(module_name)
@@ -111,17 +105,14 @@ func log_error(source_node, content):
 func send(data, to, from = null):
 	return mVrcHost.send(data, to, from)
 
-func set_datablock(datablock_name, datablock_data):
-	return mVrcHost.set_datablock(datablock_name, datablock_data)
-
 func set_icon(image):
 	return mVrcHost.set_icon(image)
 
 func set_var(var_name, var_value):
 	return mVrcHost.set_variable(var_name, var_value)
 
-func show_vrc(instance_name, fullscreen = false):
-	return mVrcHost.show_vrc(instance_name, fullscreen)
+func update_setup_progress(value):
+	return mVrcHost.update_setup_progress(value)
 
 #-------------------------------------------------------------------------------
 # API Extensions

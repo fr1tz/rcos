@@ -29,11 +29,11 @@ wait_time = 0.05
 one_shot = false
 autostart = true
 
-[node name="modules" type="Node" parent="."]
-
 [node name="connections" type="Node" parent="."]
 
-[node name="vrc_instances" type="Node" parent="."]
+[node name="vrc_canvas" parent="." instance=ExtResource( 3 )]
+
+rect = Rect2( 0, 0, 200, 400 )
 
 [node name="main_canvas" parent="." instance=ExtResource( 3 )]
 
