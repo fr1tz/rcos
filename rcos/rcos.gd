@@ -23,6 +23,7 @@ var mNextPort = {
 	PORT_TYPE_UDP: 22000
 }
 
+var mTmpDirPath = ""
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
 var mCanvasStack = []
@@ -36,6 +37,11 @@ func _notification(what):
 			pop_canvas()
 
 func _init():
+	mTmpDirPath = rlib.join_array([
+		"user://tmp/rcos", 
+		OS.get_process_ID(),
+		OS.get_unix_time()
+	], "-") + "/"
 	#OS.set_low_processor_usage_mode(true)
 	add_user_signal("task_list_changed")
 	add_user_signal("new_log_entry3")
@@ -107,6 +113,9 @@ func add_task():
 	mTasks.append(task)
 	call_deferred("emit_signal", "task_list_changed")
 	return task.id
+
+func get_tmp_dir():
+	return mTmpDirPath
 
 func remove_task(task_id):
 	for task in mTasks:
