@@ -25,7 +25,6 @@ var mSendBuffer = RawArray()
 var mCurrentDatablockName = ""
 var mCurrentDatablockSize = 0
 var mCurrentDatablockData = null;
-var mOpenVariables = {}
 var mLastCommandError = ""
 var mCommands = {
 	"add_module": funcref(self, "_cmd_add_module"),
@@ -36,10 +35,7 @@ var mCommands = {
 	"receive_datablock": funcref(self, "_cmd_receive_datablock"),
 	"remove_vrc": funcref(self, "_cmd_remove_vrc"),
 	"set_var": funcref(self, "_cmd_set_var"),
-	"show_vrc": funcref(self, "_cmd_show_vrc"),
-	"vclose": funcref(self, "_cmd_vclose"),
-	"vopen": funcref(self, "_cmd_vopen"),
-	"vwrite": funcref(self, "_cmd_vwrite")
+	"show_vrc": funcref(self, "_cmd_show_vrc")
 }
 
 func _cmd_add_module(cmdline):
@@ -120,41 +116,6 @@ func _cmd_show_vrc(cmdline):
 		fullscreen = true
 	var name = cmdline.arguments[0]
 	return mVrcHostApi.show_vrc(name, fullscreen)
-
-func _cmd_vclose(cmdline):
-	if cmdline.arguments.size() == 0:
-		return "missing arguments: VAR_NAME"
-	elif cmdline.arguments.size() > 1:
-		return "got more than 1 argument"
-	var var_name = cmdline.arguments[0]
-	if !mOpenVariables.has(var_name):
-		return "no such open variable"
-	var var_value = mOpenVariables[var_name]
-	mOpenVariables.erase(var_name)
-	return mVrcHostApi.set_var(var_name, var_value)
-
-func _cmd_vopen(cmdline):
-	if cmdline.arguments.size() == 0:
-		return "missing arguments: VAR_NAME"
-	elif cmdline.arguments.size() > 1:
-		return "got more than 1 argument"
-	var var_name = cmdline.arguments[0]
-	mOpenVariables[var_name] = ""
-	return ""
-	
-func _cmd_vwrite(cmdline):
-	if cmdline.arguments.size() == 0:
-		return "missing arguments: VAR_NAME, DATA"
-	elif cmdline.arguments.size() == 1:
-		return "missing argument: DATA"
-	elif cmdline.arguments.size() > 2:
-		return "got more than 2 arguments"
-	var var_name = cmdline.arguments[0]
-	var data = cmdline.arguments[1]
-	if !mOpenVariables.has(var_name):
-		return "no such open variable"
-	mOpenVariables[var_name] += data
-	return ""
 
 func _process_network_io():
 	_receive_data()
