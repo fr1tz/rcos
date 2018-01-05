@@ -173,20 +173,20 @@ func add_vrc(datablock_name, instance_name):
 	_log_debug(["add_vrc()", datablock_name, instance_name])
 	if get_node("vrc_instances").has_node(instance_name):
 		return "VRC instance already exists: "+instance_name
-	var vrc_data = get_datablock(datablock_name)
-	if vrc_data == null:
-		return datablock_name+": no such variable"
-	var file = File.new()
-	file.open("user://tmpdata.xml", file.WRITE)
-	file.store_buffer(vrc_data)
-	file.close()
-	var vrc_packed = load("user://tmpdata.xml")
-	Directory.new().remove("user://tmpdata.xml")
+	var vrc_datablock = get_datablock(datablock_name)
+	if vrc_datablock == null:
+		return datablock_name+": no such datablock"
+	var vrc_data_dir = get_tmp_dir() + "vrc_data_" + instance_name
+	var vrc_data = preload("res://vrc_host/vrc_data.gd").new(vrc_data)
+	vrc_data.unpack(vrc_data_dir)
+	var vrc_packed = load(vrc_data_dir + "/vrc.tscn")
 	if vrc_packed == null:
+		print("Loading VRC data failed")
 		_log_debug("	Loading VRC data failed")
 		return "Loading VRC data failed"
 	var vrc = vrc_packed.instance()
 	if vrc == null:
+		print("Failed to instance VRC")
 		_log_debug("	Failed to instance VRC")
 		return "Failed to instance VRC"
 	vrc.set_meta("vrc_instance_name", instance_name)
@@ -284,6 +284,9 @@ func get_path_from_node(node):
 	var node_path = str(node.get_path())
 	var self_path = str(get_path())
 	return "vrchost"+node_path.right(self_path.length())
+
+func get_tmp_dir():
+	return rcos.get_tmp_dir() + "vrchost" + str(mTaskId) + "/"
 
 func get_variable(name):
 	_log_debug(["get_variable()", name])
