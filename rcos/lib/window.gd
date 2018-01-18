@@ -44,7 +44,8 @@ func _canvas_input(event):
 	var index = 0
 	if touchscreen:
 		index = event.index
-	var rect = get_global_rect()
+	var rect = get_rect()
+	event.pos = get_pos() + (event.pos - get_pos()).rotated(-get_rotation())
 	if !rect.has_point(event.pos):
 		mCanvas.update_input(index, null, false)
 		return
