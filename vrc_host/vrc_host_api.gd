@@ -111,38 +111,11 @@ func set_icon(image):
 func set_var(var_name, var_value):
 	return mVrcHost.set_variable(var_name, var_value)
 
+func show_rect(rect):
+	return mVrcHost.show_rect(rect)
+
 func update_setup_progress(value):
 	return mVrcHost.update_setup_progress(value)
-
-#-------------------------------------------------------------------------------
-# API Extensions
-#-------------------------------------------------------------------------------
-
-func add_api_extension(method_name, object, method):
-	if mApiExtensions.has(method_name):
-		return "API extension " + method_name + " already exists"
-	mApiExtensions[method_name] = funcref(object, method)
-	return ""
-
-func has_api_extension(method_name):
-	return mApiExtensions.has(method_name)
-
-func remove_api_extension(method_name):
-	if !mApiExtensions.has(method_name):
-		return "API extension " + method_name + " does not exist"
-	mApiExtensions.erase(method_name)
-	return ""
-
-func call_api_extension(method_name, arg0=null, arg1=null, arg2=null, arg3=null, arg4=null, arg5=null, arg6=null, arg7=null, arg8=null, arg9=null):
-	if !mApiExtensions.has(method_name):
-		return "API extension " + method_name + " does not exist"
-	mApiExtensions[method_name].call_func(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) 
-
-func get_api_extensions():
-	var extensions = []
-	for method_name in mApiExtensions:
-		extensions.append(method_name)
-	return extensions
 
 #-------------------------------------------------------------------------------
 # VHCP (VRC Host Control Protocol) Extensions

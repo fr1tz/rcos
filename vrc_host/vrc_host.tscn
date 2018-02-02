@@ -3,7 +3,7 @@
 [ext_resource path="res://vrc_host/vrc_host.gd" type="Script" id=1]
 [ext_resource path="res://vrc_host/icon.png" type="Texture" id=2]
 [ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=3]
-[ext_resource path="res://vrc_host/main_gui.tscn" type="PackedScene" id=4]
+[ext_resource path="res://vrc_host/status_screen/status_screen.tscn" type="PackedScene" id=4]
 
 [node name="vrc_host" type="Node"]
 
@@ -35,11 +35,11 @@ autostart = true
 
 rect = Rect2( 0, 0, 200, 400 )
 
-[node name="main_canvas" parent="." instance=ExtResource( 3 )]
+[node name="status_canvas" parent="." instance=ExtResource( 3 )]
 
 rect = Rect2( 0, 0, 200, 400 )
 
-[node name="main_gui" parent="main_canvas" instance=ExtResource( 4 )]
+[node name="status_screen" parent="status_canvas" instance=ExtResource( 4 )]
 
 margin/right = 0.0
 

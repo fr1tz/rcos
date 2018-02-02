@@ -20,7 +20,6 @@ const NET_INTERFACE_STATE_OPENING = 1
 const NET_INTERFACE_STATE_OPEN = 2
 
 var mTaskId = -1
-var mMainGui = null
 var mStatusScreen = null
 var mVariables = Dictionary()
 var mVrcHostApi = null
@@ -49,15 +48,16 @@ func _init():
 func _ready():
 	_log_debug("_ready()")
 	get_node("network_input_timer").connect("timeout", self, "_process_network_io")
-	get_node("main_canvas").connect("display", self, "_on_displayed")
-	get_node("main_canvas").connect("conceal", self, "_on_concealed")
+#	get_node("main_canvas").connect("display", self, "_on_displayed")
+#	get_node("main_canvas").connect("conceal", self, "_on_concealed")
 	mTaskId = rcos.add_task()
 	var task_name = "VRC Host"
 	var task_icon = get_node("icon").get_texture()
-	var task_canvas = get_node("main_canvas")
-	var task_ops = [
-		[ "kill", funcref(self, "kill") ]
-	]
+	var task_canvas = get_node("status_canvas")
+	var task_ops = {
+		"kill": funcref(self, "kill"),
+		"go_back": funcref(self, "go_back")
+	}
 	task_icon.set_meta("rotate", true)
 	rcos.set_task_name(mTaskId, task_name)
 	rcos.set_task_icon(mTaskId, task_icon)
@@ -65,8 +65,7 @@ func _ready():
 	rcos.set_task_ops(mTaskId, task_ops)
 	mNetInterface.connections = get_node("connections")
 	mNetInterface.connections_group = "vrc_host_"+str(get_instance_ID())+"connections_group"
-	mMainGui = get_node("main_canvas/main_gui")
-	mStatusScreen = get_node("main_canvas/main_gui/status_screen")
+	mStatusScreen = get_node("status_canvas/status_screen")
 	set_variable("VRCHOST/VERSION", "0.0.0")
 	set_variable("VRCHOST/OS", "RCOS/"+OS.get_name())
 	set_variable("VRCHOST/MODEL", OS.get_model_name())
@@ -146,6 +145,15 @@ func add_log_entry(source_node, level, content):
 		rcos.log_error(source_node, content)
 	return ""
 
+func go_back():
+	var vrc_canvas = get_node("vrc_canvas")
+	var vrc = vrc_canvas.get_child(0)
+	if vrc == null:
+		return false
+	if !vrc.has_method("go_back"):
+		return false
+	return vrc.go_back()
+
 func load_vrc(vrc_data):
 	_log_debug(["load_vrc()", vrc_data])
 	if get_node("vrc_canvas").get_child_count() != 0:
@@ -162,17 +170,11 @@ func load_vrc(vrc_data):
 		return "Failed to instance VRC"
 	vrc.set_meta("vrc_host_api", mVrcHostApi)
 	var vrc_canvas = get_node("vrc_canvas")
-	var vrc_canvas_size = vrc.get_end()
-	if vrc_canvas_size.x > vrc_canvas_size.y:
-		vrc_canvas_size = Vector2(vrc_canvas_size.y, vrc_canvas_size.x)
-	var canvas_rect = Rect2(Vector2(0,0), vrc_canvas_size)
-	vrc_canvas.set_rect(canvas_rect)
 	vrc_canvas.connect("display", self, "_on_vrc_canvas_displayed", [vrc_canvas])
 	vrc_canvas.connect("conceal", self, "_on_vrc_canvas_concealed", [vrc_canvas])
 	vrc_canvas.add_child(vrc)
-	get_node("vrc_canvas").add_child(vrc)
-	mMainGui.get_node("window").show_canvas(vrc_canvas)
-	mStatusScreen.hide()	
+	rcos.set_task_canvas(mTaskId, vrc_canvas)
+	mStatusScreen.hide()
 	return ""
 
 func connect_to_interface(addr, port):
@@ -238,7 +240,10 @@ func get_path_from_node(node):
 		return null
 	var node_path = str(node.get_path())
 	var self_path = str(get_path())
-	return "vrchost"+node_path.right(self_path.length())
+	var child_path = node_path.right(self_path.length()+1)
+	if child_path.begins_with("vrc_canvas/"):
+		child_path = child_path.right(11)
+	return "vrchost/"+child_path
 
 func get_tmp_dir():
 	return rcos.get_tmp_dir() + "vrchost" + str(mTaskId) + "/"
@@ -339,6 +344,13 @@ func remove_vrc(vrc_name):
 	return "Not yet implemented"
 
 func send(data, to, from = null):
+	if to.begins_with("$"):
+		var idx = int(to.right(1))
+		var conn = mNetInterface.connections.get_child(idx)
+		if conn == null:
+			return to+": connection not found"
+		conn.send_data(data)
+		return
 	var tokens = to.split("!")
 	if tokens.size() != 3:
 		return str(to)+": invalid address"
@@ -368,9 +380,6 @@ func set_icon(texture):
 	rcos.set_task_icon(mTaskId, texture)
 	return ""
 
-func update_setup_progress(value):
-	mMainGui.get_node("status_screen").set_setup_progress(float(value))
-
 func set_variable(name, value):
 	_log_debug(["set_variable()", name, value])
 	name = name.to_upper()
@@ -385,19 +394,30 @@ func set_variable(name, value):
 	emit_signal("var_changed3", name, value, old_value)
 	return ""
 
+func show_rect(rect):
+	_log_debug(["show_rect()", rect])
+	var canvas = get_node("vrc_canvas")
+	canvas.set_rect(Rect2(0, 0, rect.size.x, rect.size.y))
+	canvas.get_child(0).set_pos(-rect.pos)
+	rcos.set_task_canvas(mTaskId, canvas)
+	return ""
+
 func show_vrc(instance_name, fullscreen):
 	_log_debug(["show_vrc()", instance_name, fullscreen])
-	for canvas in get_node("vrc_instances").get_children():
-		if canvas.get_name() == instance_name:
-			if fullscreen:
-				rcos.push_canvas(canvas)
-			else:
-				#rcos.set_task_canvas(mTaskId, canvas)
-				mMainGui.get_node("window").show_canvas(canvas)
-			mStatusScreen.hide()
-			return ""
-	return "VRC not found"
+	return ""
+#	for canvas in get_node("vrc_instances").get_children():
+#		if canvas.get_name() == instance_name:
+#			if fullscreen:
+#				rcos.push_canvas(canvas)
+#			else:
+#				#rcos.set_task_canvas(mTaskId, canvas)
+#				mMainGui.get_node("window").show_canvas(canvas)
+#			mStatusScreen.hide()
+#			return ""
+#	return "VRC not found"
 
+func update_setup_progress(value):
+	mStatusScreen.set_setup_progress(float(value))
 
 ###############################################################################
 

@@ -20,7 +20,10 @@ margin/bottom = 0.0
 
 [node name="window" parent="." instance=ExtResource( 2 )]
 
-stretch_mode = 3
-root_window = null
+rect/rotation = -90.0
+margin/left = 200.0
+margin/right = -400.0
+margin/bottom = 200.0
+stretch_mode = 0
 
 
