@@ -146,34 +146,6 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="ColorFrame" type="ColorFrame" parent="title"]
-
-visibility/behind_parent = true
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 78.0
-margin/top = 7.0
-margin/right = 194.0
-margin/bottom = 34.0
-color = Color( 0, 0, 0, 1 )
-
-[node name="title_backdrop" type="Panel" parent="title/ColorFrame"]
-
-anchor/left = 1
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = true
-focus/stop_mouse = false
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 118.0
-margin/top = -2.0
-margin/right = 2.0
-margin/bottom = 2.0
-custom_styles/panel = SubResource( 1 )
-
 [node name="button" type="Button" parent="."]
 
 anchor/left = 1
