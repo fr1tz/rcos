@@ -103,7 +103,8 @@ margin/top = 1.0
 margin/right = 41.0
 margin/bottom = 41.0
 texture = ExtResource( 2 )
-stretch_mode = 0
+expand = true
+stretch_mode = 4
 
 [node name="button" type="Button" parent="."]
 
