@@ -29,13 +29,6 @@ var mNextAvailableTaskId = 1
 var mCanvasStack = []
 var mTasks = []
 
-func _notification(what):
-	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
-		if mCanvasStack.size() <= 1:
-			get_tree().quit()
-		else:
-			pop_canvas()
-
 func _init():
 	mTmpDirPath = rlib.join_array([
 		"user://tmp/rcos", 
@@ -44,6 +37,9 @@ func _init():
 	], "-") + "/"
 	#OS.set_low_processor_usage_mode(true)
 	add_user_signal("task_list_changed")
+	add_user_signal("task_added")
+	add_user_signal("task_changed")
+	add_user_signal("task_removed")
 	add_user_signal("new_log_entry3")
 
 func _ready():
@@ -75,6 +71,7 @@ func _set_task_property(task_id, prop_name, prop_value):
 	for task in mTasks:
 		if task.id == task_id:
 			task[prop_name] = prop_value
+			call_deferred("emit_signal", "task_changed", task)
 			call_deferred("emit_signal", "task_list_changed")
 			return
 
@@ -111,6 +108,7 @@ func add_task():
 	}
 	mNextAvailableTaskId += 1
 	mTasks.append(task)
+	call_deferred("emit_signal", "task_added", task)
 	call_deferred("emit_signal", "task_list_changed")
 	return task.id
 
@@ -121,6 +119,7 @@ func remove_task(task_id):
 	for task in mTasks:
 		if task.id == task_id:
 			mTasks.erase(task)
+			call_deferred("emit_signal", "task_removed", task)
 			call_deferred("emit_signal", "task_list_changed")
 			return
 
