@@ -13,12 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends TextureFrame
+extends Control
 
 export(bool) var root_window
 export(NodePath) var canvas
 
 var mCanvas = null
+var mCanvasRegion = null
 var mActiveIndex = -1
 var mNextViewportInputEventId = 0
 
@@ -44,25 +45,47 @@ func _canvas_input(event):
 	var index = 0
 	if touchscreen:
 		index = event.index
-	var rect = get_rect()
 	event.pos = get_pos() + (event.pos - get_pos()).rotated(-get_rotation())
-	if !rect.has_point(event.pos):
+	var win_rect = get_rect()
+	if !win_rect.has_point(event.pos):
 		mCanvas.update_input(index, null, false)
 		return
-	var display_size = Vector2(rect.size.width, rect.size.height)
-	var win_size = Vector2(mCanvas.get_rect().size.width, mCanvas.get_rect().size.height)
-	var scale = win_size / display_size
-	var display_pos = event.pos - rect.pos
-	var win_pos = display_pos * scale
-	var fpos = win_pos
+	var region_rect = _get_canvas_region()
+	var win_size = Vector2(win_rect.size.width, win_rect.size.height)
+	var region_size = Vector2(region_rect.size.width, region_rect.size.height)
+	var scale = region_size / win_size
+	var win_pos = event.pos - win_rect.pos
+	var canvas_pos = win_pos*scale + region_rect.pos
+	var fpos = canvas_pos
 	var down = null
 	if touch:
 		down = event.pressed
 	mCanvas.update_input(index, fpos, down)
 
-func show_canvas(canvas):
-	#print("window: show_canvas(): ", canvas)
-	if canvas == mCanvas:
+func _draw():
+	if mCanvas == null:
+		draw_rect(get_rect(), Color(0, 0, 1, 1))
+		return
+	var texture = mCanvas.get_render_target_texture()
+	var rect = Rect2(Vector2(0, 0), get_rect().size)
+	var src_rect = _get_canvas_region()
+	var modulate = Color(1, 1, 1, 1)
+	var transpose = false
+	#prints("_draw()", rect, src_rect)
+	draw_texture_rect_region(texture, rect, src_rect, modulate, transpose)
+
+func _get_canvas_region():
+	if mCanvas == null:
+		return Rect2(0, 0, 0, 0)
+	if mCanvasRegion == null:
+		var texture = mCanvas.get_render_target_texture()
+		return Rect2(0, 0, texture.get_width(), texture.get_height())
+	else:
+		return mCanvasRegion
+
+func show_canvas(canvas, region = null):
+	#prints("window: show_canvas(): ", canvas, region)
+	if canvas == mCanvas && region == mCanvasRegion:
 		return
 	var was_displayed_list = {}
 	for canvas in get_tree().get_nodes_in_group("canvas_group"):
@@ -71,12 +94,13 @@ func show_canvas(canvas):
 		mCanvas.remove_display(self)
 	mCanvas = canvas
 	if mCanvas == null:
-		set_texture(null)
+		mCanvasRegion = null
 		rcos.disable_canvas_input(self)
 	else:
+		mCanvasRegion = region
 		mCanvas.add_display(self)
-		set_texture(mCanvas.get_render_target_texture())
 		rcos.enable_canvas_input(self)
+	update()
 	#print(">>>>>>>>>")
 	for canvas in get_tree().get_nodes_in_group("canvas_group"):
 		var was_displayed = was_displayed_list[canvas]

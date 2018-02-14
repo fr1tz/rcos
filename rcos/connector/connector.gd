@@ -23,15 +23,12 @@ var mInterfaces = null
 var mUDP = PacketPeerUDP.new()
 
 func _ready():
-	mTaskId = rcos.add_task()
-	var task_name = "Connector"
-	var task_icon = get_node("icon").get_texture()
-	var task_canvas = get_node("canvas")
-	var task_ops = null
-	rcos.set_task_name(mTaskId, task_name)
-	rcos.set_task_icon(mTaskId, task_icon)
-	rcos.set_task_canvas(mTaskId, task_canvas)
-	rcos.set_task_ops(mTaskId, task_ops)
+	var task_properties = {
+		"name": "Connector",
+		"icon": get_node("icon").get_texture(),
+		"canvas": get_node("canvas"),
+	}
+	mTaskId = rcos.add_task(task_properties)
 	mInterfaces = get_node("remote_interfaces")
 	gui = get_node("canvas/connector_gui")
 	if mUDP.listen(44000) != 0:

@@ -34,7 +34,6 @@ script/script = ExtResource( 1 )
 [node name="window" parent="." instance=ExtResource( 2 )]
 
 margin/right = 40.0
-root_window = null
 
 [node name="taskbar" parent="." instance=ExtResource( 3 )]
 

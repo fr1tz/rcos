@@ -12,7 +12,7 @@ func _notification(what):
 func _escape():
 	var taskbar_was_hidden = mTaskbar.is_hidden()
 	mTaskbar.set_hidden(false)
-	if mActiveTask.ops != null && mActiveTask.ops.has("go_back"):
+	if mActiveTask.has("ops") && mActiveTask.ops.has("go_back"):
 		var ret = mActiveTask.ops["go_back"].call_func()
 		if ret:
 			return
@@ -44,19 +44,32 @@ func show_task(task_id):
 		return
 	mActiveTask = task
 	var canvas = mActiveTask.canvas
-	var rect = Rect2(0, 0, canvas.get_rect().size.x, canvas.get_rect().size.y)
-	mWindow.set_size(Vector2(rect.size.x, rect.size.y))
+	var canvas_region = canvas.get_rect()
+	if mActiveTask.has("canvas_region"):
+		canvas_region = mActiveTask.canvas_region
 	var fullscreen = false
-	if rect.size.x > rect.size.y:
-		mWindow.set_rotation_deg(-90)
-		mWindow.set_pos(Vector2(rect.size.y, 0))
-		if rect.size.y > 200:
-			fullscreen = true
-	else:
-		mWindow.set_rotation_deg(0)
+	if canvas_region.size == Vector2(200, 400):
 		mWindow.set_pos(Vector2(0, 0))
-		if rect.size.x > 200:
-			fullscreen = true
+		mWindow.set_size(canvas_region.size)
+		mWindow.set_rotation_deg(0)
+	elif canvas_region.size == Vector2(240, 400):
+		mWindow.set_pos(Vector2(0, 0))
+		mWindow.set_size(canvas_region.size)
+		mWindow.set_rotation_deg(0)
+		fullscreen = true
+	elif canvas_region.size == Vector2(400, 200):
+		mWindow.set_pos(Vector2(200, 0))
+		mWindow.set_size(canvas_region.size)
+		mWindow.set_rotation_deg(-90)
+	elif canvas_region.size == Vector2(400, 240):
+		mWindow.set_pos(Vector2(240, 0))
+		mWindow.set_size(canvas_region.size)
+		mWindow.set_rotation_deg(-90)
+		fullscreen = true
+	else:
+		mWindow.set_pos(Vector2(0, 0))
+		mWindow.set_size(Vector2(200, 400))
+		mWindow.set_rotation_deg(0)
 	mTaskbar.set_hidden(fullscreen)
-	mWindow.show_canvas(mActiveTask.canvas)
+	mWindow.show_canvas(canvas, canvas_region)
 	mTaskbar.mark_active_task(task_id)

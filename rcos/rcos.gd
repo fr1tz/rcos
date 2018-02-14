@@ -67,14 +67,6 @@ func _input(event):
 	if get_tree().has_group(group):
 		get_tree().call_group(1|2|8, group, "_canvas_input", event)
 
-func _set_task_property(task_id, prop_name, prop_value):
-	for task in mTasks:
-		if task.id == task_id:
-			task[prop_name] = prop_value
-			call_deferred("emit_signal", "task_changed", task)
-			call_deferred("emit_signal", "task_list_changed")
-			return
-
 func _add_log_entry(source_node, level, content):
 	emit_signal("new_log_entry3", source_node, level, content)
 
@@ -98,22 +90,26 @@ func disable_canvas_input(node):
 	var group = "_canvas_input"+str(node.get_viewport().get_instance_ID())
 	node.remove_from_group(group)
 
-func add_task():
-	var task = {
-		"id": mNextAvailableTaskId,
-		"name": "",
-		"icon": null,
-		"canvas": null,
-		"ops": null
-	}
+func get_tmp_dir():
+	return mTmpDirPath
+
+func add_task(properties):
+	var task = properties
+	task["id"] = mNextAvailableTaskId
 	mNextAvailableTaskId += 1
 	mTasks.append(task)
 	call_deferred("emit_signal", "task_added", task)
 	call_deferred("emit_signal", "task_list_changed")
 	return task.id
 
-func get_tmp_dir():
-	return mTmpDirPath
+func change_task(task_id, properties):
+	for task in mTasks:
+		if task.id == task_id:
+			for key in properties.keys():
+				task[key] = properties[key]
+			call_deferred("emit_signal", "task_changed", task)
+			call_deferred("emit_signal", "task_list_changed")
+			return
 
 func remove_task(task_id):
 	for task in mTasks:
@@ -122,18 +118,6 @@ func remove_task(task_id):
 			call_deferred("emit_signal", "task_removed", task)
 			call_deferred("emit_signal", "task_list_changed")
 			return
-
-func set_task_name(task_id, string):
-	_set_task_property(task_id, "name", string)
-
-func set_task_icon(task_id, texture):
-	_set_task_property(task_id, "icon", texture)
-
-func set_task_canvas(task_id, canvas):
-	_set_task_property(task_id, "canvas", canvas)
-
-func set_task_ops(task_id, array):
-	_set_task_property(task_id, "ops", array)
 
 func get_task(task_id):
 	for task in mTasks:
