@@ -395,8 +395,8 @@ func set_variable(name, value):
 	emit_signal("var_changed3", name, value, old_value)
 	return ""
 
-func show_rect(rect):
-	_log_debug(["show_rect()", rect])
+func show_region(rect):
+	_log_debug(["show_region()", rect])
 	var canvas = get_node("vrc_canvas")
 	var new_task_properties = {
 		"canvas": canvas,

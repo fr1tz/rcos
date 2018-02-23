@@ -111,8 +111,8 @@ func set_icon(image):
 func set_var(var_name, var_value):
 	return mVrcHost.set_variable(var_name, var_value)
 
-func show_rect(rect):
-	return mVrcHost.show_rect(rect)
+func show_region(rect):
+	return mVrcHost.show_region(rect)
 
 func update_setup_progress(value):
 	return mVrcHost.update_setup_progress(value)
