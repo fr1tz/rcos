@@ -45,22 +45,6 @@ func _init():
 func _ready():
 	get_tree().set_auto_accept_quit(false)
 	set_process_input(true)
-#	spawn_module("res://rcos/logger/logger.tscn")
-	spawn_module("res://rcos/shell/shell.tscn")
-	spawn_module("res://rcos/connector/connector.tscn")
-#	var info = {
-#		addr = "localhost",
-#		name = "test",
-#		port = 1234,
-#		type = "vrc"
-#	}
-#	var vrc_host = open_connection(info)
-#	var file = File.new()
-#	file.open("res://vrc_host/output_module.xml", File.READ)
-#	vrc_host.set_variable("OUTPUT_MODULE_DATA", file.get_as_text())
-#	file.close()
-#	print(vrc_host.add_module("OUTPUT_MODULE_DATA"))
-#	vrc_host.get_node("main_canvas/main_gui/status_screen").set_connection_count(3)
 
 func _input(event):
 	var group = "_canvas_input"+str(get_viewport().get_instance_ID())
