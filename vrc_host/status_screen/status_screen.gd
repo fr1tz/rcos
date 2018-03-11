@@ -26,7 +26,8 @@ func _fixed_process(delta):
 	vrc_host.set_rot(vrc_host.get_rot() - delta*2.5)
 
 func add_error():
-	get_node("vrc_host/setup_progress").add_error()
+	get_node("vrc_host/download_progress").add_error()
+	get_node("vrc_host/unpacking_progress").add_error()
 
 func set_connection_count(count):
 	var connections = get_node("vrc_host/connections")
@@ -40,7 +41,8 @@ func set_connection_count(count):
 		connections.add_child(connection)
 		connection.set_rot(rot)
 
-func set_setup_progress(progress):
-	get_node("vrc_host/setup_progress").set_progress(progress)
+func set_vrc_download_progress(progress):
+	get_node("vrc_host/download_progress").set_progress(progress)
 
-
+func set_vrc_unpacking_progress(progress):
+	get_node("vrc_host/unpacking_progress").set_progress(progress)

@@ -24,7 +24,7 @@ script/script = ExtResource( 1 )
 transform/pos = Vector2( 100, 200 )
 texture = ExtResource( 2 )
 
-[node name="setup_progress" type="ReferenceFrame" parent="vrc_host"]
+[node name="download_progress" type="ReferenceFrame" parent="vrc_host"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -36,6 +36,19 @@ margin/right = 50.0
 margin/bottom = 51.0
 script/script = ExtResource( 3 )
 color = Color( 0.554688, 0.554688, 0.554688, 1 )
+
+[node name="unpacking_progress" type="ReferenceFrame" parent="vrc_host"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = -50.0
+margin/top = -49.0
+margin/right = 50.0
+margin/bottom = 51.0
+script/script = ExtResource( 3 )
+color = Color( 0.804688, 0.804688, 0.804688, 1 )
 
 [node name="connections" type="Position2D" parent="vrc_host"]
 

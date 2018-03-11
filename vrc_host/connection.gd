@@ -111,7 +111,7 @@ func _process_data():
 				mReceiveBuffer.resize(mReceiveBuffer.size()-buf.size())
 				mReceiveBuffer.invert()
 			var progress = float(mVrcData.size()) / float(mVrcDataSize)
-			mVrcHostApi.update_setup_progress(progress)
+			mVrcHostApi.update_vrc_download_progress(progress)
 			if mVrcData.size() == mVrcDataSize:
 				mVrcHostApi.load_vrc(mVrcData)
 				mVrcData = null

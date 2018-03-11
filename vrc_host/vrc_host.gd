@@ -22,6 +22,7 @@ const NET_INTERFACE_STATE_OPEN = 2
 var mTaskId = -1
 var mStatusScreen = null
 var mVariables = Dictionary()
+var mVrcDataUnpacker = null
 var mVrcHostApi = null
 var mNetInterface = {
 	state = NET_INTERFACE_STATE_CLOSED,
@@ -69,6 +70,17 @@ func _ready():
 	set_variable("VRCHOST/LOCALE", OS.get_locale())
 	set_variable("VRCHOST/SETUP_PROGRESS", "0")
 	_log_notice("Ready")
+
+func _fixed_process(delta):
+	if mVrcDataUnpacker == null:
+		set_fixed_process(false)
+		return
+	var progress = mVrcDataUnpacker.work()
+	mStatusScreen.set_vrc_unpacking_progress(progress)
+	if progress >= 1.0:
+		mVrcDataUnpacker = null
+		set_fixed_process(false)
+		_instance_vrc()
 
 func _on_displayed():
 	#print("_on_displayed")
@@ -123,6 +135,28 @@ func _read_packet():
 	var port = mNetInterface.udp.get_packet_port()
 	var string = data.get_string_from_ascii()
 
+func _instance_vrc():
+	var vrc_data_dir = get_tmp_dir() + "vrc_data"
+	var vrc_packed = load(vrc_data_dir + "/vrc.tscn")
+	if vrc_packed == null:
+		_log_error("Loading VRC data failed")
+		return "Loading VRC data failed"
+	var vrc = vrc_packed.instance()
+	if vrc == null:
+		_log_error("Failed to instance VRC")
+		return "Failed to instance VRC"
+	vrc.set_meta("vrc_host_api", mVrcHostApi)
+	for i in range(0, 3):
+		if vrc.get_anchor(i) != Control.ANCHOR_BEGIN:
+			_log_warning("VRC anchor "+str(i)+" is not set to 'BEGIN'")
+	var vrc_canvas = get_node("vrc_canvas")
+	vrc_canvas.set_rect(Rect2(Vector2(0, 0), vrc.get_end()))
+	vrc_canvas.connect("display", self, "_on_vrc_canvas_displayed", [vrc_canvas])
+	vrc_canvas.connect("conceal", self, "_on_vrc_canvas_concealed", [vrc_canvas])
+	vrc_canvas.add_child(vrc)
+	#rcos.set_task_canvas(mTaskId, vrc_canvas)
+	mStatusScreen.hide()
+
 func add_log_entry(source_node, level, content):
 	if typeof(source_node) != TYPE_OBJECT:
 		return
@@ -153,30 +187,14 @@ func go_back():
 
 func load_vrc(vrc_data):
 	_log_debug(["load_vrc()", vrc_data])
+	if mVrcDataUnpacker != null:
+		return "VRC loading already in progress"
 	if get_node("vrc_canvas").get_child_count() != 0:
 		return "VRC already loaded"
 	var vrc_data_dir = get_tmp_dir() + "vrc_data"
-	preload("res://vrc_host/vrc_data.gd").new(vrc_data).unpack(vrc_data_dir)
-	var vrc_packed = load(vrc_data_dir + "/vrc.tscn")
-	if vrc_packed == null:
-		_log_error("Loading VRC data failed")
-		return "Loading VRC data failed"
-	var vrc = vrc_packed.instance()
-	if vrc == null:
-		_log_error("Failed to instance VRC")
-		return "Failed to instance VRC"
-	vrc.set_meta("vrc_host_api", mVrcHostApi)
-	for i in range(0, 3):
-		if vrc.get_anchor(i) != Control.ANCHOR_BEGIN:
-			_log_warning("VRC anchor "+str(i)+" is not set to 'BEGIN'")
-	var vrc_canvas = get_node("vrc_canvas")
-	vrc_canvas.set_rect(Rect2(Vector2(0, 0), vrc.get_end()))
-	vrc_canvas.connect("display", self, "_on_vrc_canvas_displayed", [vrc_canvas])
-	vrc_canvas.connect("conceal", self, "_on_vrc_canvas_concealed", [vrc_canvas])
-	vrc_canvas.add_child(vrc)
-	#rcos.set_task_canvas(mTaskId, vrc_canvas)
-	mStatusScreen.hide()
-	return ""
+	var unpacker_path = "res://vrc_host/vrc_data_unpacker.gd"
+	mVrcDataUnpacker = load(unpacker_path).new(vrc_data, vrc_data_dir)
+	set_fixed_process(true)
 
 func connect_to_interface(addr, port):
 	_log_debug(["connect_to_interface()", addr, port])
@@ -419,8 +437,8 @@ func show_vrc(instance_name, fullscreen):
 #			return ""
 #	return "VRC not found"
 
-func update_setup_progress(value):
-	mStatusScreen.set_setup_progress(float(value))
+func update_vrc_download_progress(value):
+	mStatusScreen.set_vrc_download_progress(float(value))
 
 ###############################################################################
 

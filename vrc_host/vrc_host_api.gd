@@ -114,8 +114,8 @@ func set_var(var_name, var_value):
 func show_region(rect):
 	return mVrcHost.show_region(rect)
 
-func update_setup_progress(value):
-	return mVrcHost.update_setup_progress(value)
+func update_vrc_download_progress(value):
+	return mVrcHost.update_vrc_download_progress(value)
 
 #-------------------------------------------------------------------------------
 # VHCP (VRC Host Control Protocol) Extensions
