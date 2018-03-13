@@ -22,6 +22,7 @@ var mSelectedInterfaceWidget = null
 func _ready():
 	get_viewport().connect("display", self, "_on_displayed")
 	get_viewport().connect("conceal", self, "_on_concealed")
+	get_viewport().connect("size_changed", self, "_on_size_changed")
 	get_node("buttons").connect("button_selected", self, "_show_tab")
 	mInterfaceWidgetContainers = get_node("interfaces_panel/interfaces_scroller/interfaces_list")
 	mInfoWidget = get_node("info_panel/info_widget")
@@ -36,6 +37,14 @@ func _on_displayed():
 func _on_concealed():
 	#print("connector: _on_concealed")
 	rcos.log_debug(self, "_on_concealed()")
+
+func _on_size_changed():
+	rcos.log_debug(self, "_on_size_changed()")
+	var width = float(get_viewport().get_rect().size.x - 4 - 8 - 10)
+	var new_column_count = floor(width/(42+2))
+	prints(width, new_column_count)
+	for interface_container in mInterfaceWidgetContainers.get_children():
+		interface_container.mInterfaceWidgets.set_columns(new_column_count)
 
 func add_interface_widget(host):
 	var interface_container = null
