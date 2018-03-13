@@ -15,6 +15,9 @@
 
 extends Viewport
 
+export(Vector2) var min_size = Vector2(0, 0)
+export(bool) var resizable = true
+
 const NUM_INPUTS = 8
 
 var mDisplays = [] # List of windows that show this canvas
@@ -160,3 +163,8 @@ func is_displayed():
 			return vp.is_displayed()
 		return false
 	return false
+
+func resize(size):
+	if !resizable:
+		return
+	set_rect(Rect2(Vector2(0, 0), size))

@@ -34,6 +34,7 @@ autostart = true
 [node name="vrc_canvas" parent="." instance=ExtResource( 3 )]
 
 rect = Rect2( 0, 0, 200, 400 )
+resizable = false
 
 [node name="status_canvas" parent="." instance=ExtResource( 3 )]
 

@@ -49,8 +49,10 @@ func _on_task_added(task):
 	var item = load("res://rcos/shell/taskbar_item.tscn").instance()
 	item.add_to_group(mTaskbarItemsGroup)
 	item.set_task_id(task.id)
-	item.set_title(task.name)
-	item.set_icon(task.icon)
+	if task.has("name"):
+		item.set_title(task.name)
+	if task.has("icon"):
+		item.set_icon(task.icon)
 	item.hide_title()
 	item.connect("selected", self, "_item_selected", [task.id])
 	items.add_child(item)

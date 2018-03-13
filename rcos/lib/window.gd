@@ -64,7 +64,6 @@ func _canvas_input(event):
 
 func _draw():
 	if mCanvas == null:
-		draw_rect(get_rect(), Color(0, 0, 1, 1))
 		return
 	var texture = mCanvas.get_render_target_texture()
 	var rect = Rect2(Vector2(0, 0), get_rect().size)
@@ -72,6 +71,7 @@ func _draw():
 	var modulate = Color(1, 1, 1, 1)
 	var transpose = false
 	#prints("_draw()", rect, src_rect)
+	draw_rect(rect, Color(1, 0, 1, 1))
 	draw_texture_rect_region(texture, rect, src_rect, modulate, transpose)
 
 func _get_canvas_region():
@@ -115,3 +115,6 @@ func show_canvas(canvas, region = null):
 
 func has_canvas():
 	return mCanvas != null
+
+func get_canvas():
+	return mCanvas

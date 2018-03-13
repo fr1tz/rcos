@@ -19,5 +19,7 @@ audio_listener/enable_3d = false
 physics/object_picking = false
 gui/disable_input = false
 script/script = ExtResource( 1 )
+min_size = Vector2( 0, 0 )
+resizable = true
 
 

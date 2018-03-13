@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends Panel
+extends ColorFrame
 
 const PORT_TYPE_TCP = 0
 const PORT_TYPE_UDP = 1
@@ -26,16 +26,16 @@ var mNextPort = {
 var mTmpDirPath = ""
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
-var mCanvasStack = []
 var mTasks = []
 
 func _init():
+	#get_tree().set_auto_accept_quit(false)
+	#OS.set_low_processor_usage_mode(true)	
 	mTmpDirPath = rlib.join_array([
 		"user://tmp/rcos", 
 		OS.get_process_ID(),
 		OS.get_unix_time()
 	], "-") + "/"
-	#OS.set_low_processor_usage_mode(true)
 	add_user_signal("task_list_changed")
 	add_user_signal("task_added")
 	add_user_signal("task_changed")
@@ -43,8 +43,14 @@ func _init():
 	add_user_signal("new_log_entry3")
 
 func _ready():
-	get_tree().set_auto_accept_quit(false)
+	get_viewport().connect("size_changed", self, "_resized")
 	set_process_input(true)
+
+func _resized():
+	var root_canvas = get_node("root_window").get_canvas()
+	if root_canvas != null:
+		var new_size = get_rect().size
+		root_canvas.resize(new_size)
 
 func _input(event):
 	var group = "_canvas_input"+str(get_viewport().get_instance_ID())
@@ -125,23 +131,8 @@ func listen(object, port_type):
 			return port
 	return -2
 
-func push_canvas(canvas):
-	if mCanvasStack.has(canvas):
-		mCanvasStack.erase(canvas)
-	mCanvasStack.push_back(canvas)
+func set_root_canvas(canvas):
 	get_node("root_window").show_canvas(canvas)
-
-func pop_canvas():
-	if mCanvasStack.size() > 0:
-		remove_canvas(mCanvasStack.back())
-
-func remove_canvas(canvas):
-	if mCanvasStack.has(canvas):
-		mCanvasStack.erase(canvas)
-	if mCanvasStack.size() > 0:
-		get_node("root_window").show_canvas(mCanvasStack.back())
-	else:
-		get_node("root_window").show_canvas(null)
 
 func spawn_module(scene_path, name = null):
 	if name == null:
