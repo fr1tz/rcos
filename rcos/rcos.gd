@@ -48,9 +48,16 @@ func _ready():
 
 func _resized():
 	var root_canvas = get_node("root_window").get_canvas()
-	if root_canvas != null:
-		var new_size = get_rect().size
-		root_canvas.resize(new_size)
+	if root_canvas == null:
+		return
+	var screen_size = get_viewport().get_rect().size
+	if OS.get_model_name() == "GenericDevice":
+		root_canvas.resize(screen_size)
+	else:
+		var screen_num = OS.get_current_screen()
+		var dpi = OS.get_screen_dpi(screen_num)
+		var root_canvas_size = screen_size * (120.0/dpi)
+		root_canvas.resize(root_canvas_size)
 
 func _input(event):
 	var group = "_canvas_input"+str(get_viewport().get_instance_ID())
@@ -133,6 +140,7 @@ func listen(object, port_type):
 
 func set_root_canvas(canvas):
 	get_node("root_window").show_canvas(canvas)
+	_resized()
 
 func spawn_module(scene_path, name = null):
 	if name == null:
