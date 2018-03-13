@@ -1,8 +1,8 @@
 [gd_scene load_steps=11 format=1]
 
-[ext_resource path="res://rcos/shell/taskbar_item.gd" type="Script" id=1]
-[ext_resource path="res://rcos/shell/icon.gd" type="Script" id=2]
-[ext_resource path="res://rcos/shell/graphics/taskbar_font.fnt" type="BitmapFont" id=3]
+[ext_resource path="res://rcos/wm/taskbar_item.gd" type="Script" id=1]
+[ext_resource path="res://rcos/wm/icon.gd" type="Script" id=2]
+[ext_resource path="res://rcos/wm/graphics/taskbar_font.fnt" type="BitmapFont" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 

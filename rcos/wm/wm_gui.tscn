@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=1]
 
-[ext_resource path="res://rcos/shell/shell_gui.gd" type="Script" id=1]
+[ext_resource path="res://rcos/wm/wm_gui.gd" type="Script" id=1]
 [ext_resource path="res://rcos/lib/window.tscn" type="PackedScene" id=2]
-[ext_resource path="res://rcos/shell/taskbar.tscn" type="PackedScene" id=3]
+[ext_resource path="res://rcos/wm/taskbar.tscn" type="PackedScene" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 

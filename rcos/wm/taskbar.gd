@@ -46,7 +46,7 @@ func _on_ops_button_pressed():
 
 func _on_task_added(task):
 	var items = get_node("items_scroller/items")
-	var item = load("res://rcos/shell/taskbar_item.tscn").instance()
+	var item = load("res://rcos/wm/taskbar_item.tscn").instance()
 	item.add_to_group(mTaskbarItemsGroup)
 	item.set_task_id(task.id)
 	if task.has("name"):
