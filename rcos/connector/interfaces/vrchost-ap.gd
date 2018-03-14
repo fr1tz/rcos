@@ -106,5 +106,5 @@ func process_packet(data):
 		mInterfaceWidget.connect("activated", self, "activate")
 
 func activate():
-	var vrc_host = rcos.spawn_module("res://vrc_host/vrc_host.tscn")
+	var vrc_host = rcos.spawn_module("vrc_host")
 	vrc_host.connect_to_interface(mAddr, mPort)
