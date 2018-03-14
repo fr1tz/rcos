@@ -51,6 +51,9 @@ func tl(string):
 func base64_decode(input_string):
 	return _base64_decode(input_string)
 
+func find_files(dir_path, match_expr):
+	return _find_files(dir_path, match_expr)
+
 #-------------------------------------------------------------------------------
 # Function Implementations
 #-------------------------------------------------------------------------------
@@ -226,3 +229,27 @@ func _tl(string):
 		elif i == len-1:
 			return ""
 	return ""
+
+func _find_files(dir_path, match_expr):
+	if !dir_path.ends_with("/"):
+		dir_path += "/"
+	var dir = Directory.new()
+	if dir.open(dir_path) != OK:
+		return []
+	var files = []
+	dir.list_dir_begin()
+	var file_name = dir.get_next()
+	while (file_name != ""):
+		if file_name.begins_with("."):
+			file_name = dir.get_next()
+			continue
+		var file_path = dir_path + file_name
+		if dir.current_is_dir():
+			var files2 = _find_files(file_path, match_expr)
+			if !files2.empty():
+				files += files2
+		else:
+			if file_name.match(match_expr):
+				files.push_back(file_path)
+		file_name = dir.get_next()
+	return files
