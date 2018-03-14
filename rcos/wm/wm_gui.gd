@@ -61,8 +61,8 @@ func show_task(task_id):
 		window_rect = Rect2(Vector2(0, 0), mActiveTask.canvas_region.size)
 	if canvas.resizable:
 		mWindow.set_rotation_deg(0)
-		if canvas.min_size.x >= frame_rect.size.x \
-		|| canvas.min_size.y >= frame_rect.size.y:
+		if canvas.min_size.x > frame_rect.size.x \
+		|| canvas.min_size.y > frame_rect.size.y:
 			canvas.resize(canvas.min_size)
 			var aspect = frame_rect.size / canvas.min_size
 			window_rect.size = canvas.min_size * min(aspect.x, aspect.y)
