@@ -159,9 +159,8 @@ func is_displayed():
 		if window.root_window:
 			return true
 		var vp = window.get_viewport()
-		if vp.has_method("is_displayed"):
-			return vp.is_displayed()
-		return false
+		if vp.has_method("is_displayed") && vp.is_displayed():
+			return true
 	return false
 
 func resize(size):
