@@ -4,12 +4,12 @@
 [ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=2]
 [ext_resource path="res://rcos/wm/wm_gui.tscn" type="PackedScene" id=3]
 
-[node name="shell" type="Node"]
+[node name="wm" type="Node"]
 
 script/script = ExtResource( 1 )
 
-[node name="shell_canvas" parent="." instance=ExtResource( 2 )]
+[node name="wm_canvas" parent="." instance=ExtResource( 2 )]
 
-[node name="shell_gui" parent="shell_canvas" instance=ExtResource( 3 )]
+[node name="wm_gui" parent="wm_canvas" instance=ExtResource( 3 )]
 
 

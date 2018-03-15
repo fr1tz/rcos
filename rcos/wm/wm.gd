@@ -16,5 +16,5 @@
 extends Node
 
 func _ready():
-	var canvas = get_node("shell_canvas")
+	var canvas = get_node("wm_canvas")
 	rcos.set_root_canvas(canvas)

@@ -61,6 +61,11 @@ margin/bottom = 0.0
 
 [node name="window" parent="desktop" instance=ExtResource( 2 )]
 
+anchor/right = 1
+anchor/bottom = 1
+margin/right = 0.0
+margin/bottom = 0.0
+
 [node name="taskbar" parent="." instance=ExtResource( 3 )]
 
 
