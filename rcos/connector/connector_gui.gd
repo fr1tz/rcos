@@ -42,7 +42,6 @@ func _on_size_changed():
 	rcos.log_debug(self, "_on_size_changed()")
 	var width = float(get_viewport().get_rect().size.x - 4 - 8 - 10)
 	var new_column_count = floor(width/(42+2))
-	prints(width, new_column_count)
 	for interface_container in mInterfaceWidgetContainers.get_children():
 		interface_container.mInterfaceWidgets.set_columns(new_column_count)
 
