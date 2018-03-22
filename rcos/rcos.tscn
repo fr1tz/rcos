@@ -25,6 +25,10 @@ __meta__ = {
 
 [node name="root_window" parent="." instance=ExtResource( 2 )]
 
+anchor/right = 1
+anchor/bottom = 1
+margin/right = 0.0
+margin/bottom = 0.0
 root_window = true
 
 
