@@ -45,6 +45,8 @@ func _on_ops_button_pressed():
 	op[1].call_func()
 
 func _on_task_added(task):
+	if task.has("type") && task.type == "widget_factory":
+		return
 	var items = get_node("items_scroller/items")
 	var item = load("res://rcos/wm/taskbar_item.tscn").instance()
 	item.add_to_group(mTaskbarItemsGroup)
