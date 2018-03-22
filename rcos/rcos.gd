@@ -24,7 +24,7 @@ var mNextPort = {
 }
 
 var mTmpDirPath = ""
-var mModules = {}
+var mModuleInfo = {}
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
 var mTasks = []
@@ -37,7 +37,9 @@ func _init():
 		OS.get_process_ID(),
 		OS.get_unix_time()
 	], "-") + "/"
-	mModules = _find_modules()
+	mModuleInfo = _find_modules()
+	add_user_signal("module_added")
+	add_user_signal("module_removed")
 	add_user_signal("task_list_changed")
 	add_user_signal("task_added")
 	add_user_signal("task_changed")
@@ -117,8 +119,14 @@ func disable_canvas_input(node):
 	var group = "_canvas_input"+str(node.get_viewport().get_instance_ID())
 	node.remove_from_group(group)
 
+func get_module_info():
+	return mModuleInfo
+
 func get_modules():
-	return mModules
+	var modules = {}
+	for node in get_node("modules").get_children():
+		modules[node.get_name()] = node.get_child(0)
+	return modules
 
 func get_tmp_dir():
 	return mTmpDirPath
@@ -176,10 +184,10 @@ func set_root_canvas(canvas):
 	_resized()
 
 func spawn_module(module_name, instance_name = null):
-	if !mModules.has(module_name):
+	if !mModuleInfo.has(module_name):
 		log_error(self, "spawn_module(): Unknown module: " + module_name)
 		return false
-	var module = mModules[module_name]
+	var module = mModuleInfo[module_name]
 	if instance_name == null:
 		instance_name = module.name
 	var scene_packed = load(module.path)
@@ -196,6 +204,7 @@ func spawn_module(module_name, instance_name = null):
 	module_node.set_name(instance_name)
 	mNextAvailableModuleId += 1
 	get_node("modules").add_child(node)
+	emit_signal("module_added", module_node)
 	return module_node
 
 func open_connection(todo):
