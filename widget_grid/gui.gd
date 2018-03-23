@@ -16,23 +16,31 @@
 extends ColorFrame
 
 var mModule = null
-var mGridBackground = null
-var mGridControl = null
-var mScrollbarH = null
-var mScrollbarV = null
+
+onready var mAddWidgetButton = get_node("button_area/add_widget_button")
+onready var mEditWidgetsButton = get_node("button_area/edit_widgets_button")
+onready var mWidgetFactoriesPanel = get_node("widget_factories_panel")
+onready var mGridBackground = get_node("grid_area/scroller/background")
+onready var mGridControl = get_node("grid_area/scroller/grid")
+onready var mScrollbarH = get_node("grid_area/scroll_bar_h")
+onready var mScrollbarV = get_node("grid_area/scroll_bar_v")
 
 func _ready():
 	get_viewport().connect("size_changed", self, "_on_size_changed")
-	mScrollbarH = get_node("grid_area/scroll_bar_h")
+	mAddWidgetButton.connect("pressed", self, "show_widget_factories_panel")
+	mEditWidgetsButton.connect("toggled", self, "toggle_edit_mode")
+	mWidgetFactoriesPanel.connect("item_selected", self, "_on_widget_factory_item_selected")
 	mScrollbarH.connect("value_changed", self, "_scroll")
-	mScrollbarV = get_node("grid_area/scroll_bar_v")
 	mScrollbarV.connect("value_changed", self, "_scroll")
-	mGridBackground = get_node("grid_area/scroller/background")
-	mGridControl = get_node("grid_area/scroller/grid")
 	mGridControl.connect("item_rect_changed", self, "_on_size_changed")
-	var popup = get_node("add_widget_button").get_popup()
-	popup.connect("item_pressed", mGridControl, "add_widget")
-	get_node("reshape_widgets_button").connect("toggled", self, "toggle_edit_mode")
+	#var popup = get_node("add_widget_button").get_popup()
+	#popup.connect("item_pressed", mGridControl, "add_widget")
+
+func _on_widget_factory_item_selected(item):
+	var task_id = item.get_widget_factory_task().id
+	var pos = mGridControl.get_pos().abs()
+	mGridControl.add_widget(task_id, pos)
+	mWidgetFactoriesPanel.set_hidden(true)
 
 func _on_size_changed():
 	rcos.log_debug(self, "_on_size_changed()")
@@ -95,18 +103,17 @@ func _scroll(val):
 func init(module):
 	mModule = module
 
-func set_grid_size(size):
-	mGridControl.set_custom_minimum_size(size)
-	mGridControl.set_size(size)
+func go_back():
+	if mWidgetFactoriesPanel.is_hidden():
+		return false
+	mWidgetFactoriesPanel.set_hidden(true)
+	return true
+
+func show_widget_factories_panel():
+	mWidgetFactoriesPanel.set_hidden(false)
 
 func toggle_edit_mode(edit_mode):
 	mGridControl.toggle_edit_mode(edit_mode)
 
-func update_available_widgets():
-	var widget_tasks = mModule.get_widget_tasks()
-	print(widget_tasks)
-	var popup = get_node("add_widget_button").get_popup()
-	popup.clear()
-	for task in widget_tasks:
-		popup.add_item(task.name, task.id)
-
+func update_available_widgets(widget_factory_tasks):
+	mWidgetFactoriesPanel.update_available_widgets(widget_factory_tasks)

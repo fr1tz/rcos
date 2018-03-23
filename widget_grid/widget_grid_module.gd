@@ -51,15 +51,15 @@ func _on_task_added(task):
 		return
 	mWidgetFactoryTasks.push_back(task)
 	for grid_widget_gui in mWidgetGridGuis:
-		grid_widget_gui.update_available_widgets()
+		grid_widget_gui.update_available_widgets(mWidgetFactoryTasks)
 
 func _on_task_removed():
 	pass
 
 func create_widget_grid():
 	var canvas = rlib.instance_scene("res://rcos/lib/canvas.tscn")
-	get_node("grids").add_child(canvas)
-	var gui = rlib.instance_scene("res://widget_grid/widget_grid_gui.tscn")
+	get_node("canvases").add_child(canvas)
+	var gui = rlib.instance_scene("res://widget_grid/gui.tscn")
 	canvas.add_child(gui)
 	gui.init(self)
 	var task_properties = {
@@ -68,7 +68,7 @@ func create_widget_grid():
 		"canvas": canvas,
 		"ops": {
 			"kill": funcref(gui, "kill"),
-			#"go_back": funcref(self, "go_back")
+			"go_back": funcref(gui, "go_back")
 		}
 	}
 	rcos.add_task(task_properties)

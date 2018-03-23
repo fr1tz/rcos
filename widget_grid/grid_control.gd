@@ -18,15 +18,16 @@ extends ColorFrame
 var mEditMode = false
 var mActiveReshapeControl = null
 
-func add_widget(task_id):
+func add_widget(task_id, pos):
 	var task = rcos.get_task(task_id)
 	var widget = task.create_widget.call_func()
 	if widget == null:
 		return
 	var widget_container = rlib.instance_scene("res://widget_grid/widget_container.tscn")
 	add_child(widget_container)
+	widget_container.set_pos(pos)
 	widget_container.set_widget(widget)
-	widget_container.set_pos(Vector2(0, 0))
+	widget_container.toggle_edit_mode(mEditMode)
 	widget_container.connect("item_rect_changed", self, "update_size")
 	var reshape_control = widget_container.get_reshape_control()
 	reshape_control.connect("clicked", self, "set_active_reshape_control", [reshape_control])

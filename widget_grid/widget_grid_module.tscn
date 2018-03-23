@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=1]
 
 [ext_resource path="res://widget_grid/widget_grid_module.gd" type="Script" id=1]
-[ext_resource path="res://widget_grid/graphics/icon.png" type="Texture" id=2]
+[ext_resource path="res://widget_grid/graphics/icons/widget_grid.png" type="Texture" id=2]
 
 [node name="widget_grid_module" type="Node"]
 
@@ -20,6 +20,6 @@ margin/bottom = 0.0
 texture = ExtResource( 2 )
 stretch_mode = 0
 
-[node name="grids" type="Node" parent="."]
+[node name="canvases" type="Node" parent="."]
 
 

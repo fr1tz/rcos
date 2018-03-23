@@ -1,17 +1,16 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://widget_grid/widget_grid_control.gd" type="Script" id=1]
+[ext_resource path="res://widget_grid/grid_control.gd" type="Script" id=1]
 
-[node name="widget_grid_control" type="ColorFrame"]
+[node name="grid" type="ColorFrame"]
 
-rect/min_size = Vector2( 240, 400 )
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 240.0
+margin/right = 242.0
 margin/bottom = 400.0
 color = Color( 0, 0.5625, 0.0878906, 0 )
 script/script = ExtResource( 1 )

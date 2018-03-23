@@ -112,7 +112,6 @@ custom_styles/panel = SubResource( 1 )
 
 [node name="color" type="ColorFrame" parent="."]
 
-visibility/blend_mode = 3
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = true
