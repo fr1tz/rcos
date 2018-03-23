@@ -53,6 +53,12 @@ func send_key_event(ev):
 	input(ev)
 	_call_canvas_input(ev)
 
+func get_input_fpos(index):
+	return mInputs[index].fpos
+
+func get_input_down(index):
+	return mInputs[index].down
+
 func update_input(index, fpos, down):
 	var input = mInputs[index]
 	var prev_fpos = input.fpos

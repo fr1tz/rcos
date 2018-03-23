@@ -47,7 +47,7 @@ func _canvas_input(event):
 		index = event.index
 	var win_rect = get_global_rect()
 	event.pos = win_rect.pos + (event.pos - win_rect.pos).rotated(-get_rotation())
-	if !win_rect.has_point(event.pos):
+	if mCanvas.get_input_down(index) == false && !win_rect.has_point(event.pos):
 		mCanvas.update_input(index, null, false)
 		return
 	var region_rect = _get_canvas_region()
