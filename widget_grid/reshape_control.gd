@@ -49,6 +49,9 @@ func _update_control():
 	mControl.set_size(get_size())
 	mControl.set_rotation(get_rotation())
 
+func get_control():
+	return mControl
+
 func set_control(control):
 	mControl = control
 

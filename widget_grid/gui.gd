@@ -19,6 +19,10 @@ var mModule = null
 
 onready var mAddWidgetButton = get_node("button_area/add_widget_button")
 onready var mEditWidgetsButton = get_node("button_area/edit_widgets_button")
+onready var mRaiseLowerWidgetButton = get_node("button_area/edit_buttons/raiselower")
+onready var mRotateWidgetButton = get_node("button_area/edit_buttons/rotate")
+onready var mDeleteWidgetButton = get_node("button_area/edit_buttons/delete")
+onready var mConfigureWidgetButton = get_node("button_area/edit_buttons/configure")
 onready var mWidgetFactoriesPanel = get_node("widget_factories_panel")
 onready var mGridBackground = get_node("grid_area/scroller/background")
 onready var mGridControl = get_node("grid_area/scroller/grid")
@@ -29,6 +33,10 @@ func _ready():
 	get_viewport().connect("size_changed", self, "_on_size_changed")
 	mAddWidgetButton.connect("pressed", self, "show_widget_factories_panel")
 	mEditWidgetsButton.connect("toggled", self, "toggle_edit_mode")
+	mRaiseLowerWidgetButton.connect("pressed", mGridControl, "raiselower_selected_widget")
+	mRotateWidgetButton.connect("pressed", mGridControl, "rotate_selected_widget")
+	mDeleteWidgetButton.connect("pressed", mGridControl, "delete_selected_widget")
+	mConfigureWidgetButton.connect("pressed", self, "configure_selected_widget")
 	mWidgetFactoriesPanel.connect("item_selected", self, "_on_widget_factory_item_selected")
 	mScrollbarH.connect("value_changed", self, "_scroll")
 	mScrollbarV.connect("value_changed", self, "_scroll")
@@ -100,6 +108,12 @@ func _scroll(val):
 	mGridControl.set_pos(Vector2(x, y))
 	mGridBackground.set_pos(Vector2(x, y))
 
+func configure_selected_widget():
+	var widget_container = mGridControl.get_selected_widget_container()
+	if widget_container == null:
+		return
+	print("yay")
+
 func init(module):
 	mModule = module
 
@@ -113,6 +127,7 @@ func show_widget_factories_panel():
 	mWidgetFactoriesPanel.set_hidden(false)
 
 func toggle_edit_mode(edit_mode):
+	get_node("button_area/edit_buttons").set_hidden(!edit_mode)
 	mGridControl.toggle_edit_mode(edit_mode)
 
 func update_available_widgets(widget_factory_tasks):

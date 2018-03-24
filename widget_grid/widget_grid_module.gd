@@ -58,6 +58,7 @@ func _on_task_removed():
 
 func create_widget_grid():
 	var canvas = rlib.instance_scene("res://rcos/lib/canvas.tscn")
+	canvas.min_size = Vector2(200, 80)
 	get_node("canvases").add_child(canvas)
 	var gui = rlib.instance_scene("res://widget_grid/gui.tscn")
 	canvas.add_child(gui)

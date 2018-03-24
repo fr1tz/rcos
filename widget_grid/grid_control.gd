@@ -16,21 +16,30 @@
 extends ColorFrame
 
 var mEditMode = false
-var mActiveReshapeControl = null
+var mSelectedWidgetContainer = null
 
 func add_widget(task_id, pos):
 	var task = rcos.get_task(task_id)
-	var widget = task.create_widget.call_func()
-	if widget == null:
+	var widget_package = task.create_widget_packet.call_func()
+	if widget_package == null:
 		return
 	var widget_container = rlib.instance_scene("res://widget_grid/widget_container.tscn")
 	add_child(widget_container)
+	var reshape_control = widget_container.get_reshape_control()
+	reshape_control.connect("clicked", self, "_on_reshape_control_clicked", [reshape_control])
+	widget_container.init(widget_package)
 	widget_container.set_pos(pos)
-	widget_container.set_widget(widget)
 	widget_container.toggle_edit_mode(mEditMode)
 	widget_container.connect("item_rect_changed", self, "update_size")
-	var reshape_control = widget_container.get_reshape_control()
-	reshape_control.connect("clicked", self, "set_active_reshape_control", [reshape_control])
+
+func _on_reshape_control_clicked(reshape_control):
+	if mSelectedWidgetContainer != null:
+		if reshape_control == mSelectedWidgetContainer.get_reshape_control():
+			return
+	if mSelectedWidgetContainer:
+		mSelectedWidgetContainer.get_reshape_control().deselect()
+	mSelectedWidgetContainer = reshape_control.get_control()
+	reshape_control.select()
 
 func toggle_edit_mode(edit_mode):
 	mEditMode = edit_mode
@@ -47,11 +56,27 @@ func update_size():
 		if p.y > h: h = p.y
 	set_size(Vector2(w, h))
 
-func set_active_reshape_control(reshape_control):
-	if reshape_control == mActiveReshapeControl:
+func get_selected_widget_container():
+	return mSelectedWidgetContainer
+
+func raiselower_selected_widget():
+	if mSelectedWidgetContainer == null:
 		return
-	if mActiveReshapeControl:
-		mActiveReshapeControl.deselect()
-	mActiveReshapeControl = reshape_control
-	if mActiveReshapeControl:
-		mActiveReshapeControl.select()
+	var pos = mSelectedWidgetContainer.get_position_in_parent()
+	if pos != get_child_count() - 1:
+		pos = get_child_count() - 1
+	else:
+		pos = 0
+	move_child(mSelectedWidgetContainer, pos)
+
+func rotate_selected_widget():
+	if mSelectedWidgetContainer == null:
+		return
+	mSelectedWidgetContainer.rotate()
+
+func delete_selected_widget():
+	if mSelectedWidgetContainer == null:
+		return
+	mSelectedWidgetContainer.queue_free()
+	mSelectedWidgetContainer = null
+	update_size()
