@@ -29,7 +29,7 @@ func _init():
 
 func _ready():
 	if canvas != null && !canvas.is_empty():
-		set_canvas(get_node(canvas))
+		show_canvas(get_node(canvas))
 
 func _canvas_input(event):
 	if !is_visible():
