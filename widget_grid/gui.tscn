@@ -201,6 +201,7 @@ color = Color( 0.296875, 0.296875, 0.296875, 1 )
 
 [node name="button_area" type="Panel" parent="."]
 
+editor/display_folded = true
 anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true

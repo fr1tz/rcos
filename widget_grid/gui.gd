@@ -41,8 +41,6 @@ func _ready():
 	mScrollbarH.connect("value_changed", self, "_scroll")
 	mScrollbarV.connect("value_changed", self, "_scroll")
 	mGridControl.connect("item_rect_changed", self, "_on_size_changed")
-	#var popup = get_node("add_widget_button").get_popup()
-	#popup.connect("item_pressed", mGridControl, "add_widget")
 
 func _on_widget_factory_item_selected(item):
 	var task_id = item.get_widget_factory_task().id
@@ -58,17 +56,14 @@ func _on_size_changed():
 	var hscrollbar = get_node("grid_area/scroll_bar_h")
 	var vscrollbar = get_node("grid_area/scroll_bar_v")
 	var corner = get_node("grid_area/corner_rect")
-	hscrollbar.set_hidden(grid_size.x <= area_size.x)
-	vscrollbar.set_hidden(grid_size.y <= area_size.y)
 	var hscroll = false
 	var vscroll = false
-	if !hscrollbar.is_hidden():
-		area_size.y -= 40
-	if !vscrollbar.is_hidden():
-		area_size.x -= 40
-	if grid_size.x > area_size.x:
+	if grid_size.x > area_size.x && grid_size.y > area_size.y:
 		hscroll = true
-	if grid_size.y > area_size.y:
+		vscroll = true
+	elif grid_size.x > area_size.x:
+		hscroll = true
+	elif grid_size.y > area_size.y:
 		vscroll = true
 	corner.set_hidden(true)
 	if hscroll && vscroll:
@@ -112,7 +107,6 @@ func configure_selected_widget():
 	var widget_container = mGridControl.get_selected_widget_container()
 	if widget_container == null:
 		return
-	print("yay")
 
 func init(module):
 	mModule = module

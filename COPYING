@@ -22,4 +22,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Examples of files available under more permissive licenses:
 
    * rlib/rlib.gd - MIT License
+   * widget_grid/widget_host_api.gd - MIT License
    * vrc_host/vrc_host_api.gd - MIT License
