@@ -17,11 +17,13 @@ extends ColorFrame
 
 const MODE_INACTIVE = 0
 const MODE_MOVE = 1
+const MODE_RESIZE = 2
 
 export(Color) var mDefaultColor = Color(0, 1, 0, 1)
 export(Color) var mSelectedColor = Color(1, 0, 0, 1)
 var mControl = null
 var mMode = MODE_INACTIVE
+var mClickPos = Vector2(0, 0)
 
 func _init():
 	add_user_signal("clicked")
@@ -33,13 +35,16 @@ func _input_event(event):
 	if event.type == InputEvent.MOUSE_BUTTON:
 		if event.pressed:
 			emit_signal("clicked")
-			_set_mode(MODE_MOVE)
-		else:
-			_set_mode(MODE_INACTIVE)
+#			mClickPos = event.pos
+#			_set_mode(MODE_MOVE)
+#		else:
+#			_set_mode(MODE_INACTIVE)
 	elif event.type == InputEvent.MOUSE_MOTION:
 		if mMode == MODE_MOVE:
-			var vec = event.relative_pos
+			var vec = event.pos - mClickPos
 			mControl.set_pos(mControl.get_pos() + vec)
+		elif mMode == MODE_RESIZE:
+			pass
 
 func _set_mode(mode):
 	mMode = mode

@@ -1,11 +1,12 @@
-[gd_scene load_steps=13 format=1]
+[gd_scene load_steps=14 format=1]
 
 [ext_resource path="res://widget_grid/gui.gd" type="Script" id=1]
 [ext_resource path="res://widget_grid/graphics/grid.png" type="Texture" id=2]
 [ext_resource path="res://widget_grid/grid_control.tscn" type="PackedScene" id=3]
-[ext_resource path="res://widget_grid/graphics/icons/add_widget.png" type="Texture" id=4]
-[ext_resource path="res://widget_grid/graphics/icons/edit_widget.png" type="Texture" id=5]
-[ext_resource path="res://widget_grid/widget_factories_panel.tscn" type="PackedScene" id=6]
+[ext_resource path="res://widget_grid/reshape_grid.tscn" type="PackedScene" id=4]
+[ext_resource path="res://widget_grid/graphics/icons/add_widget.png" type="Texture" id=5]
+[ext_resource path="res://widget_grid/graphics/icons/edit_widget.png" type="Texture" id=6]
+[ext_resource path="res://widget_grid/widget_factories_panel.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -122,6 +123,7 @@ margin/bottom = 80.0
 
 [node name="background" type="TextureFrame" parent="grid_area/scroller"]
 
+visibility/visible = false
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -138,6 +140,10 @@ stretch_mode = 2
 
 margin/right = 0.0
 margin/bottom = 0.0
+
+[node name="reshape_grid" parent="grid_area/scroller" instance=ExtResource( 4 )]
+
+visibility/visible = false
 
 [node name="scroll_bar_h" type="HScrollBar" parent="grid_area"]
 
@@ -201,7 +207,6 @@ color = Color( 0.296875, 0.296875, 0.296875, 1 )
 
 [node name="button_area" type="Panel" parent="."]
 
-editor/display_folded = true
 anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -229,7 +234,7 @@ custom_styles/normal = SubResource( 1 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-icon = ExtResource( 4 )
+icon = ExtResource( 5 )
 flat = false
 
 [node name="edit_widgets_button" type="Button" parent="button_area"]
@@ -249,10 +254,10 @@ custom_styles/normal = SubResource( 1 )
 toggle_mode = true
 enabled_focus_mode = 2
 shortcut = null
-icon = ExtResource( 5 )
+icon = ExtResource( 6 )
 flat = false
 
-[node name="fullscreen1_button" type="Button" parent="button_area"]
+[node name="fullscreen_button1" type="Button" parent="button_area"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -272,7 +277,7 @@ shortcut = null
 text = "FS"
 flat = false
 
-[node name="fullscreen2_button" type="Button" parent="button_area"]
+[node name="fullscreen_button2" type="Button" parent="button_area"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -292,7 +297,7 @@ shortcut = null
 text = "FS"
 flat = false
 
-[node name="fullscreen3_button" type="Button" parent="button_area"]
+[node name="fullscreen_button3" type="Button" parent="button_area"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -314,6 +319,7 @@ flat = false
 
 [node name="edit_buttons" type="Control" parent="button_area"]
 
+editor/display_folded = true
 visibility/visible = false
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -344,7 +350,7 @@ shortcut = null
 text = "R/L"
 flat = false
 
-[node name="rotate" type="Button" parent="button_area/edit_buttons"]
+[node name="reshape" type="Button" parent="button_area/edit_buttons"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -354,6 +360,26 @@ margin/left = 40.0
 margin/top = 0.0
 margin/right = 80.0
 margin/bottom = 40.0
+custom_styles/hover = SubResource( 5 )
+custom_styles/pressed = SubResource( 6 )
+custom_styles/focus = SubResource( 3 )
+custom_styles/normal = SubResource( 5 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Rshp"
+flat = false
+
+[node name="rotate" type="Button" parent="button_area/edit_buttons"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 40.0
+margin/top = 40.0
+margin/right = 80.0
+margin/bottom = 80.0
 custom_styles/hover = SubResource( 5 )
 custom_styles/pressed = SubResource( 6 )
 custom_styles/focus = SubResource( 3 )
@@ -404,7 +430,7 @@ shortcut = null
 text = "Conf"
 flat = false
 
-[node name="widget_factories_panel" parent="." instance=ExtResource( 6 )]
+[node name="widget_factories_panel" parent="." instance=ExtResource( 7 )]
 
 visibility/visible = false
 

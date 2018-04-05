@@ -18,6 +18,7 @@ extends ColorFrame
 var mEditMode = false
 var mReshapeControl = null
 var mWidget = null
+var mWidgetOrientation = 0
 
 onready var mContent = get_node("content")
 onready var mWidgetWindow = get_node("widget_window")
@@ -25,7 +26,11 @@ onready var mWidgetWindow = get_node("widget_window")
 func _ready():
 	mReshapeControl = get_node("reshape_control")
 	mReshapeControl.set_control(self)
+	connect("resized", self, "_resized")
 
+func _resized():
+	mWidgetWindow.set_size(get_size())
+	
 func init(widget_host_api, widget):
 	if widget == null || !widget.has_node("main_canvas"):
 		return
@@ -53,7 +58,6 @@ func init(widget_host_api, widget):
 		config_canvas.set_name("config_canvas")
 	mWidget.set_meta("widget_host_api", widget_host_api)
 	mContent.add_child(mWidget)
-	
 	if config_canvas:
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas.get_child(0).get_size()))
 	var size = get_widget_canvas().get_rect().size
@@ -79,6 +83,9 @@ func get_reshape_control():
 	return mReshapeControl
 
 func rotate():
+	mWidgetOrientation += 1
+	if mWidgetOrientation == 3:
+		mWidgetOrientation = 0
 	# Adjust container rect
 	var pos = get_pos()
 	var size = get_size()
@@ -105,3 +112,4 @@ func rotate():
 		pos = Vector2(0, 0)
 	mWidgetWindow.set_rotation_deg(rot)
 	mWidgetWindow.set_pos(pos)
+

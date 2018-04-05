@@ -16,16 +16,22 @@
 extends ColorFrame
 
 var mModule = null
+var mTaskId = -1
 
 onready var mAddWidgetButton = get_node("button_area/add_widget_button")
 onready var mEditWidgetsButton = get_node("button_area/edit_widgets_button")
+onready var mFullscreenButton1 = get_node("button_area/fullscreen_button1")
+onready var mFullscreenButton2 = get_node("button_area/fullscreen_button2")
+onready var mFullscreenButton3 = get_node("button_area/fullscreen_button3")
 onready var mRaiseLowerWidgetButton = get_node("button_area/edit_buttons/raiselower")
+onready var mReshapeWidgetButton = get_node("button_area/edit_buttons/reshape")
 onready var mRotateWidgetButton = get_node("button_area/edit_buttons/rotate")
 onready var mDeleteWidgetButton = get_node("button_area/edit_buttons/delete")
 onready var mConfigureWidgetButton = get_node("button_area/edit_buttons/configure")
 onready var mWidgetFactoriesPanel = get_node("widget_factories_panel")
 onready var mGridBackground = get_node("grid_area/scroller/background")
 onready var mGridControl = get_node("grid_area/scroller/grid")
+onready var mReshapeGrid = get_node("grid_area/scroller/reshape_grid")
 onready var mScrollbarH = get_node("grid_area/scroll_bar_h")
 onready var mScrollbarV = get_node("grid_area/scroll_bar_v")
 
@@ -33,7 +39,11 @@ func _ready():
 	get_viewport().connect("size_changed", self, "_on_size_changed")
 	mAddWidgetButton.connect("pressed", self, "show_widget_factories_panel")
 	mEditWidgetsButton.connect("toggled", self, "toggle_edit_mode")
+	mFullscreenButton1.connect("pressed", self, "activate_fullscreen", [0])
+	mFullscreenButton2.connect("pressed", self, "activate_fullscreen", [1])
+	mFullscreenButton3.connect("pressed", self, "activate_fullscreen", [2])
 	mRaiseLowerWidgetButton.connect("pressed", mGridControl, "raiselower_selected_widget")
+	mReshapeWidgetButton.connect("pressed", self, "reshape_selected_widget")
 	mRotateWidgetButton.connect("pressed", mGridControl, "rotate_selected_widget")
 	mDeleteWidgetButton.connect("pressed", mGridControl, "delete_selected_widget")
 	mConfigureWidgetButton.connect("pressed", self, "configure_selected_widget")
@@ -96,22 +106,50 @@ func _on_size_changed():
 	vscrollbar.set_max(grid_size.y)
 	vscrollbar.set_page(scroller.get_size().y)
 	mGridBackground.set_size(area_size - mGridControl.get_pos())
+	mReshapeGrid.set_size(area_size - mGridControl.get_pos())
 
 func _scroll(val):
 	var x = -mScrollbarH.get_val()
 	var y = -mScrollbarV.get_val()
 	mGridControl.set_pos(Vector2(x, y))
 	mGridBackground.set_pos(Vector2(x, y))
+	mReshapeGrid.set_pos(Vector2(x, y))
+
+func _reshape_selected_widget_begin():
+	mReshapeGrid.clear_painted_rect()
+	mReshapeGrid.connect("finished", self, "_reshape_selected_widget_finish")
+	mReshapeGrid.set_hidden(false)
+
+func _reshape_selected_widget_finish():
+	mReshapeGrid.disconnect("finished", self, "_reshape_selected_widget_finish")
+	mReshapeGrid.set_hidden(true)
+	var widget_container = mGridControl.get_selected_widget_container()
+	if widget_container == null:
+		return
+	var rect = mReshapeGrid.get_painted_rect()
+	widget_container.set_pos(rect.pos)
+	widget_container.set_size(rect.size)
+
+func reshape_selected_widget():
+	_reshape_selected_widget_begin()
 
 func configure_selected_widget():
 	var widget_container = mGridControl.get_selected_widget_container()
 	if widget_container == null:
 		return
 
-func init(module):
+func init(module, task_id):
 	mModule = module
+	mTaskId = task_id
 
 func go_back():
+	var task = rcos.get_task(mTaskId)
+	if task.has("fullscreen") && task.fullscreen:
+		var new_task_properties = {
+			"canvas_region": null,
+			"fullscreen": false
+		}
+		rcos.change_task(mTaskId, new_task_properties)
 	if mWidgetFactoriesPanel.is_hidden():
 		return false
 	mWidgetFactoriesPanel.set_hidden(true)
@@ -126,3 +164,10 @@ func toggle_edit_mode(edit_mode):
 
 func update_available_widgets(widget_factory_tasks):
 	mWidgetFactoriesPanel.update_available_widgets(widget_factory_tasks)
+
+func activate_fullscreen(mode):
+	var new_task_properties = {
+		"canvas_region": get_node("grid_area/scroller").get_global_rect(),
+		"fullscreen": true
+	}
+	rcos.change_task(mTaskId, new_task_properties)

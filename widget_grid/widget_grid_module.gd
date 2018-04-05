@@ -62,7 +62,6 @@ func create_widget_grid():
 	get_node("canvases").add_child(canvas)
 	var gui = rlib.instance_scene("res://widget_grid/gui.tscn")
 	canvas.add_child(gui)
-	gui.init(self)
 	var task_properties = {
 		"name": "Widget Grid",
 		"icon": get_node("icon").get_texture(),
@@ -72,7 +71,8 @@ func create_widget_grid():
 			"go_back": funcref(gui, "go_back")
 		}
 	}
-	rcos.add_task(task_properties)
+	var task_id = rcos.add_task(task_properties)
+	gui.init(self, task_id)
 	mWidgetGridGuis.push_back(gui)
 
 func get_widget_tasks():

@@ -96,6 +96,22 @@ margin/right = 0.0
 margin/bottom = 0.0
 color = Color( 1, 1, 1, 1 )
 
+[node name="center" type="ColorFrame" parent="."]
+
+visibility/visible = false
+visibility/self_opacity = 0.5
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 20.0
+margin/top = 20.0
+margin/right = 20.0
+margin/bottom = 20.0
+color = Color( 0.21875, 1, 0, 0 )
+
 [node name="Panel" type="Panel" parent="."]
 
 anchor/right = 1
