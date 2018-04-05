@@ -20,6 +20,7 @@ const NET_INTERFACE_STATE_OPENING = 1
 const NET_INTERFACE_STATE_OPEN = 2
 
 var mTaskId = -1
+var mWidgetFactoryTaskIds = {}
 var mStatusScreen = null
 var mVariables = Dictionary()
 var mVrcDataUnpacker = null
@@ -440,6 +441,30 @@ func show_vrc(instance_name, fullscreen):
 
 func update_vrc_download_progress(value):
 	mStatusScreen.set_vrc_download_progress(float(value))
+
+func add_widget_factory(widget_name, object, method):
+	if mWidgetFactoryTaskIds.has(widget_name):
+		var task_id = mWidgetFactoryTaskIds[widget_name]
+		rcos.change_task(task_id, {
+			"name": widget_name,
+			"create_widget_func": funcref(object, method)
+		})
+	else:
+		var task_id = rcos.add_task({
+			"type": "widget_factory",
+			"name": widget_name,
+			"create_widget_func": funcref(object, method)
+		})
+		mWidgetFactoryTaskIds[widget_name] = task_id
+	return true
+
+func remove_widget_factory(widget_name):
+	if !mWidgetFactoryTaskIds.has(widget_name):
+		return true
+	var task_id = mWidgetFactoryTaskIds[widget_name]
+	rcos.remove_task(task_id)
+	mWidgetFactoryTaskIds.erase(widget_name)
+	return true
 
 ###############################################################################
 

@@ -117,6 +117,12 @@ func show_region(rect, fullscreen = false):
 func update_vrc_download_progress(value):
 	return mVrcHost.update_vrc_download_progress(value)
 
+func add_widget_factory(widget_name, object, method):
+	return mVrcHost.add_widget_factory(widget_name, object, method)
+
+func remove_widget_factory(widget_name):
+	return mVrcHost.add_widget_factory(widget_name)
+
 #-------------------------------------------------------------------------------
 # VHCP (VRC Host Control Protocol) Extensions
 #-------------------------------------------------------------------------------
