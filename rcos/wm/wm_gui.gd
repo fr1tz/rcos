@@ -57,7 +57,7 @@ func show_task(task_id):
 		frame_rect = Rect2(Vector2(0, 0), get_rect().size)
 	var window_rotated = false
 	var window_rect = Rect2(Vector2(0, 0), canvas.get_rect().size)
-	if mActiveTask.has("canvas_region"):
+	if mActiveTask.has("canvas_region") && mActiveTask.canvas_region != null:
 		window_rect = Rect2(Vector2(0, 0), mActiveTask.canvas_region.size)
 	if canvas.resizable:
 		mWindow.set_rotation_deg(0)
