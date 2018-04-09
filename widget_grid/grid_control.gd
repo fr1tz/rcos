@@ -113,7 +113,16 @@ func update_overlay_draw():
 func draw_overlay():
 	for node in mOverlayDrawNodes.keys():
 		var widget_container = mOverlayDrawNodes[node]
-		var pos = widget_container.get_pos() + widget_container.get_widget_window().get_pos()
-		var rot = widget_container.get_widget_window().get_rotation()
-		mOverlay.draw_set_transform(pos, rot, Vector2(1, 1))
+		var window = widget_container.get_widget_window()
+		var window_size = window.get_size()
+		var canvas_size = window.get_canvas().get_rect().size
+		var pos = widget_container.get_pos() + window.get_pos()
+		var rot = window.get_rotation()
+		var scale = window_size / canvas_size
+		var orientation = widget_container.get_widget_orientation()
+		if orientation == 1 || orientation == 3:
+			var x = scale.x
+			scale.x = scale.y
+			scale.y = x
+		mOverlay.draw_set_transform(pos, rot, scale)
 		node._overlay_draw(mOverlay)

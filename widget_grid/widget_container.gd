@@ -15,10 +15,15 @@
 
 extends ColorFrame
 
+const ORIENTATION_N = 0
+const ORIENTATION_E = 1
+const ORIENTATION_S = 2
+const ORIENTATION_W = 3
+
 var mEditMode = false
 var mReshapeControl = null
 var mWidget = null
-var mWidgetOrientation = 0
+var mWidgetOrientation = ORIENTATION_N
 
 onready var mContent = get_node("content")
 onready var mWidgetWindow = get_node("widget_window")
@@ -29,7 +34,26 @@ func _ready():
 	connect("resized", self, "_resized")
 
 func _resized():
-	mWidgetWindow.set_size(get_size())
+	var pos = Vector2(0, 0)
+	var size = get_size()
+	var rot = mWidgetWindow.get_rotation_deg()
+	if mWidgetOrientation == ORIENTATION_E:
+		rot = 270
+		pos = Vector2(size.x, 0)
+		size = Vector2(size.y, size.x)
+	elif mWidgetOrientation == ORIENTATION_S:
+		rot = 180
+		pos = Vector2(size.x, size.y)
+	elif mWidgetOrientation == ORIENTATION_W:
+		rot = 90
+		pos = Vector2(0, size.y)
+		size = Vector2(size.y, size.x)
+	else:
+		rot = 0
+		pos = Vector2(0, 0)
+	mWidgetWindow.set_rotation_deg(rot)
+	mWidgetWindow.set_pos(pos)
+	mWidgetWindow.set_size(size)
 	
 func init(widget_host_api, widget):
 	if widget == null || !widget.has_node("main_canvas"):
@@ -84,32 +108,9 @@ func get_reshape_control():
 
 func rotate():
 	mWidgetOrientation += 1
-	if mWidgetOrientation == 3:
+	if mWidgetOrientation == 4:
 		mWidgetOrientation = 0
-	# Adjust container rect
-	var pos = get_pos()
-	var size = get_size()
-	var center = pos + size/2
-	size = Vector2(size.y, size.x)
-	pos = center - size/2
-	set_size(size)
-	set_pos(pos)
-	# Adjust widget window
-	center = get_size()/2
-	size = mWidgetWindow.get_size()
-	var rot = mWidgetWindow.get_rotation_deg()
-	if rot == 0:
-		rot = 270
-		pos = center + Vector2(size.y, -size.x)/2
-	elif rot == 270:
-		rot = 180
-		pos = center + Vector2(size.x, size.y)/2
-	elif rot == 180:
-		rot = 90
-		pos = center + Vector2(-size.y, size.x)/2
-	else:
-		rot = 0
-		pos = Vector2(0, 0)
-	mWidgetWindow.set_rotation_deg(rot)
-	mWidgetWindow.set_pos(pos)
+	_resized()
 
+func get_widget_orientation():
+	return mWidgetOrientation
