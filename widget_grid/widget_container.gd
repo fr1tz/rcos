@@ -80,7 +80,7 @@ func init(widget_host_api, widget):
 		config_canvas_placeholder.queue_free()
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas_size))
 		config_canvas.set_name("config_canvas")
-	mWidget.set_meta("widget_host_api", widget_host_api)
+	rlib.set_meta_recursive(mWidget, "widget_host_api", widget_host_api)
 	mContent.add_child(mWidget)
 	if config_canvas:
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas.get_child(0).get_size()))

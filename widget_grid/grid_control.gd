@@ -104,6 +104,9 @@ func enable_overlay_draw(node):
 		return
 	mOverlayDrawNodes[node] = widget_container
 
+func disable_overlay_draw(node):
+	mOverlayDrawNodes.erase(node)
+
 func remove_painter(node):
 	mOverlayDrawNodes.erase(node)
 
