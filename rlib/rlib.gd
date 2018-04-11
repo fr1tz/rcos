@@ -54,6 +54,9 @@ func base64_decode(input_string):
 func find_files(dir_path, match_expr):
 	return _find_files(dir_path, match_expr)
 
+func set_meta_recursive(node, name, value):
+	_set_meta_recursive(node, name, value)
+
 #-------------------------------------------------------------------------------
 # Function Implementations
 #-------------------------------------------------------------------------------
@@ -253,3 +256,8 @@ func _find_files(dir_path, match_expr):
 				files.push_back(file_path)
 		file_name = dir.get_next()
 	return files
+
+func _set_meta_recursive(node, name, value):
+	node.set_meta(name, value)
+	for c in node.get_children():
+		_set_meta_recursive(c, name, value)
