@@ -146,7 +146,7 @@ func _instance_vrc():
 	if vrc == null:
 		_log_error("Failed to instance VRC")
 		return "Failed to instance VRC"
-	vrc.set_meta("vrc_host_api", mVrcHostApi)
+	rlib.set_meta_recursive(vrc, "vrc_host_api", mVrcHostApi)
 	for i in range(0, 3):
 		if vrc.get_anchor(i) != Control.ANCHOR_BEGIN:
 			_log_warning("VRC anchor "+str(i)+" is not set to 'BEGIN'")
