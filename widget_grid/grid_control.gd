@@ -83,6 +83,11 @@ func rotate_selected_widget():
 		return
 	mSelectedWidgetContainer.rotate()
 
+func configure_selected_widget():
+	if mSelectedWidgetContainer == null:
+		return
+	mSelectedWidgetContainer.configure()
+
 func delete_selected_widget():
 	if mSelectedWidgetContainer == null:
 		return

@@ -24,6 +24,7 @@ var mEditMode = false
 var mReshapeControl = null
 var mWidget = null
 var mWidgetOrientation = ORIENTATION_N
+var mConfigTaskId = -1
 
 onready var mContent = get_node("content")
 onready var mWidgetWindow = get_node("widget_window")
@@ -54,7 +55,19 @@ func _resized():
 	mWidgetWindow.set_rotation_deg(rot)
 	mWidgetWindow.set_pos(pos)
 	mWidgetWindow.set_size(size)
-	
+
+func _config_task_go_back():
+	if mWidget.has_method("get_config_gui"):
+		var config_gui = mWidget.get_config_gui()
+		if config_gui != null:
+			if config_gui.has_method("go_back"):
+				var went_back = config_gui.go_back()
+				if went_back:
+					return true
+	rcos.remove_task(mConfigTaskId)
+	mConfigTaskId = -1
+	return true
+
 func init(widget_host_api, widget):
 	if widget == null || !widget.has_node("main_canvas"):
 		return
@@ -78,9 +91,11 @@ func init(widget_host_api, widget):
 		config_canvas = rlib.instance_scene("res://rcos/lib/canvas.tscn")
 		config_canvas_placeholder.replace_by(config_canvas)
 		config_canvas_placeholder.queue_free()
+		config_canvas.resizable = false
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas_size))
 		config_canvas.set_name("config_canvas")
 	rlib.set_meta_recursive(mWidget, "widget_host_api", widget_host_api)
+	rlib.set_meta_recursive(mWidget, "widget_root_node", mWidget)
 	mContent.add_child(mWidget)
 	if config_canvas:
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas.get_child(0).get_size()))
@@ -111,6 +126,20 @@ func rotate():
 	if mWidgetOrientation == 4:
 		mWidgetOrientation = 0
 	_resized()
+
+func configure():
+	var config_canvas = get_config_canvas()
+	if config_canvas == null:
+		return
+	if mConfigTaskId == -1:
+		var task_properties = {
+			"name": "Widget Settings",
+			"canvas": config_canvas,
+			"ops": {
+				"go_back": funcref(self, "_config_task_go_back")
+			}
+		}
+		mConfigTaskId = rcos.add_task(task_properties)
 
 func get_widget_orientation():
 	return mWidgetOrientation

@@ -28,12 +28,13 @@ onready var mReshapeWidgetButton = get_node("button_area/edit_buttons/reshape")
 onready var mRotateWidgetButton = get_node("button_area/edit_buttons/rotate")
 onready var mDeleteWidgetButton = get_node("button_area/edit_buttons/delete")
 onready var mConfigureWidgetButton = get_node("button_area/edit_buttons/configure")
-onready var mWidgetFactoriesPanel = get_node("widget_factories_panel")
 onready var mGridBackground = get_node("grid_area/scroller/background")
 onready var mGridControl = get_node("grid_area/scroller/grid")
 onready var mReshapeGrid = get_node("grid_area/scroller/reshape_grid")
 onready var mScrollbarH = get_node("grid_area/scroll_bar_h")
 onready var mScrollbarV = get_node("grid_area/scroll_bar_v")
+onready var mWidgetFactoriesPanel = get_node("widget_factories_panel")
+onready var mWidgetConfigWindow = get_node("widget_config_window")
 
 func _ready():
 	get_viewport().connect("size_changed", self, "_on_size_changed")
@@ -46,7 +47,7 @@ func _ready():
 	mReshapeWidgetButton.connect("pressed", self, "reshape_selected_widget")
 	mRotateWidgetButton.connect("pressed", mGridControl, "rotate_selected_widget")
 	mDeleteWidgetButton.connect("pressed", mGridControl, "delete_selected_widget")
-	mConfigureWidgetButton.connect("pressed", self, "configure_selected_widget")
+	mConfigureWidgetButton.connect("pressed", mGridControl, "configure_selected_widget")
 	mWidgetFactoriesPanel.connect("item_selected", self, "_on_widget_factory_item_selected")
 	mScrollbarH.connect("value_changed", self, "_scroll")
 	mScrollbarV.connect("value_changed", self, "_scroll")
@@ -133,11 +134,6 @@ func _reshape_selected_widget_finish():
 func reshape_selected_widget():
 	_reshape_selected_widget_begin()
 
-func configure_selected_widget():
-	var widget_container = mGridControl.get_selected_widget_container()
-	if widget_container == null:
-		return
-
 func init(module, task_id):
 	mModule = module
 	mTaskId = task_id
@@ -150,9 +146,11 @@ func go_back():
 			"fullscreen": false
 		}
 		rcos.change_task(mTaskId, new_task_properties)
-	if mWidgetFactoriesPanel.is_hidden():
+	if mWidgetFactoriesPanel.is_hidden() \
+	&& mWidgetConfigWindow.is_hidden():
 		return false
 	mWidgetFactoriesPanel.set_hidden(true)
+	mWidgetConfigWindow.set_hidden(true)
 	return true
 
 func show_widget_factories_panel():
