@@ -179,7 +179,6 @@ color = Color( 0.296875, 0.296875, 0.296875, 1 )
 
 [node name="button_area" type="Panel" parent="."]
 
-editor/display_folded = true
 anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -230,7 +229,7 @@ shortcut = null
 icon = ExtResource( 9 )
 flat = false
 
-[node name="fullscreen_button1" type="Button" parent="button_area"]
+[node name="save_button" type="Button" parent="button_area"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -247,10 +246,10 @@ custom_styles/normal = ExtResource( 5 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-text = "FS"
+text = "Save"
 flat = false
 
-[node name="fullscreen_button2" type="Button" parent="button_area"]
+[node name="load_button" type="Button" parent="button_area"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -267,10 +266,10 @@ custom_styles/normal = ExtResource( 5 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-text = "FS"
+text = "Load"
 flat = false
 
-[node name="fullscreen_button3" type="Button" parent="button_area"]
+[node name="fullscreen_button" type="Button" parent="button_area"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true

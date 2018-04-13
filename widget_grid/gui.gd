@@ -20,9 +20,9 @@ var mTaskId = -1
 
 onready var mAddWidgetButton = get_node("button_area/add_widget_button")
 onready var mEditWidgetsButton = get_node("button_area/edit_widgets_button")
-onready var mFullscreenButton1 = get_node("button_area/fullscreen_button1")
-onready var mFullscreenButton2 = get_node("button_area/fullscreen_button2")
-onready var mFullscreenButton3 = get_node("button_area/fullscreen_button3")
+onready var mSaveButton = get_node("button_area/save_button")
+onready var mLoadButton = get_node("button_area/load_button")
+onready var mFullscreenButton = get_node("button_area/fullscreen_button")
 onready var mRaiseLowerWidgetButton = get_node("button_area/edit_buttons/raiselower")
 onready var mReshapeWidgetButton = get_node("button_area/edit_buttons/reshape")
 onready var mRotateWidgetButton = get_node("button_area/edit_buttons/rotate")
@@ -40,9 +40,9 @@ func _ready():
 	get_viewport().connect("size_changed", self, "_on_size_changed")
 	mAddWidgetButton.connect("pressed", self, "show_widget_factories_panel")
 	mEditWidgetsButton.connect("toggled", self, "toggle_edit_mode")
-	mFullscreenButton1.connect("pressed", self, "activate_fullscreen", [0])
-	mFullscreenButton2.connect("pressed", self, "activate_fullscreen", [1])
-	mFullscreenButton3.connect("pressed", self, "activate_fullscreen", [2])
+	mSaveButton.connect("pressed", mGridControl, "save_to_file")
+	mLoadButton.connect("pressed", mGridControl, "load_from_file")
+	mFullscreenButton.connect("pressed", self, "activate_fullscreen")
 	mRaiseLowerWidgetButton.connect("pressed", mGridControl, "raiselower_selected_widget")
 	mReshapeWidgetButton.connect("pressed", self, "reshape_selected_widget")
 	mRotateWidgetButton.connect("pressed", mGridControl, "rotate_selected_widget")
@@ -163,7 +163,7 @@ func toggle_edit_mode(edit_mode):
 func update_available_widgets(widget_factory_tasks):
 	mWidgetFactoriesPanel.update_available_widgets(widget_factory_tasks)
 
-func activate_fullscreen(mode):
+func activate_fullscreen():
 	var new_task_properties = {
 		"canvas_region": get_node("grid_area/scroller").get_global_rect(),
 		"fullscreen": true

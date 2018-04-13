@@ -20,10 +20,13 @@ const ORIENTATION_E = 1
 const ORIENTATION_S = 2
 const ORIENTATION_W = 3
 
+var mWidgetHostApi = null
 var mEditMode = false
 var mReshapeControl = null
 var mWidget = null
 var mWidgetOrientation = ORIENTATION_N
+var mWidgetProductId = ""
+var mWidgetConfigString = ""
 var mConfigTaskId = -1
 
 onready var mContent = get_node("content")
@@ -68,7 +71,13 @@ func _config_task_go_back():
 	mConfigTaskId = -1
 	return true
 
-func init(widget_host_api, widget):
+func init(widget_host_api, widget_product_id = "", widget_orientation = ORIENTATION_N, widget_config_string = ""):
+	mWidgetHostApi = widget_host_api
+	mWidgetProductId = widget_product_id
+	mWidgetOrientation = widget_orientation
+	mWidgetConfigString = widget_config_string
+
+func add_widget(widget):
 	if widget == null || !widget.has_node("main_canvas"):
 		return
 	mWidget = widget
@@ -94,9 +103,11 @@ func init(widget_host_api, widget):
 		config_canvas.resizable = false
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas_size))
 		config_canvas.set_name("config_canvas")
-	rlib.set_meta_recursive(mWidget, "widget_host_api", widget_host_api)
+	rlib.set_meta_recursive(mWidget, "widget_host_api", mWidgetHostApi)
 	rlib.set_meta_recursive(mWidget, "widget_root_node", mWidget)
 	mContent.add_child(mWidget)
+	if mWidgetConfigString != "" && mWidget.has_method("load_widget_config_string"):
+		mWidget.load_widget_config_string(mWidgetConfigString)
 	if config_canvas:
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas.get_child(0).get_size()))
 	var size = get_widget_canvas().get_rect().size
@@ -108,6 +119,20 @@ func init(widget_host_api, widget):
 func toggle_edit_mode(edit_mode):
 	mEditMode = edit_mode
 	mReshapeControl.set_hidden(!edit_mode)
+
+func get_widget():
+	return mWidget
+
+func get_widget_product_id():
+	return mWidgetProductId
+
+func get_widget_config_string():
+	if mWidget != null && mWidget.has_method("create_widget_config_string"):
+		mWidgetConfigString = mWidget.create_widget_config_string()
+	return mWidgetConfigString
+
+func get_widget_orientation():
+	return mWidgetOrientation
 
 func get_widget_canvas():
 	return mWidget.get_node("main_canvas")
@@ -140,6 +165,3 @@ func configure():
 			}
 		}
 		mConfigTaskId = rcos.add_task(task_properties)
-
-func get_widget_orientation():
-	return mWidgetOrientation

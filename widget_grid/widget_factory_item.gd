@@ -19,7 +19,7 @@ var mWidgetFactoryTask = null
 
 func set_widget_factory_task(widget_factory_task):
 	mWidgetFactoryTask = widget_factory_task
-	set_text(mWidgetFactoryTask.name)
+	set_text(mWidgetFactoryTask.product_name)
 
 func get_widget_factory_task():
 	return mWidgetFactoryTask
