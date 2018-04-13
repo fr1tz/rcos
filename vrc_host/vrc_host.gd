@@ -442,28 +442,29 @@ func show_vrc(instance_name, fullscreen):
 func update_vrc_download_progress(value):
 	mStatusScreen.set_vrc_download_progress(float(value))
 
-func add_widget_factory(widget_name, object, method):
-	if mWidgetFactoryTaskIds.has(widget_name):
-		var task_id = mWidgetFactoryTaskIds[widget_name]
+func add_widget_factory(product_id, product_name, object, create_widget_method):
+	if mWidgetFactoryTaskIds.has(product_id):
+		var task_id = mWidgetFactoryTaskIds[product_id]
 		rcos.change_task(task_id, {
-			"name": widget_name,
-			"create_widget_func": funcref(object, method)
+			"product_name": product_name,
+			"create_widget_func": funcref(object, create_widget_method)
 		})
 	else:
 		var task_id = rcos.add_task({
 			"type": "widget_factory",
-			"name": widget_name,
-			"create_widget_func": funcref(object, method)
+			"product_id": product_id,
+			"product_name": product_name,
+			"create_widget_func": funcref(object, create_widget_method)
 		})
-		mWidgetFactoryTaskIds[widget_name] = task_id
+		mWidgetFactoryTaskIds[product_id] = task_id
 	return true
 
-func remove_widget_factory(widget_name):
-	if !mWidgetFactoryTaskIds.has(widget_name):
+func remove_widget_factory(product_id):
+	if !mWidgetFactoryTaskIds.has(product_id):
 		return true
-	var task_id = mWidgetFactoryTaskIds[widget_name]
+	var task_id = mWidgetFactoryTaskIds[product_id]
 	rcos.remove_task(task_id)
-	mWidgetFactoryTaskIds.erase(widget_name)
+	mWidgetFactoryTaskIds.erase(product_id)
 	return true
 
 ###############################################################################
