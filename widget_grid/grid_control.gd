@@ -153,6 +153,8 @@ func clear():
 		widget_container.queue_free()
 
 func save_to_file():
+	if mWidgetContainers.get_child_count() == 0:
+		return
 	var file = File.new()
 	if file.open("user://widget_grid_conf.json", File.WRITE) != OK:
 		return

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends ColorFrame
+extends Panel
 
 const ORIENTATION_N = 0
 const ORIENTATION_E = 1
@@ -76,6 +76,7 @@ func init(widget_host_api, widget_product_id = "", widget_orientation = ORIENTAT
 	mWidgetProductId = widget_product_id
 	mWidgetOrientation = widget_orientation
 	mWidgetConfigString = widget_config_string
+	get_node("widget_product_id_label").set_text(mWidgetProductId)
 
 func add_widget(widget):
 	if widget == null || !widget.has_node("main_canvas"):
