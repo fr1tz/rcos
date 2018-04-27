@@ -172,4 +172,6 @@ func is_displayed():
 func resize(size):
 	if !resizable:
 		return
+	size.x = max(min_size.x, size.x)
+	size.y = max(min_size.y, size.y)
 	set_rect(Rect2(Vector2(0, 0), size))
