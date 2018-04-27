@@ -15,6 +15,7 @@
 
 extends Control
 
+export(bool) var debug
 export(bool) var root_window
 export(NodePath) var canvas
 
@@ -63,15 +64,14 @@ func _canvas_input(event):
 	mCanvas.update_input(index, fpos, down)
 
 func _draw():
+	var rect = Rect2(Vector2(0, 0), get_rect().size)
 	if mCanvas == null:
+		draw_rect(rect, Color(1, 0, 1, 1))
 		return
 	var texture = mCanvas.get_render_target_texture()
-	var rect = Rect2(Vector2(0, 0), get_rect().size)
 	var src_rect = _get_canvas_region()
 	var modulate = Color(1, 1, 1, 1)
 	var transpose = false
-	#prints("_draw()", rect, src_rect)
-	draw_rect(rect, Color(1, 0, 1, 1))
 	draw_texture_rect_region(texture, rect, src_rect, modulate, transpose)
 
 func _get_canvas_region():
