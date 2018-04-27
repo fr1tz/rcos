@@ -33,7 +33,7 @@ func _write_file(root_dir_path, file_name, data):
 	if !mDirectory.dir_exists(dir_path):
 		mDirectory.make_dir_recursive(dir_path)
 	var ext = file_path.extension()
-	if ext == "gd" || ext == "tscn" || ext == "xml":
+	if ext == "gd" || ext == "tscn" || ext == "tres" || ext == "xml":
 		var txt = data.get_string_from_utf8()
 		txt = txt.replace("res://", root_dir_path)
 		data = txt.to_utf8()
