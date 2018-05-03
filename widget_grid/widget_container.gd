@@ -58,6 +58,9 @@ func _resized():
 	mWidgetWindow.set_rotation_deg(rot)
 	mWidgetWindow.set_pos(pos)
 	mWidgetWindow.set_size(size)
+	var canvas = get_widget_canvas()
+	if canvas != null:
+		canvas.resize(size)
 
 func _config_task_go_back():
 	if mWidget.has_method("get_config_gui"):
@@ -84,16 +87,20 @@ func add_widget(widget):
 	mWidget = widget
 	var main_canvas = null
 	var main_canvas_size = Vector2(40, 40)
+	var main_canvas_min_size = Vector2(40, 40)
 	var config_canvas = null
 	var config_canvas_size = Vector2(40, 40)
 	var main_canvas_placeholder = mWidget.get_node("main_canvas")
 	main_canvas_size.x = main_canvas_placeholder.get_margin(MARGIN_RIGHT)
 	main_canvas_size.y = main_canvas_placeholder.get_margin(MARGIN_BOTTOM)
+	main_canvas_min_size = main_canvas_placeholder.get_custom_minimum_size()
 	main_canvas = rlib.instance_scene("res://rcos/lib/canvas.tscn")
 	main_canvas_placeholder.replace_by(main_canvas)
 	main_canvas_placeholder.queue_free()
 	main_canvas.set_rect(Rect2(Vector2(0, 0), main_canvas_size))
 	main_canvas.set_name("main_canvas")
+	main_canvas.min_size = main_canvas_min_size
+	main_canvas.resizable = true
 	if mWidget.has_node("config_canvas"):
 		var config_canvas_placeholder = mWidget.get_node("config_canvas")
 		config_canvas_size.x = config_canvas_placeholder.get_margin(MARGIN_RIGHT)
@@ -113,9 +120,12 @@ func add_widget(widget):
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas.get_child(0).get_size()))
 	var size = get_widget_canvas().get_rect().size
 	set_size(size)
+	main_canvas.resize(size)
 	mWidgetWindow.set_pos(Vector2(0, 0))
 	mWidgetWindow.set_size(size)
-	mWidgetWindow.show_canvas(mWidget.get_node("main_canvas"))
+	mWidgetWindow.show_canvas(main_canvas)
+	mWidgetWindow.set_hidden(false)
+	get_node("widget_product_id_label").set_hidden(true)
 
 func toggle_edit_mode(edit_mode):
 	mEditMode = edit_mode
@@ -136,6 +146,8 @@ func get_widget_orientation():
 	return mWidgetOrientation
 
 func get_widget_canvas():
+	if mWidget == null:
+		return null
 	return mWidget.get_node("main_canvas")
 
 func get_config_canvas():

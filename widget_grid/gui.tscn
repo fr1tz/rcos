@@ -68,7 +68,6 @@ script/script = ExtResource( 1 )
 
 [node name="grid_area" type="Control" parent="."]
 
-editor/display_folded = true
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false

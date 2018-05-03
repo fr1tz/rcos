@@ -35,10 +35,6 @@ func _input_event(event):
 	if event.type == InputEvent.MOUSE_BUTTON:
 		if event.pressed:
 			emit_signal("clicked")
-#			mClickPos = event.pos
-#			_set_mode(MODE_MOVE)
-#		else:
-#			_set_mode(MODE_INACTIVE)
 	elif event.type == InputEvent.MOUSE_MOTION:
 		if mMode == MODE_MOVE:
 			var vec = event.pos - mClickPos

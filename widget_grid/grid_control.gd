@@ -19,13 +19,69 @@ var mWidgetHostApi = null
 var mOverlayDrawNodes = {}
 var mEditMode = false
 var mSelectedWidgetContainer = null
+var mIndexToWidgetContainer = []
 
 onready var mWidgetContainers = get_node("widget_containers")
 onready var mOverlay = get_node("overlay")
 
 func _ready():
 	mWidgetHostApi = preload("widget_host_api.gd").new(self)
+	for i in range(0, 8):
+		mIndexToWidgetContainer.push_back(null)
 	rcos.connect("task_added", self, "_on_task_added")
+	rcos.enable_canvas_input(self)
+
+func _canvas_input(event):
+	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
+	var touch = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON)
+	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)
+	if !touch && !drag:
+		return
+	var window = null
+	var canvas = null
+	var index = 0
+	var fpos = null
+	var down = null
+	if touchscreen && event.index < 8:
+		index = event.index
+	if touch:
+		if event.pressed:
+			if !get_global_rect().has_point(event.pos):
+				return
+			for c in get_widget_containers():
+				if c.get_global_rect().has_point(event.pos):
+					mIndexToWidgetContainer[index] = c
+					window = c.get_widget_window()
+					canvas = c.get_widget_canvas()
+					down = true
+					break
+		else:
+			var widget_container = mIndexToWidgetContainer[index]
+			if widget_container == null:
+				return
+			mIndexToWidgetContainer[index] = null
+			window = widget_container.get_widget_window()
+			canvas = widget_container.get_widget_canvas()
+			down = false
+	else:
+		var widget_container = mIndexToWidgetContainer[index]
+		if widget_container == null:
+			return
+		window = widget_container.get_widget_window()
+		canvas = widget_container.get_widget_canvas()
+		down = null
+	if window == null || canvas == null:
+		return
+	var win_rect = window.get_global_rect()
+	event.pos = win_rect.pos + (event.pos - win_rect.pos).rotated(-window.get_rotation())
+	if canvas.get_input_down(index) == false && !win_rect.has_point(event.pos):
+		canvas.update_input(index, null, false)
+		return
+	var win_size = Vector2(win_rect.size.width, win_rect.size.height)
+	var win_pos = event.pos - win_rect.pos
+	var canvas_pos = win_pos
+	var fpos = canvas_pos
+	canvas.update_input(index, fpos, down)
 
 func _on_reshape_control_clicked(reshape_control):
 	if mSelectedWidgetContainer != null:

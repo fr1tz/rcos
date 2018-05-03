@@ -15,6 +15,8 @@
 
 extends TextureFrame
 
+const GRID_SIZE = 40
+
 var mActive = false
 var mPaintedRect = null
 var mClickPos = Vector2(0, 0)
@@ -38,10 +40,10 @@ func _input_event(event):
 		var y1 = min(mClickPos.y, p2.y)
 		var x2 = max(mClickPos.x, p2.x)
 		var y2 = max(mClickPos.y, p2.y)
-		x1 -= fmod(x1, 40)
-		x2 += 40 - fmod(x2, 40)
-		y1 -= fmod(y1, 40)
-		y2 += 40 - fmod(y2, 40)
+		x1 -= fmod(x1, GRID_SIZE)
+		x2 += GRID_SIZE - fmod(x2, GRID_SIZE)
+		y1 -= fmod(y1, GRID_SIZE)
+		y2 += GRID_SIZE - fmod(y2, GRID_SIZE)
 		mPaintedRect = Rect2(Vector2(x1, y1), Vector2(x2-x1, y2-y1))
 	update()
 
