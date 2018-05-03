@@ -15,6 +15,9 @@
 
 extends ColorFrame
 
+const DEFAULT_TARGET_FPS = 30
+const MAX_TARGET_FPS = 120
+
 const PORT_TYPE_TCP = 0
 const PORT_TYPE_UDP = 1
 
@@ -23,6 +26,7 @@ var mNextPort = {
 	PORT_TYPE_UDP: 22000
 }
 
+var mScreenTouches = 0
 var mTmpDirPath = ""
 var mModuleInfo = {}
 var mNextAvailableModuleId = 1
@@ -30,6 +34,7 @@ var mNextAvailableTaskId = 1
 var mTasks = []
 
 func _init():
+	OS.set_target_fps(DEFAULT_TARGET_FPS)
 	#get_tree().set_auto_accept_quit(false)
 	#OS.set_low_processor_usage_mode(true)	
 	mTmpDirPath = rlib.join_array([
@@ -64,6 +69,15 @@ func _resized():
 		root_canvas.resize(root_canvas_size)
 
 func _input(event):
+	if event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON:
+		if event.pressed:
+			mScreenTouches += 1
+		else:
+			mScreenTouches -= 1
+		if mScreenTouches > 0:
+			OS.set_target_fps(MAX_TARGET_FPS)
+		else:
+			OS.set_target_fps(DEFAULT_TARGET_FPS)
 	var group = "_canvas_input"+str(get_viewport().get_instance_ID())
 	if get_tree().has_group(group):
 		get_tree().call_group(1|2|8, group, "_canvas_input", event)
