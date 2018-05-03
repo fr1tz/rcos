@@ -113,6 +113,9 @@ func show_canvas(canvas, region = null):
 			canvas.set_render_target_update_mode(Viewport.RENDER_TARGET_UPDATE_DISABLED)
 			canvas.emit_signal("conceal")
 
+func is_root_window():
+	return root_window
+
 func has_canvas():
 	return mCanvas != null
 
