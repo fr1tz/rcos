@@ -162,9 +162,9 @@ func remove_display(window):
 
 func is_displayed():
 	for window in mDisplays:
-		if window.is_root_window():
-			return true
 		var vp = window.get_viewport()
+		if vp == get_node("/root"):
+			return true
 		if vp.has_method("is_displayed") && vp.is_displayed():
 			return true
 	return false

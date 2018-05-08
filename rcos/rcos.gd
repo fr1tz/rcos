@@ -15,9 +15,6 @@
 
 extends ColorFrame
 
-const DEFAULT_TARGET_FPS = 30
-const MAX_TARGET_FPS = 120
-
 const PORT_TYPE_TCP = 0
 const PORT_TYPE_UDP = 1
 
@@ -26,7 +23,6 @@ var mNextPort = {
 	PORT_TYPE_UDP: 22000
 }
 
-var mScreenTouches = 0
 var mTmpDirPath = ""
 var mModuleInfo = {}
 var mNextAvailableModuleId = 1
@@ -34,7 +30,7 @@ var mNextAvailableTaskId = 1
 var mTasks = []
 
 func _init():
-	OS.set_target_fps(DEFAULT_TARGET_FPS)
+	OS.set_target_fps(30)
 	#get_tree().set_auto_accept_quit(false)
 	#OS.set_low_processor_usage_mode(true)	
 	mTmpDirPath = rlib.join_array([
@@ -52,35 +48,8 @@ func _init():
 	add_user_signal("new_log_entry3")
 
 func _ready():
-	get_viewport().connect("size_changed", self, "_resized")
-	set_process_input(true)
-
-func _resized():
-	var root_canvas = get_node("root_window").get_canvas()
-	if root_canvas == null:
-		return
-	var screen_size = get_viewport().get_rect().size
-	if OS.get_model_name() == "GenericDevice":
-		root_canvas.resize(screen_size)
-	else:
-		var screen_num = OS.get_current_screen()
-		var dpi = OS.get_screen_dpi(screen_num)
-		var root_canvas_size = screen_size * (120.0/dpi)
-		root_canvas.resize(root_canvas_size)
-
-func _input(event):
-	if event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON:
-		if event.pressed:
-			mScreenTouches += 1
-		else:
-			mScreenTouches -= 1
-		if mScreenTouches > 0:
-			OS.set_target_fps(MAX_TARGET_FPS)
-		else:
-			OS.set_target_fps(DEFAULT_TARGET_FPS)
-	var group = "_canvas_input"+str(get_viewport().get_instance_ID())
-	if get_tree().has_group(group):
-		get_tree().call_group(1|2|8, group, "_canvas_input", event)
+	var root_canvas_script = load("res://rcos/root_canvas.gd")
+	get_node("/root").set_script(root_canvas_script)
 
 func _add_log_entry(source_node, level, content):
 	emit_signal("new_log_entry3", source_node, level, content)
@@ -192,10 +161,6 @@ func listen(object, port_type):
 			mNextPort[port_type] = port+1
 			return port
 	return -2
-
-func set_root_canvas(canvas):
-	get_node("root_window").show_canvas(canvas)
-	_resized()
 
 func spawn_module(module_name, instance_name = null):
 	if !mModuleInfo.has(module_name):

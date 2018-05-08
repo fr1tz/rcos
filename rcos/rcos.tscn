@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=1]
 
 [ext_resource path="res://rcos/rcos.gd" type="Script" id=1]
-[ext_resource path="res://rcos/lib/window.tscn" type="PackedScene" id=2]
+[ext_resource path="res://rcos/wm/wm.tscn" type="PackedScene" id=2]
 
 [node name="rcos" type="ColorFrame"]
 
@@ -23,12 +23,6 @@ __meta__ = {
 
 [node name="modules" type="Node" parent="."]
 
-[node name="root_window" parent="." instance=ExtResource( 2 )]
-
-anchor/right = 1
-anchor/bottom = 1
-margin/right = 0.0
-margin/bottom = 0.0
-root_window = true
+[node name="wm" parent="." instance=ExtResource( 2 )]
 
 

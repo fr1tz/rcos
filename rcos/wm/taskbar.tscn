@@ -1,23 +1,18 @@
 [gd_scene load_steps=16 format=1]
 
 [ext_resource path="res://rcos/wm/taskbar.gd" type="Script" id=1]
-[ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=2]
-[ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=3]
-[ext_resource path="res://rcos/wm/graphics/sidebar_background.png" type="Texture" id=4]
-[ext_resource path="res://rcos/wm/graphics/taskbar_frame.png" type="Texture" id=5]
+[ext_resource path="res://rcos/wm/ops_button.tscn" type="PackedScene" id=2]
+[ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=3]
+[ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=4]
+[ext_resource path="res://rcos/wm/graphics/sidebar_background.png" type="Texture" id=5]
+[ext_resource path="res://rcos/wm/graphics/taskbar_frame.png" type="Texture" id=6]
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxEmpty" id=1]
 
 content_margin/left = -1.0
 content_margin/right = -1.0
 content_margin/top = -1.0
 content_margin/bottom = -1.0
-bg_color = Color( 0.6, 0.6, 0.6, 1 )
-light_color = Color( 0.721569, 0.721569, 0.721569, 1 )
-dark_color = Color( 0.8, 0.8, 0.8, 1 )
-border_size = 1
-border_blend = true
-draw_bg = true
 
 [sub_resource type="StyleBoxEmpty" id=2]
 
@@ -68,31 +63,24 @@ content_margin/right = -1.0
 content_margin/top = -1.0
 content_margin/bottom = -1.0
 
-[sub_resource type="StyleBoxEmpty" id=9]
-
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
-
-[sub_resource type="Theme" id=10]
+[sub_resource type="Theme" id=9]
 
 HScrollBar/icons/decrement = null
 HScrollBar/icons/decrement_hilite = null
 HScrollBar/icons/increment = null
 HScrollBar/icons/increment_hilite = null
-HScrollBar/styles/grabber = SubResource( 2 )
-HScrollBar/styles/grabber_hilite = SubResource( 3 )
-HScrollBar/styles/scroll = SubResource( 4 )
-HScrollBar/styles/scroll_focus = SubResource( 5 )
+HScrollBar/styles/grabber = SubResource( 1 )
+HScrollBar/styles/grabber_hilite = SubResource( 2 )
+HScrollBar/styles/scroll = SubResource( 3 )
+HScrollBar/styles/scroll_focus = SubResource( 4 )
 VScrollBar/icons/decrement = null
 VScrollBar/icons/decrement_hilite = null
 VScrollBar/icons/increment = null
 VScrollBar/icons/increment_hilite = null
-VScrollBar/styles/grabber = SubResource( 6 )
-VScrollBar/styles/grabber_hilite = SubResource( 7 )
-VScrollBar/styles/scroll = SubResource( 8 )
-VScrollBar/styles/scroll_focus = SubResource( 9 )
+VScrollBar/styles/grabber = SubResource( 5 )
+VScrollBar/styles/grabber_hilite = SubResource( 6 )
+VScrollBar/styles/scroll = SubResource( 7 )
+VScrollBar/styles/scroll_focus = SubResource( 8 )
 
 [node name="taskbar" type="ReferenceFrame"]
 
@@ -109,35 +97,7 @@ margin/right = 0.0
 margin/bottom = 0.0
 script/script = ExtResource( 1 )
 
-[node name="ops_button" type="ColorFrame" parent="."]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
-color = Color( 0, 0, 0, 1 )
-
-[node name="button" type="Button" parent="ops_button"]
-
-visibility/visible = false
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 3.0
-margin/top = 1.0
-margin/right = 39.0
-margin/bottom = 39.0
-custom_styles/normal = SubResource( 1 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "..."
-flat = false
+[node name="ops_button" parent="." instance=ExtResource( 2 )]
 
 [node name="background" type="ColorFrame" parent="."]
 
@@ -153,9 +113,9 @@ margin/right = 0.0
 margin/bottom = 0.0
 color = Color( 0.398438, 0.398438, 0.398438, 1 )
 
-[node name="items_scroller" parent="." instance=ExtResource( 2 )]
+[node name="items_scroller" parent="." instance=ExtResource( 3 )]
 
-theme/theme = SubResource( 10 )
+theme/theme = SubResource( 9 )
 margin/left = -200.0
 margin/top = 40.0
 
@@ -172,7 +132,7 @@ margin/bottom = 40.0
 custom_constants/separation = 0
 alignment = 0
 
-[node name="scroller_input_area" parent="items_scroller" instance=ExtResource( 3 )]
+[node name="scroller_input_area" parent="items_scroller" instance=ExtResource( 4 )]
 
 margin/left = 200.0
 
@@ -188,7 +148,7 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
-texture = ExtResource( 4 )
+texture = ExtResource( 5 )
 modulate = Color( 0.721569, 0.721569, 0.721569, 1 )
 expand = true
 stretch_mode = 2
@@ -203,7 +163,7 @@ margin/left = 0.0
 margin/top = 40.0
 margin/right = 40.0
 margin/bottom = 400.0
-texture = ExtResource( 5 )
+texture = ExtResource( 6 )
 modulate = Color( 0.722656, 0.722656, 0.722656, 1 )
 stretch_mode = 0
 

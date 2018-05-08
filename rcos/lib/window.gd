@@ -16,7 +16,6 @@
 extends Control
 
 export(bool) var debug
-export(bool) var root_window
 export(NodePath) var canvas
 
 var mCanvas = null
@@ -65,8 +64,8 @@ func _canvas_input(event):
 
 func _draw():
 	var rect = Rect2(Vector2(0, 0), get_rect().size)
+	draw_rect(rect, Color(1, 0, 1, 1))
 	if mCanvas == null:
-		draw_rect(rect, Color(1, 0, 1, 1))
 		return
 	var texture = mCanvas.get_render_target_texture()
 	var src_rect = _get_canvas_region()
@@ -112,9 +111,6 @@ func show_canvas(canvas, region = null):
 		elif was_displayed && !is_displayed:
 			canvas.set_render_target_update_mode(Viewport.RENDER_TARGET_UPDATE_DISABLED)
 			canvas.emit_signal("conceal")
-
-func is_root_window():
-	return root_window
 
 func has_canvas():
 	return mCanvas != null

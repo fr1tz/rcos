@@ -36,32 +36,38 @@ func _get_input_area():
 func _canvas_input(event):
 	if !is_visible() || event.type == InputEvent.KEY:
 		return
-	if event.type != InputEvent.SCREEN_TOUCH && event.type != InputEvent.SCREEN_DRAG:
+	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
+	var touch = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON)
+	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)
+	if !touch && !drag:
 		return
+	var index = 0
+	if touchscreen:
+		index = event.index
 	if mState == STATE_INACTIVE \
-	&& event.type == InputEvent.SCREEN_TOUCH \
+	&& touch \
 	&& event.pressed \
 	&& _get_input_area().has_point(event.pos):
-		_set_select_state(event.index, event.pos)
+		_set_select_state(index, event.pos)
 	elif mState == STATE_SELECT \
-	&& event.type == InputEvent.SCREEN_DRAG \
-	&& event.index == mActiveIndex \
+	&& drag \
+	&& index == mActiveIndex \
 	&& (event.pos-mInitialTouchPos).length() > 5:
 		_set_scroll_state()
 	elif mState == STATE_SCROLL \
-	&& event.type == InputEvent.SCREEN_DRAG \
-	&& event.index == mActiveIndex:
+	&& drag \
+	&& index == mActiveIndex:
 		_scroll(event.pos - mLastTouchPos)
 	elif mState != STATE_INACTIVE \
-	&& event.type == InputEvent.SCREEN_TOUCH \
+	&& touch \
 	&& !event.pressed \
-	&& event.index == mActiveIndex:
+	&& index == mActiveIndex:
 		if mState == STATE_SELECT \
 		&& _get_input_area().has_point(event.pos):
 			_send_click()
 		_set_inactive_state()
 	# Update last touch pos.
-	if event.index == mActiveIndex:
+	if index == mActiveIndex:
 		mLastTouchPos = event.pos
 
 func _process(delta):
@@ -98,20 +104,21 @@ func _scroll(scroll_vec):
 func _send_click():
 	var pos = mLastTouchPos
 	set_ignore_mouse(true)
-	#print("scroller_input_area(): click: ", pos)
-	var window = get_viewport()
-	var ev = InputEvent()
+	print("scroller_input_area(): click: ", pos)
+	var canvas = get_viewport()
 	# Send mouse down.
+	var ev = InputEvent()
+	ev.device = -1
 	ev.type = InputEvent.MOUSE_BUTTON
-	ev.ID = window.get_next_input_event_id()
+	ev.ID = canvas.get_next_input_event_id()
 	ev.button_mask = 1
 	ev.pos = pos
 	ev.x = ev.pos.x
 	ev.y = ev.pos.y
 	ev.button_index = 1
 	ev.pressed = true
-	window.input(ev)
+	canvas.input(ev)
 	# Send mouse up.
-	ev.ID = window.get_next_input_event_id()
+	ev.ID = canvas.get_next_input_event_id()
 	ev.pressed = false
-	window.input(ev)
+	canvas.input(ev)
