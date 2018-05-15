@@ -104,7 +104,7 @@ func _scroll(scroll_vec):
 func _send_click():
 	var pos = mLastTouchPos
 	set_ignore_mouse(true)
-	print("scroller_input_area(): click: ", pos)
+	#print("scroller_input_area(): click: ", pos)
 	var canvas = get_viewport()
 	# Send mouse down.
 	var ev = InputEvent()
