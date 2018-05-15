@@ -174,9 +174,6 @@ func enable_overlay_draw(node):
 func disable_overlay_draw(node):
 	mOverlayDrawNodes.erase(node)
 
-func remove_painter(node):
-	mOverlayDrawNodes.erase(node)
-
 func update_overlay_draw():
 	mOverlay.update()
 
