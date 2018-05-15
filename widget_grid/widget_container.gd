@@ -30,7 +30,8 @@ var mWidgetConfigString = ""
 var mConfigTaskId = -1
 
 onready var mContent = get_node("content")
-onready var mWidgetWindow = get_node("widget_window")
+#onready var mWidgetWindow = get_node("widget_window")
+onready var mViewportSprite = get_node("viewport_sprite")
 
 func _ready():
 	mReshapeControl = get_node("reshape_control")
@@ -40,27 +41,35 @@ func _ready():
 func _resized():
 	var pos = Vector2(0, 0)
 	var size = get_size()
-	var rot = mWidgetWindow.get_rotation_deg()
+	var rot
+	var rot_deg
 	if mWidgetOrientation == ORIENTATION_E:
-		rot = 270
+		rot = PI+PI/2
+		rot_deg = 270
 		pos = Vector2(size.x, 0)
 		size = Vector2(size.y, size.x)
 	elif mWidgetOrientation == ORIENTATION_S:
-		rot = 180
+		rot = PI
+		rot_deg = 180
 		pos = Vector2(size.x, size.y)
 	elif mWidgetOrientation == ORIENTATION_W:
-		rot = 90
+		rot = PI/2
+		rot_deg = 90
 		pos = Vector2(0, size.y)
 		size = Vector2(size.y, size.x)
 	else:
 		rot = 0
+		rot_deg = 0
 		pos = Vector2(0, 0)
-	mWidgetWindow.set_rotation_deg(rot)
-	mWidgetWindow.set_pos(pos)
-	mWidgetWindow.set_size(size)
+#	mWidgetWindow.set_rotation_deg(rot_deg)
+#	mWidgetWindow.set_pos(pos)
+#	mWidgetWindow.set_size(size)
+	mViewportSprite.set_pos(get_size()/2)
+	mViewportSprite.set_rot(rot)
 	var canvas = get_widget_canvas()
-	if canvas != null:
-		canvas.resize(size)
+	if canvas == null:
+		return
+	canvas.resize(size)
 
 func _config_task_go_back():
 	if mWidget.has_method("get_config_gui"):
@@ -121,10 +130,12 @@ func add_widget(widget):
 	var size = get_widget_canvas().get_rect().size
 	set_size(size)
 	main_canvas.resize(size)
-	mWidgetWindow.set_pos(Vector2(0, 0))
-	mWidgetWindow.set_size(size)
-	mWidgetWindow.show_canvas(main_canvas)
-	mWidgetWindow.set_hidden(false)
+#	mWidgetWindow.set_pos(Vector2(0, 0))
+#	mWidgetWindow.set_size(size)
+#	mWidgetWindow.show_canvas(main_canvas)
+#	mWidgetWindow.set_hidden(true)
+	main_canvas.set_render_target_update_mode(Viewport.RENDER_TARGET_UPDATE_WHEN_VISIBLE)
+	mViewportSprite.set_viewport_path(main_canvas.get_path())
 	get_node("widget_product_id_label").set_hidden(true)
 
 func toggle_edit_mode(edit_mode):
@@ -153,8 +164,8 @@ func get_widget_canvas():
 func get_config_canvas():
 	return mWidget.get_node("config_canvas")
 
-func get_widget_window():
-	return mWidgetWindow
+func get_widget_rotation():
+	return mViewportSprite.get_rot()
 
 func get_reshape_control():
 	return mReshapeControl

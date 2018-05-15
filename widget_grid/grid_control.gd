@@ -37,7 +37,7 @@ func _canvas_input(event):
 	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)
 	if !touch && !drag:
 		return
-	var window = null
+	var container = null
 	var canvas = null
 	var index = 0
 	var fpos = null
@@ -51,7 +51,7 @@ func _canvas_input(event):
 			for c in get_widget_containers():
 				if c.get_global_rect().has_point(event.pos):
 					mIndexToWidgetContainer[index] = c
-					window = c.get_widget_window()
+					container = c
 					canvas = c.get_widget_canvas()
 					down = true
 					break
@@ -60,26 +60,23 @@ func _canvas_input(event):
 			if widget_container == null:
 				return
 			mIndexToWidgetContainer[index] = null
-			window = widget_container.get_widget_window()
+			container = widget_container
 			canvas = widget_container.get_widget_canvas()
 			down = false
 	else:
 		var widget_container = mIndexToWidgetContainer[index]
 		if widget_container == null:
 			return
-		window = widget_container.get_widget_window()
+		container = widget_container
 		canvas = widget_container.get_widget_canvas()
 		down = null
-	if window == null || canvas == null:
+	if container == null || canvas == null:
 		return
-	var win_rect = window.get_global_rect()
-	event.pos = win_rect.pos + (event.pos - win_rect.pos).rotated(-window.get_rotation())
-	if canvas.get_input_down(index) == false && !win_rect.has_point(event.pos):
-		canvas.update_input(index, null, false)
-		return
-	var win_size = Vector2(win_rect.size.width, win_rect.size.height)
-	var win_pos = event.pos - win_rect.pos
-	var canvas_pos = win_pos
+	var win_rect = container.get_global_rect()
+	var win_center = win_rect.pos + win_rect.size/2
+	var rot = container.get_widget_rotation()
+	var vec = (event.pos - win_center).rotated(-rot)
+	var canvas_pos = canvas.get_rect().size/2 + vec
 	var fpos = canvas_pos
 	canvas.update_input(index, fpos, down)
 
@@ -186,17 +183,12 @@ func update_overlay_draw():
 func draw_overlay():
 	for node in mOverlayDrawNodes.keys():
 		var widget_container = mOverlayDrawNodes[node]
-		var window = widget_container.get_widget_window()
-		var window_size = window.get_size()
-		var canvas_size = window.get_canvas().get_rect().size
-		var pos = widget_container.get_pos() + window.get_pos()
-		var rot = window.get_rotation()
-		var scale = window_size / canvas_size
-		var orientation = widget_container.get_widget_orientation()
-		if orientation == 1 || orientation == 3:
-			var x = scale.x
-			scale.x = scale.y
-			scale.y = x
+		var canvas = widget_container.get_widget_canvas()
+		var canvas_size = canvas.get_rect().size
+		var center = widget_container.get_pos() + widget_container.get_size()/2
+		var rot = widget_container.get_widget_rotation()
+		var pos = center + Vector2(-canvas_size.x/2, -canvas_size.y/2).rotated(rot)
+		var scale = Vector2(1, 1)
 		mOverlay.draw_set_transform(pos, rot, scale)
 		node._overlay_draw(mOverlay)
 

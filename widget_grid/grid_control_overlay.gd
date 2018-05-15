@@ -15,21 +15,11 @@
 
 extends Control
 
-var mPainters = []
-
 func _draw():
 #	VisualServer.canvas_item_set_clip(get_canvas_item(), true)
 #	for painter in mPainters:
 #		painter._overlay_draw(self)
 	get_parent().draw_overlay()
-
-func add_painter(painter):
-	if mPainters.has(painter):
-		return
-	mPainters.append(painter)
-
-func remove_painter(painter):
-	mPainters.erase(painter)
 
 func draw_circle5(center, radius, angleFrom, angleTo, color, line_width = 4):
 	var nbPoints = 32
