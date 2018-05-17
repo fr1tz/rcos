@@ -17,8 +17,6 @@ extends Control
 
 func _draw():
 #	VisualServer.canvas_item_set_clip(get_canvas_item(), true)
-#	for painter in mPainters:
-#		painter._overlay_draw(self)
 	get_parent().draw_overlay()
 
 func draw_circle5(center, radius, angleFrom, angleTo, color, line_width = 4):

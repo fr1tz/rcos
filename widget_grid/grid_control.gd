@@ -113,6 +113,10 @@ func add_widget(widget_factory_task_id, pos):
 	widget_container.set_pos(pos)
 
 func toggle_edit_mode(edit_mode):
+	if edit_mode:
+		rcos.disable_canvas_input(self)
+	else:
+		rcos.enable_canvas_input(self)
 	mEditMode = edit_mode
 	for widget_container in mWidgetContainers.get_children():
 		widget_container.toggle_edit_mode(edit_mode)
