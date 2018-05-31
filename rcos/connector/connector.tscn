@@ -22,15 +22,6 @@ margin/bottom = -11.0
 texture = ExtResource( 2 )
 stretch_mode = 0
 
-[node name="read_packets_timer" type="Timer" parent="."]
-
-process_mode = 1
-wait_time = 0.1
-one_shot = false
-autostart = true
-
-[node name="remote_interfaces" type="Node" parent="."]
-
 [node name="canvas" parent="." instance=ExtResource( 3 )]
 
 rect = Rect2( 0, 0, 200, 400 )

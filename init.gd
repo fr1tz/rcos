@@ -16,6 +16,7 @@
 extends Node
 
 func _ready():
+	rcos.spawn_module("vrchost_ap_detector")
 	rcos.spawn_module("connector")
 	rcos.spawn_module("widget_grid")
 	queue_free()

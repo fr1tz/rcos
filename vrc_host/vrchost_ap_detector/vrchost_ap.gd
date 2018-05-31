@@ -15,7 +15,7 @@
 
 extends Node
 
-var mConnector = null
+var mDetector = null
 var mName = null
 var mAddr = null
 var mPort = null
@@ -53,8 +53,8 @@ func _decode_icon(string):
 #	tex.create_from_image(img, 0)
 #	return tex
 
-func init(connector, addr, port):
-	mConnector = connector
+func init(detector, addr, port):
+	mDetector = detector
 	mAddr = addr
 	mPort = port
 
@@ -68,8 +68,8 @@ func process_packet(data):
 			var msg_bin = RawArray()
 			msg_bin.append(0)
 			msg_bin.append(1)
-			mConnector.send_packet(msg_txt, mAddr, mPort)
-			mConnector.send_packet(msg_bin, mAddr, mPort)
+			mDetector.send_packet(msg_txt, mAddr, mPort)
+			mDetector.send_packet(msg_bin, mAddr, mPort)
 		mLastHeartbeatTime = OS.get_unix_time()
 	elif msg.to_lower().begins_with("#service"):
 		var name = "default"
@@ -94,7 +94,11 @@ func process_packet(data):
 					rcos.log_error(self, "unable to decode icon")
 					continue
 				#prints("found icon:", icon)
-		mInterfaceWidget = mConnector.gui.add_interface_widget(host)
+		var connector_service = rcos.get_node("services/connector_service")
+		if connector_service == null:
+			rcos.log_error(self, "Unable to find connector service")
+			return
+		mInterfaceWidget = connector_service.add_interface_widget(host)
 		var info = rlib.join_array([
 			desc,
 			"VrcHost Service Access Point",

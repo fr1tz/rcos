@@ -13,21 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+var _connector = null
 
-extends Node
-
-var gui = null
-
-var mTaskId = -1
-
-func _ready():
-	var service = rlib.instance_scene("res://rcos/connector/connector_service.tscn")
-	service._connector = self
-	rcos.get_node("services").add_child(service)
-	var task_properties = {
-		"name": "Connector",
-		"icon": get_node("icon").get_texture(),
-		"canvas": get_node("canvas"),
-	}
-	mTaskId = rcos.add_task(task_properties)
-	gui = get_node("canvas/connector_gui")
+func add_interface_widget(host):
+	return _connector.gui.add_interface_widget(host)
