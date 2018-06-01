@@ -21,7 +21,7 @@ var mUDP = PacketPeerUDP.new()
 func _ready():
 	mAccessPoints = get_node("access_points")
 	if mUDP.listen(44000) != 0:
-		rcos.log_error(self, "Unable to listen on UDP port 44001")
+		rcos.log_error(self, "Unable to listen on UDP port 44000")
 	else:
 		get_node("read_packets_timer").connect("timeout", self, "_read_packets")
 		get_node("read_packets_timer").start()
