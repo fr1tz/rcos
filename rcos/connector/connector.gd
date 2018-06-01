@@ -23,7 +23,8 @@ var mTaskId = -1
 func _ready():
 	var service = rlib.instance_scene("res://rcos/connector/connector_service.tscn")
 	service._connector = self
-	rcos.get_node("services").add_child(service)
+	if !rcos.add_service(service):
+		rcos.log_error(self, "Unable to add connector service")
 	var task_properties = {
 		"name": "Connector",
 		"icon": get_node("icon").get_texture(),
