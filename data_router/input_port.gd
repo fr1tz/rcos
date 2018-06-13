@@ -15,5 +15,14 @@
 
 extends Node
 
-func _ready():
-	pass
+var mData = null
+
+func _init():
+	add_user_signal("data_changed")
+
+func put_data(data):
+	mData = data
+	emit_signal("data_changed", mData)
+
+func get_data():
+	return mData

@@ -22,7 +22,11 @@ onready var mInputPorts = get_node("input_ports")
 onready var mOutputPorts = get_node("output_ports")
 
 func _add_port(port_path, port_type):
-	var parent_node = mOutputPorts
+	var parent_node = null
+	if port_type == PORT_TYPE_INPUT:
+		parent_node = mInputPorts
+	elif port_type == PORT_TYPE_OUTPUT:
+		parent_node =  mOutputPorts
 	if parent_node.has_node(port_path):
 		return false
 	var node_names = port_path.split("/", false)
@@ -44,7 +48,25 @@ func _add_port(port_path, port_type):
 		parent_node = parent_node.get_node(node_name)
 
 func add_input_port(port_path):
-	_add_port(port_path, PORT_TYPE_INPUT)
+	return _add_port(port_path, PORT_TYPE_INPUT)
 
 func add_output_port(port_path):
-	_add_port(port_path, PORT_TYPE_OUTPUT)
+	return _add_port(port_path, PORT_TYPE_OUTPUT)
+
+func add_connection(output_port_path, input_port_path):
+	#prints("data_router: add connection: ", output_port_path, "->", input_port_path)
+	if !mOutputPorts.has_node(output_port_path) \
+	|| !mInputPorts.has_node(input_port_path):
+		return false
+	var output_port_node = mOutputPorts.get_node(output_port_path)
+	var input_port_node = mInputPorts.get_node(input_port_path)
+	return output_port_node.add_connection(input_port_node)
+
+func remove_connection(output_port_path, input_port_path):
+	#prints("data_router: remove connection: ", output_port_path, "->", input_port_path)
+	if !mOutputPorts.has_node(output_port_path) \
+	|| !mInputPorts.has_node(input_port_path):
+		return false
+	var output_port_node = mOutputPorts.get_node(output_port_path)
+	var input_port_node = mInputPorts.get_node(input_port_path)
+	return output_port_node.remove_connection(input_port_node)

@@ -15,5 +15,24 @@
 
 extends Node
 
+var mData = null
+var mConnections = []
+
 func _ready():
 	pass
+
+func add_connection(input_node):
+	if mConnections.has(input_node):
+		return true
+	mConnections.push_back(input_node)
+	put_data(mData)
+	return true
+
+func remove_connection(input_node):
+	mConnections.erase(input_node)
+	return true
+
+func put_data(data):
+	mData = data
+	for input_node in mConnections:
+		input_node.put_data(data)
