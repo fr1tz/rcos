@@ -15,9 +15,15 @@
 
 extends Node
 
+var gui = null
+
+var mTaskId = -1
+
 func _ready():
-	rcos.spawn_module("vrchost_ap_detector")
-	rcos.spawn_module("connector")
-	rcos.spawn_module("data_connector")
-	rcos.spawn_module("widget_grid")
-	queue_free()
+	var task_properties = {
+		"name": "Data Connector",
+		"icon": get_node("icon").get_texture(),
+		"canvas": get_node("canvas"),
+	}
+	mTaskId = rcos.add_task(task_properties)
+
