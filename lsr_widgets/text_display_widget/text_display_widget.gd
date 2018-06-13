@@ -15,10 +15,13 @@
 
 extends Node
 
+var mInputPort = null
+
 func _ready():
-	rcos.spawn_module("connector")
-	rcos.spawn_module("data_connector")
-	rcos.spawn_module("widget_grid")
-	rcos.spawn_module("lsr_widgets")
-	rcos.spawn_module("vrchost_ap_detector")
-	queue_free()
+	var port_path_prefix = "local/text_display_widget"+str(get_meta("widget_id"))
+	mInputPort = data_router.add_input_port(port_path_prefix+"/text")
+	mInputPort.connect("data_changed", self, "_set_text")
+
+func _set_text(data):
+	prints("text_display_widget:", data)
+	get_node("main_canvas/gui/Panel/Label").set_text(data)

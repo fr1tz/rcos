@@ -16,9 +16,12 @@
 extends Node
 
 func _ready():
-	rcos.spawn_module("connector")
-	rcos.spawn_module("data_connector")
-	rcos.spawn_module("widget_grid")
-	rcos.spawn_module("lsr_widgets")
-	rcos.spawn_module("vrchost_ap_detector")
-	queue_free()
+	rcos.add_task({
+			"type": "widget_factory",
+			"product_name": "Text Display Widget",
+			"product_id": "lsr_widgets.text_display_widget",
+			"create_widget_func": funcref(self, "create_widget")
+		})
+
+func create_widget():
+	return rlib.instance_scene("res://lsr_widgets/text_display_widget/text_display_widget.tscn")
