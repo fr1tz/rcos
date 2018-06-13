@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://data_router/output_port.gd" type="Script" id=1]
+
+[node name="output_port" type="Node"]
+
+script/script = ExtResource( 1 )
+
+
