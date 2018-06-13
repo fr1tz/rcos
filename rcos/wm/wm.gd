@@ -77,6 +77,8 @@ func show_task(task_id):
 	var task = rcos.get_task(task_id)
 	if task == null:
 		return
+	if !task.has("canvas"):
+		return
 	mActiveTask = task
 	var canvas = mActiveTask.canvas
 	var fullscreen = false
