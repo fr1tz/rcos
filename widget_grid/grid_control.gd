@@ -16,6 +16,7 @@
 extends ColorFrame
 
 var mWidgetHostApi = null
+var mNextWidgetId = 1
 var mOverlayDrawNodes = {}
 var mEditMode = false
 var mSelectedWidgetContainer = null
@@ -103,12 +104,14 @@ func add_widget(widget_factory_task_id, pos):
 	var task = rcos.get_task(widget_factory_task_id)
 	if !task.has("product_id"):
 		return
+	var widget_id = mNextWidgetId
+	mNextWidgetId += 1
 	var widget_product_id = task.product_id
 	var widget = task.create_widget_func.call_func()
 	if widget == null:
 		return
 	var widget_container = add_widget_container()
-	widget_container.init(mWidgetHostApi, task.product_id)
+	widget_container.init(mWidgetHostApi, widget_id, task.product_id)
 	widget_container.add_widget(widget)
 	widget_container.set_pos(pos)
 
@@ -214,6 +217,7 @@ func save_to_file():
 	for widget_container in get_widget_containers():
 		var pos = widget_container.get_pos()
 		var size = widget_container.get_size()
+		var widget_id = widget_container.get_widget_id()
 		var widget_product_id = widget_container.get_widget_product_id()
 		var widget_orientation = widget_container.get_widget_orientation()
 		var widget_config_string = widget_container.get_widget_config_string()
@@ -222,6 +226,7 @@ func save_to_file():
 			"y": pos.y,
 			"width": size.x,
 			"height": size.y,
+			"widget_id": widget_id,
 			"widget_product_id": widget_product_id,
 			"widget_orientation": widget_orientation,
 			"widget_config_string": widget_config_string
@@ -244,7 +249,7 @@ func load_from_file():
 	if config.version == 0:
 		for c in config.widget_containers:
 			var widget_container = add_widget_container()
-			widget_container.init(mWidgetHostApi, c.widget_product_id, c.widget_orientation, c.widget_config_string)
+			widget_container.init(mWidgetHostApi, c.widget_id, c.widget_product_id, c.widget_orientation, c.widget_config_string)
 			for task in tasks:
 				if !task.has("type") || !task.has("product_id") || !task.has("create_widget_func"):
 					continue

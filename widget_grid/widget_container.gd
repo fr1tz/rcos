@@ -24,6 +24,7 @@ var mWidgetHostApi = null
 var mEditMode = false
 var mReshapeControl = null
 var mWidget = null
+var mWidgetId = -1
 var mWidgetOrientation = ORIENTATION_N
 var mWidgetProductId = ""
 var mWidgetConfigString = ""
@@ -83,8 +84,9 @@ func _config_task_go_back():
 	mConfigTaskId = -1
 	return true
 
-func init(widget_host_api, widget_product_id = "", widget_orientation = ORIENTATION_N, widget_config_string = ""):
+func init(widget_host_api, widget_id, widget_product_id = "", widget_orientation = ORIENTATION_N, widget_config_string = ""):
 	mWidgetHostApi = widget_host_api
+	mWidgetId = widget_id
 	mWidgetProductId = widget_product_id
 	mWidgetOrientation = widget_orientation
 	mWidgetConfigString = widget_config_string
@@ -121,6 +123,7 @@ func add_widget(widget):
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas_size))
 		config_canvas.set_name("config_canvas")
 	rlib.set_meta_recursive(mWidget, "widget_host_api", mWidgetHostApi)
+	rlib.set_meta_recursive(mWidget, "widget_id", mWidgetId)
 	rlib.set_meta_recursive(mWidget, "widget_root_node", mWidget)
 	mContent.add_child(mWidget)
 	if mWidgetConfigString != "" && mWidget.has_method("load_widget_config_string"):
@@ -144,6 +147,9 @@ func toggle_edit_mode(edit_mode):
 
 func get_widget():
 	return mWidget
+
+func get_widget_id():
+	return mWidgetId
 
 func get_widget_product_id():
 	return mWidgetProductId
