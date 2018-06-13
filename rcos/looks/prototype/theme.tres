@@ -1,0 +1,133 @@
+[gd_resource type="Theme" load_steps=13 format=1]
+
+[ext_resource path="res://rcos/looks/prototype/button_focus.tres" type="StyleBox" id=1]
+[ext_resource path="res://rcos/looks/prototype/button_hover.tres" type="StyleBox" id=2]
+[ext_resource path="res://rcos/looks/prototype/button_normal.tres" type="StyleBox" id=3]
+[ext_resource path="res://rcos/looks/prototype/button_pressed.tres" type="StyleBox" id=4]
+[ext_resource path="res://rcos/looks/prototype/graphics/checkbox.checked.png" type="Texture" id=5]
+[ext_resource path="res://rcos/looks/prototype/graphics/checkbox.unchecked.png" type="Texture" id=6]
+[ext_resource path="res://rcos/looks/prototype/graphics/slider_grabber.png" type="Texture" id=7]
+[ext_resource path="res://rcos/fonts/ponyo/Ponyo.otf" type="DynamicFontData" id=8]
+
+[sub_resource type="StyleBoxEmpty" id=1]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=2]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=3]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="DynamicFont" id=4]
+
+font/size = 12
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 8 )
+
+[resource]
+
+default_font = SubResource( 4 )
+Button/colors/font_color = Color( 0.878431, 0.878431, 0.878431, 1 )
+Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+Button/colors/font_color_hover = Color( 0.941176, 0.941176, 0.941176, 1 )
+Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = ExtResource( 1 )
+Button/styles/focus = ExtResource( 1 )
+Button/styles/hover = ExtResource( 2 )
+Button/styles/normal = ExtResource( 3 )
+Button/styles/pressed = ExtResource( 4 )
+CheckBox/colors/font_color = Color( 0.878431, 0.878431, 0.878431, 1 )
+CheckBox/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+CheckBox/colors/font_color_hover = Color( 0.941176, 0.941176, 0.941176, 1 )
+CheckBox/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+CheckBox/constants/check_vadjust = 0
+CheckBox/constants/hseparation = 4
+CheckBox/fonts/font = null
+CheckBox/icons/checked = ExtResource( 5 )
+CheckBox/icons/radio_checked = null
+CheckBox/icons/radio_unchecked = null
+CheckBox/icons/unchecked = ExtResource( 6 )
+CheckBox/styles/disabled = SubResource( 1 )
+CheckBox/styles/focus = SubResource( 2 )
+CheckBox/styles/hover = SubResource( 3 )
+CheckBox/styles/normal = null
+CheckBox/styles/pressed = null
+HButtonArray/colors/font_color = Color( 0.690196, 0.690196, 0.690196, 1 )
+HButtonArray/colors/font_color_selected = Color( 0.941176, 0.941176, 0.941176, 1 )
+HButtonArray/constants/button_separator = 4
+HButtonArray/constants/icon_separator = 2
+HButtonArray/fonts/font = null
+HButtonArray/fonts/font_selected = null
+HButtonArray/styles/focus = ExtResource( 1 )
+HButtonArray/styles/hover = ExtResource( 2 )
+HButtonArray/styles/normal = ExtResource( 3 )
+HButtonArray/styles/selected = ExtResource( 4 )
+HSlider/icons/grabber = ExtResource( 7 )
+HSlider/icons/grabber_hilite = ExtResource( 7 )
+HSlider/icons/tick = null
+HSlider/styles/focus = null
+HSlider/styles/grabber_hilite = null
+HSlider/styles/slider = null
+Panel/styles/panel = ExtResource( 3 )
+Panel/styles/panelf = null
+Panel/styles/panelnc = null
+TabContainer/colors/font_color_bg = Color( 0.690196, 0.690196, 0.690196, 1 )
+TabContainer/colors/font_color_fg = Color( 0.941176, 0.941176, 0.941176, 1 )
+TabContainer/constants/hseparation = 4
+TabContainer/constants/label_valign_bg = 2
+TabContainer/constants/label_valign_fg = 0
+TabContainer/constants/side_margin = 8
+TabContainer/constants/top_margin = 24
+TabContainer/fonts/font = null
+TabContainer/icons/decrement = null
+TabContainer/icons/decrement_hilite = null
+TabContainer/icons/increment = null
+TabContainer/icons/increment_hilite = null
+TabContainer/icons/menu = null
+TabContainer/icons/menu_hilite = null
+TabContainer/styles/panel = ExtResource( 3 )
+TabContainer/styles/tab_bg = null
+TabContainer/styles/tab_fg = null
+Tabs/colors/font_color_bg = Color( 0.690196, 0.690196, 0.690196, 1 )
+Tabs/colors/font_color_fg = Color( 1, 0, 0, 1 )
+Tabs/constants/hseparation = 4
+Tabs/constants/label_valign_bg = 2
+Tabs/constants/label_valign_fg = 0
+Tabs/constants/top_margin = 24
+Tabs/fonts/font = null
+Tabs/icons/close = null
+Tabs/icons/decrement = null
+Tabs/icons/decrement_hilite = null
+Tabs/icons/increment = null
+Tabs/icons/increment_hilite = null
+Tabs/styles/button = ExtResource( 3 )
+Tabs/styles/button_pressed = ExtResource( 4 )
+Tabs/styles/panel = ExtResource( 3 )
+Tabs/styles/tab_bg = null
+Tabs/styles/tab_fg = null
+VButtonArray/colors/font_color = Color( 0.690196, 0.690196, 0.690196, 1 )
+VButtonArray/colors/font_color_selected = Color( 0.941176, 0.941176, 0.941176, 1 )
+VButtonArray/constants/button_separator = 4
+VButtonArray/constants/icon_separator = 2
+VButtonArray/fonts/font = null
+VButtonArray/fonts/font_selected = null
+VButtonArray/styles/focus = ExtResource( 1 )
+VButtonArray/styles/hover = ExtResource( 2 )
+VButtonArray/styles/normal = ExtResource( 3 )
+VButtonArray/styles/selected = ExtResource( 4 )
+
