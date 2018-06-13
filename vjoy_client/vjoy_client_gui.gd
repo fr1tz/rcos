@@ -13,13 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends Node
+extends Panel
 
-func _ready():
-	rcos.spawn_module("connector")
-	rcos.spawn_module("data_connector")
-	rcos.spawn_module("widget_grid")
-	rcos.spawn_module("lsr_widgets")
-	rcos.spawn_module("vrchost_ap_detector")
-	rcos.spawn_module("vjoy_server_detector")
-	queue_free()
+
