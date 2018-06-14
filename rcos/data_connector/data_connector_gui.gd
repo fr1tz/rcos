@@ -22,6 +22,8 @@ func _ready():
 	mOutputsTree.set_hide_root(true)
 	mInputsTree.set_hide_root(true)
 	get_node("status_bar/refresh_button").connect("pressed", self, "refresh")
+	get_node("status_bar/save_button").connect("pressed", self, "_save")
+	get_node("status_bar/load_button").connect("pressed", self, "_load")
 	get_node("status_bar/connect_button").connect("pressed", self, "_connect")
 	get_node("status_bar/disconnect_button").connect("pressed", self, "_disconnect")
 	refresh()
@@ -48,6 +50,36 @@ func _connect():
 
 func _disconnect():
 	print("_disconnect(): TODO")
+
+func _save():
+	var dir = Directory.new()
+	if !dir.dir_exists("user://etc"):
+		dir.make_dir_recursive("user://etc")
+	var connections = data_router.get_connections()
+	var file = File.new()
+	if file.open("user://etc/data_router_conf.json", File.WRITE) != OK:
+		return
+	var config = {
+		"version": 0,
+		"connections": connections
+	}
+	file.store_buffer(config.to_json().to_utf8())
+	file.close()
+
+func _load():
+	var file = File.new()
+	if file.open("user://etc/data_router_conf.json", File.READ) != OK:
+		return
+	var text = file.get_buffer(file.get_len()).get_string_from_utf8()
+	file.close()
+	var config = {}
+	if config.parse_json(text) != OK:
+		return
+	if config.version == 0:
+		for connection in config.connections:
+			var output_port_path = connection.output
+			var input_port_path = connection.input
+			data_router.add_connection(output_port_path, input_port_path)
 
 func refresh():
 	mOutputsTree.clear()
