@@ -36,8 +36,10 @@ func _add_port(port_path, port_type):
 			var new_node = null
 			if port_type == PORT_TYPE_INPUT:
 				new_node = rlib.instance_scene("res://data_router/input_port.tscn")
+				new_node.add_to_group("data_router_input_ports")
 			elif port_type == PORT_TYPE_OUTPUT:
 				new_node = rlib.instance_scene("res://data_router/output_port.tscn")
+				new_node.add_to_group("data_router_output_ports")
 			new_node.set_name(node_name)
 			parent_node.add_child(new_node)
 			return new_node
@@ -52,6 +54,26 @@ func add_input_port(port_path):
 
 func add_output_port(port_path):
 	return _add_port(port_path, PORT_TYPE_OUTPUT)
+
+func get_input_ports():
+	return get_tree().get_nodes_in_group("data_router_input_ports")
+
+func get_output_ports():
+	return get_tree().get_nodes_in_group("data_router_output_ports")
+
+func get_connections():
+	var connections = []
+	var output_ports = get_output_ports()
+	for output_port in output_ports:
+		var output_port_path = output_port.get_port_path()
+		for input_port in output_port.get_connections():
+			var input_port_path = input_port.get_port_path()
+			var connection = {
+				"output": output_port_path,
+				"input": input_port_path
+			}
+			connections.push_back(connection)
+	return connections
 
 func add_connection(output_port_path, input_port_path):
 	#prints("data_router: add connection: ", output_port_path, "->", input_port_path)

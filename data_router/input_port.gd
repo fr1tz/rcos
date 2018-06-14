@@ -20,6 +20,9 @@ var mData = null
 func _init():
 	add_user_signal("data_changed")
 
+func get_port_path():
+	return data_router.get_node("input_ports").get_path_to(self)
+
 func put_data(data):
 	mData = data
 	emit_signal("data_changed", mData)

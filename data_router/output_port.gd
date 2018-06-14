@@ -32,6 +32,12 @@ func remove_connection(input_node):
 	mConnections.erase(input_node)
 	return true
 
+func get_connections():
+	return mConnections
+
+func get_port_path():
+	return data_router.get_node("output_ports").get_path_to(self)
+
 func put_data(data):
 	mData = data
 	for input_node in mConnections:
