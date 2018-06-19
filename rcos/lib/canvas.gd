@@ -15,6 +15,7 @@
 
 extends Viewport
 
+export(bool) var debug = false
 export(Vector2) var min_size = Vector2(0, 0)
 export(bool) var resizable = true
 
@@ -50,6 +51,8 @@ func get_next_input_event_id():
 
 func send_key_event(ev):
 	ev.ID = get_next_input_event_id()
+	if debug:
+		prints(get_name(), "send_key_event(): calling input():", ev)
 	input(ev)
 	_call_canvas_input(ev)
 
@@ -82,6 +85,8 @@ func update_input(index, fpos, down):
 			ev.y = ev.pos.y
 			ev.button_index = 1
 			ev.pressed = down
+			if debug:
+				prints(get_name(), "update_input(): calling input():", ev)
 			input(ev)
 		elif down && prev_down:
 			var ev = InputEvent()
@@ -97,6 +102,8 @@ func update_input(index, fpos, down):
 			ev.speed = ev.relative_pos
 			ev.speed_x = ev.relative_pos.x
 			ev.speed_y = ev.relative_pos.y
+			if debug:
+				prints(get_name(), "update_input(): calling input():", ev)
 			input(ev)
 	# Produce touchscreen input events.
 	if down != prev_down:

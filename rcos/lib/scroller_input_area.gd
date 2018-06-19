@@ -15,6 +15,8 @@
 
 extends ReferenceFrame
 
+export(bool) var debug = false
+
 const STATE_INACTIVE = 0
 const STATE_SELECT = 1
 const STATE_SCROLL = 2
@@ -33,7 +35,13 @@ func _get_input_area():
 		return get_node("input_area").get_global_rect()
 	return get_global_rect()
 
+func _input_event(event):
+	if debug:
+		prints(get_name(), "_input_event", event)
+
 func _canvas_input(event):
+	if debug:
+		prints(get_name(), "_canvas_input", event)
 	if !is_visible() || event.type == InputEvent.KEY:
 		return
 	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
@@ -117,8 +125,12 @@ func _send_click():
 	ev.y = ev.pos.y
 	ev.button_index = 1
 	ev.pressed = true
+	if debug:
+		prints(get_name(), "_send_click(): calling input():", ev)
 	canvas.input(ev)
 	# Send mouse up.
 	ev.ID = canvas.get_next_input_event_id()
 	ev.pressed = false
+	if debug:
+		prints(get_name(), "_send_click(): calling input():", ev)
 	canvas.input(ev)
