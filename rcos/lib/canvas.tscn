@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://rcos/lib/canvas.gd" type="Script" id=1]
+[ext_resource path="res://rcos/lib/_res/canvas/canvas.gd" type="Script" id=1]
 
 [node name="canvas" type="Viewport"]
 
@@ -19,6 +19,7 @@ audio_listener/enable_3d = false
 physics/object_picking = false
 gui/disable_input = false
 script/script = ExtResource( 1 )
+debug = false
 min_size = Vector2( 0, 0 )
 resizable = true
 

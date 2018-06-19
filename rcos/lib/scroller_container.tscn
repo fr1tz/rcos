@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=1]
 
-[ext_resource path="res://rcos/lib/scroller_container.gd" type="Script" id=1]
+[ext_resource path="res://rcos/lib/_res/scroller_container/scroller_container.gd" type="Script" id=1]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 

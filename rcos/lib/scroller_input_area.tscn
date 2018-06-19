@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://rcos/lib/scroller_input_area.gd" type="Script" id=1]
+[ext_resource path="res://rcos/lib/_res/scroller_container/scroller_input_area.gd" type="Script" id=1]
 
 [node name="scroller_input_area" type="ReferenceFrame"]
 
@@ -15,5 +15,6 @@ margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
 script/script = ExtResource( 1 )
+debug = false
 
 
