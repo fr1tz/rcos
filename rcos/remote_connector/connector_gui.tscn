@@ -1,11 +1,11 @@
 [gd_scene load_steps=8 format=1]
 
-[ext_resource path="res://rcos/connector/connector_gui.gd" type="Script" id=1]
+[ext_resource path="res://rcos/remote_connector/connector_gui.gd" type="Script" id=1]
 [ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=2]
 [ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=3]
-[ext_resource path="res://rcos/connector/graphics/icon.scanner.png" type="Texture" id=4]
-[ext_resource path="res://rcos/connector/graphics/icon.favs.png" type="Texture" id=5]
-[ext_resource path="res://rcos/connector/graphics/icon.custom.png" type="Texture" id=6]
+[ext_resource path="res://rcos/remote_connector/graphics/icon.scanner.png" type="Texture" id=4]
+[ext_resource path="res://rcos/remote_connector/graphics/icon.favs.png" type="Texture" id=5]
+[ext_resource path="res://rcos/remote_connector/graphics/icon.custom.png" type="Texture" id=6]
 
 [sub_resource type="StyleBoxFlat" id=1]
 

@@ -52,7 +52,7 @@ func add_interface_widget(host):
 			interface_container = c
 			break
 	if interface_container == null:
-		interface_container = rlib.instance_scene("res://rcos/connector/interface_widget_container.tscn")
+		interface_container = rlib.instance_scene("res://rcos/remote_connector/interface_widget_container.tscn")
 		interface_container.set_name(host)
 		mInterfaceWidgetContainers.add_child(interface_container)
 	var interface_widget = interface_container.add_interface_widget()
