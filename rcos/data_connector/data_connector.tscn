@@ -24,13 +24,13 @@ stretch_mode = 0
 
 [node name="canvas" parent="." instance=ExtResource( 3 )]
 
-rect = Rect2( 0, 0, 400, 200 )
-min_size = Vector2( 400, 200 )
+rect = Rect2( 0, 0, 200, 400 )
+min_size = Vector2( 200, 400 )
 resizable = false
+mDebug = true
 
 [node name="data_connector_gui" parent="canvas" instance=ExtResource( 4 )]
 
 margin/right = 0.0
-margin/bottom = 0.0
 
 
