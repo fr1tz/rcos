@@ -31,8 +31,8 @@ func _ready():
 	data_router.connect("connection_added", self, "_connection_added")
 	data_router.connect("connection_removed", self, "_connection_removed")
 	get_node("buttons/add_connection_button").connect("pressed", self, "_show_output_port_selector")
-	get_node("buttons/toggle_connection_button").connect("pressed", self, "_toggle_connection_item")
-	get_node("buttons/remove_connection_button").connect("pressed", self, "_remove_connection_item")
+	get_node("buttons/toggle_connection_button").connect("pressed", self, "_toggle_selected_connection_item")
+	get_node("buttons/remove_connection_button").connect("pressed", self, "_remove_selected_connection_item")
 	get_node("buttons/save_button").connect("pressed", self, "_save")
 	get_node("output_port_selector").connect("canceled", self, "_show_connections")
 	get_node("output_port_selector").connect("node_selected", self, "_output_port_selected")
@@ -54,10 +54,14 @@ func _input_port_added(input_port_node):
 		item.activate_connection()
 
 func _connection_added(output_port_node, input_port_node):
-	_add_connection_item(output_port_node, input_port_node)
+	_add_connection_item(output_port_node, input_port_node, false)
 
 func _connection_removed(output_port_node, input_port_node):
-	pass
+	var output_path = data_router.output_node_to_port_path(output_port_node)
+	var input_path = data_router.input_node_to_port_path(input_port_node)
+	var key = output_path+"->"+input_path
+	if mConnectionItemsByKey.has(key):
+		mConnectionItemsByKey[key].update_markings()
 
 func _connections_changed():
 	for c in mConnectionItems.get_children():
@@ -69,7 +73,7 @@ func _connections_changed():
 		item.initialize(connection.output, connection.input)
 		mConnectionItems.add_child(item)
 
-func _add_connection_item(output, input):
+func _add_connection_item(output, input, disabled):
 	var output_path = null
 	var input_path = null
 	if typeof(output) == TYPE_STRING:
@@ -84,7 +88,7 @@ func _add_connection_item(output, input):
 	if mConnectionItemsByKey.has(key):
 		return mConnectionItemsByKey[key]
 	var item = rlib.instance_scene("res://rcos/data_connector/connection_item.tscn")
-	item.initialize(output_path, input_path)
+	item.initialize(output_path, input_path, disabled)
 	item.connect("pressed", self, "_connection_item_selected", [item])
 	get_node("items_container/items").add_child(item)
 	mConnectionItemsByKey[key] = item
@@ -114,8 +118,10 @@ func _remove_selected_connection_item():
 	mSelectedConnectionItem.queue_free()
 	mSelectedConnectionItem = null
 
-func _toggle_connection_item():
-	pass
+func _toggle_selected_connection_item():
+	if mSelectedConnectionItem == null:
+		return
+	mSelectedConnectionItem.toggle_connection_disabled()
 
 func _connection_item_selected(item):
 	if mSelectedConnectionItem != null:
@@ -130,7 +136,8 @@ func _save():
 	for item in mConnectionItems.get_children():
 		var connection = {
 			"output": item.get_output_port_path(),
-			"input": item.get_input_port_path()
+			"input": item.get_input_port_path(),
+			"disabled": item.is_connection_disabled()
 		}
 		connections.push_back(connection)
 	var file = File.new()
@@ -153,8 +160,8 @@ func _load():
 	if config.parse_json(text) != OK:
 		return
 	if config.version == 0:
-		for connection in config.connections:
-			var item = _add_connection_item(connection.output, connection.input)
+		for c in config.connections:
+			var item = _add_connection_item(c.output, c.input, c.disabled)
 			item.activate_connection()
 
 func _show_connections():

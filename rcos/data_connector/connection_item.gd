@@ -17,11 +17,12 @@ extends Button
 
 var mOutputPortPath = null
 var mInputPortPath = null
-var mDisabled = false
+var mConnectionDisabled = false
 
-func initialize(output_port_path, input_port_path):
+func initialize(output_port_path, input_port_path, disabled):
 	mOutputPortPath = output_port_path
 	mInputPortPath = input_port_path
+	mConnectionDisabled = disabled
 	get_node("output_port_path_label").set_text(mOutputPortPath)
 	get_node("input_port_path_label").set_text(mInputPortPath)
 	update_markings()
@@ -32,13 +33,26 @@ func get_output_port_path():
 func get_input_port_path():
 	return mInputPortPath
 
+func is_connection_disabled():
+	return mConnectionDisabled
+
 func activate_connection():
+	if mConnectionDisabled:
+		return
 	data_router.add_connection(mOutputPortPath, mInputPortPath)
 	update_markings()
 
 func deactivate_connection():
 	data_router.remove_connection(mOutputPortPath, mInputPortPath)
 	update_markings()
+
+func toggle_connection_disabled():
+	if mConnectionDisabled:
+		mConnectionDisabled = false
+		activate_connection()
+	else:
+		mConnectionDisabled = true
+		deactivate_connection()
 
 func update_markings():
 	var output_exists = data_router.has_output_port(mOutputPortPath)
@@ -47,7 +61,7 @@ func update_markings():
 	get_node("output_port_icon/existing").set_hidden(!output_exists)
 	get_node("input_port_icon/missing").set_hidden(input_exists)
 	get_node("input_port_icon/existing").set_hidden(!input_exists)
-	if mDisabled:
+	if mConnectionDisabled:
 		get_node("connection_icon/active").set_hidden(true)
 		get_node("connection_icon/inactive").set_hidden(true)
 		get_node("connection_icon/disabled").set_hidden(false)

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://rcos/data_connector/connection_item.gd" type="Script" id=2]
-[ext_resource path="res://rcos/fonts/teko/Teko-Light.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://rcos/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://rcos/data_connector/graphics/existing_output_port.png" type="Texture" id=4]
 [ext_resource path="res://rcos/data_connector/graphics/missing_output_port.png" type="Texture" id=5]
 [ext_resource path="res://rcos/data_connector/graphics/existing_input_port.png" type="Texture" id=6]
@@ -13,9 +13,7 @@
 
 [sub_resource type="DynamicFont" id=1]
 
-font/size = 16
-extra_spacing/top = -3
-extra_spacing/bottom = -3
+font/size = 14
 font/use_mipmaps = false
 font/use_filter = false
 font/font = ExtResource( 3 )
@@ -45,9 +43,9 @@ focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 21.0
-margin/top = 2.0
+margin/top = 1.0
 margin/right = 198.0
-margin/bottom = 20.0
+margin/bottom = 22.0
 custom_fonts/font = SubResource( 1 )
 valign = 1
 percent_visible = 1.0
@@ -63,7 +61,7 @@ size_flags/vertical = 0
 margin/left = 21.0
 margin/top = 20.0
 margin/right = 198.0
-margin/bottom = 38.0
+margin/bottom = 41.0
 custom_fonts/font = SubResource( 1 )
 valign = 1
 percent_visible = 1.0
