@@ -25,7 +25,8 @@ func add_connection(input_node):
 	if mConnections.has(input_node):
 		return true
 	mConnections.push_back(input_node)
-	put_data(mData)
+	if mData != null:
+		put_data(mData)
 	return true
 
 func remove_connection(input_node):

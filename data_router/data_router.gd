@@ -21,6 +21,12 @@ const PORT_TYPE_OUTPUT = 1
 onready var mInputPorts = get_node("input_ports")
 onready var mOutputPorts = get_node("output_ports")
 
+func _init():
+	add_user_signal("input_port_added")
+	add_user_signal("output_port_added")
+	add_user_signal("connection_added")
+	add_user_signal("connection_removed")
+
 func _add_port(port_path, port_type):
 	var parent_node = null
 	if port_type == PORT_TYPE_INPUT:
@@ -42,6 +48,10 @@ func _add_port(port_path, port_type):
 				new_node.add_to_group("data_router_output_ports")
 			new_node.set_name(node_name)
 			parent_node.add_child(new_node)
+			if port_type == PORT_TYPE_INPUT:
+				emit_signal("input_port_added", new_node)
+			elif port_type == PORT_TYPE_OUTPUT:
+				emit_signal("output_port_added", new_node)
 			return new_node
 		if !parent_node.has_node(node_name):
 			var new_node = Node.new()
@@ -54,6 +64,19 @@ func add_input_port(port_path):
 
 func add_output_port(port_path):
 	return _add_port(port_path, PORT_TYPE_OUTPUT)
+
+func has_input_port(port_path):
+	return mInputPorts.has_node(port_path)
+
+func has_output_port(port_path):
+	return mOutputPorts.has_node(port_path)
+
+func has_connection(output_port_path, input_port_path):
+	var output_port = mOutputPorts.get_node(output_port_path)
+	var input_port = mInputPorts.get_node(input_port_path)
+	if output_port == null || input_port == null:
+		return false
+	return output_port.get_connections().has(input_port)
 
 func get_input_ports():
 	return get_tree().get_nodes_in_group("data_router_input_ports")
@@ -75,20 +98,54 @@ func get_connections():
 			connections.push_back(connection)
 	return connections
 
-func add_connection(output_port_path, input_port_path):
-	#prints("data_router: add connection: ", output_port_path, "->", input_port_path)
-	if !mOutputPorts.has_node(output_port_path) \
-	|| !mInputPorts.has_node(input_port_path):
-		return false
-	var output_port_node = mOutputPorts.get_node(output_port_path)
-	var input_port_node = mInputPorts.get_node(input_port_path)
-	return output_port_node.add_connection(input_port_node)
+func output_node_to_port_path(node):
+	return str(get_node("output_ports").get_path_to(node))
 
-func remove_connection(output_port_path, input_port_path):
-	#prints("data_router: remove connection: ", output_port_path, "->", input_port_path)
-	if !mOutputPorts.has_node(output_port_path) \
-	|| !mInputPorts.has_node(input_port_path):
+func input_node_to_port_path(node):
+	return str(get_node("input_ports").get_path_to(node))
+
+func add_connection(output, input):
+	#prints("data_router: add connection: ", output, "->", input)
+	var output_port_node = null
+	var input_port_node = null
+	if typeof(output) == TYPE_STRING:
+		output_port_node = mOutputPorts.get_node(output)
+	elif typeof(output) == TYPE_OBJECT:
+		output_port_node = output
+	else:
 		return false
-	var output_port_node = mOutputPorts.get_node(output_port_path)
-	var input_port_node = mInputPorts.get_node(input_port_path)
-	return output_port_node.remove_connection(input_port_node)
+	if typeof(input) == TYPE_STRING:
+		input_port_node = mInputPorts.get_node(input)
+	elif typeof(input) == TYPE_OBJECT:
+		input_port_node = input
+	else:
+		return false
+	if output_port_node == null || input_port_node == null:
+		return false
+	var success = output_port_node.add_connection(input_port_node)
+	if success:
+		emit_signal("connection_added", output_port_node, input_port_node)
+	return success
+
+func remove_connection(output, input):
+	#prints("data_router: remove connection: ", output, "->", input)
+	var output_port_node = null
+	var input_port_node = null
+	if typeof(output) == TYPE_STRING:
+		output_port_node = mOutputPorts.get_node(output)
+	elif typeof(output) == TYPE_OBJECT:
+		output_port_node = output
+	else:
+		return false
+	if typeof(input) == TYPE_STRING:
+		input_port_node = mInputPorts.get_node(input)
+	elif typeof(output) == TYPE_OBJECT:
+		input_port_node = input
+	else:
+		return false
+	if output_port_node == null || input_port_node == null:
+		return false
+	var success = output_port_node.remove_connection(input_port_node)
+	if success:
+		emit_signal("connection_removed", output_port_node, input_port_node)
+	return success
