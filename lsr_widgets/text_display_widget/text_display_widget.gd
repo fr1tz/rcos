@@ -22,6 +22,8 @@ func _ready():
 	mInputPort = data_router.add_input_port(port_path_prefix+"/text")
 	mInputPort.connect("data_changed", self, "_set_text")
 
+func _exit_tree():
+	data_router.remove_port(mInputPort)
+
 func _set_text(data):
-	prints("text_display_widget:", data)
-	get_node("main_canvas/gui/Panel/Label").set_text(data)
+	get_node("main_canvas/gui/Panel/Label").set_text(str(data))
