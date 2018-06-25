@@ -24,6 +24,8 @@ onready var mOutputPorts = get_node("output_ports")
 func _init():
 	add_user_signal("input_port_added")
 	add_user_signal("output_port_added")
+	add_user_signal("input_port_removed")
+	add_user_signal("output_port_removed")
 	add_user_signal("connection_added")
 	add_user_signal("connection_removed")
 
@@ -34,7 +36,7 @@ func _add_port(port_path, port_type):
 	elif port_type == PORT_TYPE_OUTPUT:
 		parent_node =  mOutputPorts
 	if parent_node.has_node(port_path):
-		return false
+		return null
 	var node_names = port_path.split("/", false)
 	for i in range(0, node_names.size()):
 		var node_name = node_names[i]
@@ -58,6 +60,34 @@ func _add_port(port_path, port_type):
 			new_node.set_name(node_name)
 			parent_node.add_child(new_node)
 		parent_node = parent_node.get_node(node_name)
+
+func remove_port(port_node):
+	if port_node == null:
+		return
+	var port_type = null
+	var port_path = null
+	var root_node = null
+	if port_node extends load("res://data_router/input_port.gd"):
+		port_type = PORT_TYPE_INPUT
+		port_path = input_node_to_port_path(port_node)
+		root_node = mInputPorts
+	elif port_node extends load("res://data_router/output_port.gd"):
+		port_type = PORT_TYPE_OUTPUT
+		port_path = output_node_to_port_path(port_node)
+		root_node = mOutputPorts
+	var node = port_node
+	while node != root_node:
+		if node.get_child_count() == 0:
+			var parent = node.get_parent()
+			node.get_parent().remove_child(node)
+			node.queue_free()
+			node = parent
+		else:
+			break
+	if port_type == PORT_TYPE_INPUT:
+		emit_signal("input_port_removed", port_path)
+	elif port_type == PORT_TYPE_OUTPUT:
+		emit_signal("output_port_removed", port_path)
 
 func add_input_port(port_path):
 	return _add_port(port_path, PORT_TYPE_INPUT)
