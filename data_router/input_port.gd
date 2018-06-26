@@ -24,8 +24,9 @@ func get_port_path():
 	return data_router.get_node("input_ports").get_path_to(self)
 
 func put_data(data):
+	var old_data = mData
 	mData = data
-	emit_signal("data_changed", mData)
+	emit_signal("data_changed", old_data, mData)
 
 func get_data():
 	return mData
