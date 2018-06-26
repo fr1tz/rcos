@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=1]
+
+[ext_resource path="res://lsr_widgets/gamepad_widgets/main_gui/touchpad.gd" type="Script" id=1]
+[ext_resource path="res://lsr_widgets/gamepad_widgets/polygon_util/polygon_util.tscn" type="PackedScene" id=2]
+
+[node name="touchpad" type="Polygon2D"]
+
+polygon = Vector2Array( 200, 0, 430, 0, 430, 240, 200, 240 )
+uv = Vector2Array(  )
+color = Color( 0.224792, 0.248107, 0.496094, 0 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = null
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+script/script = ExtResource( 1 )
+mode = "Stick"
+radius = 24
+threshold = 0
+hi_color = Color( 1, 1, 1, 1 )
+fg_color = Color( 0.492188, 0.666748, 1, 1 )
+bg_color = Color( 0.251923, 0.35188, 0.507813, 1 )
+
+[node name="polygon_util" parent="." instance=ExtResource( 2 )]
+
+
