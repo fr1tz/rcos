@@ -29,6 +29,7 @@ func _ready():
 	mWidgetHostApi = preload("widget_host_api.gd").new(self)
 	for i in range(0, 8):
 		mIndexToWidgetContainer.push_back(null)
+	#load_from_file()
 	rcos.connect("task_added", self, "_on_task_added")
 	rcos.enable_canvas_input(self)
 
@@ -203,12 +204,16 @@ func clear():
 	for widget_container in mWidgetContainers.get_children():
 		mWidgetContainers.remove_child(widget_container)
 		widget_container.queue_free()
+	mNextWidgetId = 1
 
 func save_to_file():
 	if mWidgetContainers.get_child_count() == 0:
 		return
+	var dir = Directory.new()
+	if !dir.dir_exists("user://etc"):
+		dir.make_dir_recursive("user://etc")
 	var file = File.new()
-	if file.open("user://widget_grid_conf.json", File.WRITE) != OK:
+	if file.open("user://etc/widget_grid_conf.json", File.WRITE) != OK:
 		return
 	var config = {
 		"version": 0,
@@ -238,7 +243,7 @@ func save_to_file():
 func load_from_file():
 	clear()
 	var file = File.new()
-	if file.open("user://widget_grid_conf.json", File.READ) != OK:
+	if file.open("user://etc/widget_grid_conf.json", File.READ) != OK:
 		return
 	var text = file.get_buffer(file.get_len()).get_string_from_utf8()
 	file.close()
@@ -250,6 +255,8 @@ func load_from_file():
 		for c in config.widget_containers:
 			var widget_container = add_widget_container()
 			widget_container.init(mWidgetHostApi, c.widget_id, c.widget_product_id, c.widget_orientation, c.widget_config_string)
+			if c.widget_id >= mNextWidgetId:
+				mNextWidgetId = c.widget_id + 1
 			for task in tasks:
 				if !task.has("type") || !task.has("product_id") || !task.has("create_widget_func"):
 					continue
