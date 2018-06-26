@@ -37,8 +37,7 @@ var mGizmo = {
 }
  
 func _init():
-	add_user_signal("activated")
-	add_user_signal("deactivated")
+	pass
 
 func _ready():
 	mWidgetHost = get_meta("widget_host_api")
@@ -108,7 +107,7 @@ func _canvas_input(event):
 	if index == mIndex:
 		if touch && !event.pressed:
 			mIndex = -1
-			emit_signal("deactivated")
+			mOutputPorts["pressed"].put_data(false)
 			mWidgetHost.disable_overlay_draw(self)
 		else:
 			mGizmo.target = event.pos
@@ -119,14 +118,14 @@ func _canvas_input(event):
 		mIndex = index
 		mGizmo.center = event.pos
 		mGizmo.target = mGizmo.center
-		emit_signal("activated")
+		mOutputPorts["pressed"].put_data(true)
 		mWidgetHost.enable_overlay_draw(self)
 	mWidgetHost.update_overlay_draw()
 	if mode == "Stick" || mode == "DPad":
 		var vec = get_vec()
 		mOutputPorts["x"].put_data(vec.x)
 		mOutputPorts["y"].put_data(vec.y)
-	mOutputPorts["pressed"].put_data(is_active())
+
 
 func _draw():
 	_draw_frame()
