@@ -54,7 +54,7 @@ func _input_port_added(input_port_node):
 		item.activate_connection()
 
 func _connection_added(output_port_node, input_port_node):
-	_add_connection_item(output_port_node, input_port_node, false)
+	_add_connection_item(output_port_node, input_port_node)
 
 func _connection_removed(output_port_node, input_port_node):
 	var output_path = data_router.output_node_to_port_path(output_port_node)
@@ -73,7 +73,7 @@ func _connections_changed():
 		item.initialize(connection.output, connection.input)
 		mConnectionItems.add_child(item)
 
-func _add_connection_item(output, input, disabled):
+func _add_connection_item(output, input, disabled = false):
 	var output_path = null
 	var input_path = null
 	if typeof(output) == TYPE_STRING:
@@ -112,7 +112,7 @@ func _remove_selected_connection_item():
 	if mConnectionItemsByOutput.has(output_path):
 		mConnectionItemsByOutput[output_path].erase(mSelectedConnectionItem)
 	if mConnectionItemsByInput.has(input_path):
-		mConnectionItemsByOutput[input_path].erase(mSelectedConnectionItem)
+		mConnectionItemsByInput[input_path].erase(mSelectedConnectionItem)
 	mConnectionItems.remove_child(mSelectedConnectionItem)
 	mSelectedConnectionItem.deactivate_connection()
 	mSelectedConnectionItem.queue_free()
