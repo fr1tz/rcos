@@ -1,4 +1,4 @@
-# Copyright © 2017, 2018 Michael Goldener <mg@wasted.ch>
+# Copyright © 2018 Michael Goldener <mg@wasted.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,15 +15,23 @@
 
 extends Node
 
+const SEND_UPDATE_INTERVAL = 1.00 # 0.05
+
 var gui = null
 
 var mTaskId = -1
-var mHostname = null
+var mServerAddress = null
+var mServerTcpPort = -1
+var mServerUdpPort = -1
+var mServerHostname = null
+var mClientId = -1
+var mControllers = null
 var mConnection = null
 var mUDP = PacketPeerUDP.new()
-var mVjoyStatusOutputs = []
+var mSendUpdateCountdown = SEND_UPDATE_INTERVAL
 
 func _ready():
+	mControllers = get_node("controllers")
 	mConnection = get_node("connection")
 	mConnection.connect("message_received", self, "_process_message")
 	var task_properties = {
@@ -33,30 +41,50 @@ func _ready():
 	}
 	mTaskId = rcos.add_task(task_properties)
 
+func _fixed_process(delta):
+	mSendUpdateCountdown -= delta
+	if mSendUpdateCountdown <= 0:
+		_send_update()
+
 func _process_message(msg):
 	prints("vjoy_client: _process_message():", msg)
 	var type = rlib.hd(msg)
 	var args = rlib.tl(msg)
-	if type == "hostname":
-		mHostname = rlib.hd(args)
-		for i in range(0, 16):
-			var port_name = mHostname+"/vjoy_server/vjoy"+str(i+1)+"/status"
-			var port = data_router.add_output_port(port_name)
-			mVjoyStatusOutputs.push_back(port)
+	if type == "init":
+		mServerHostname = rlib.hd(args); args = rlib.tl(args)
+		mServerUdpPort = int(rlib.hd(args)); args = rlib.tl(args)
+		mClientId = int(rlib.hd(args))
+		for id in range(1, 17):
+			var ctrl = rlib.instance_scene("res://vjoy_client/vjoy_controller.tscn")
+			ctrl.set_name("vjoy_controller"+str(id))
+			ctrl.initialize(mServerHostname, id)
+			mControllers.add_child(ctrl)
+		set_fixed_process(true)
 	elif type == "vjoy_status":
 		var id = rlib.hd(args)
 		args = rlib.tl(args)
 		var state = rlib.hd(args)
-		prints("vjoy", id, "state:", state)
-		var idx = int(id)-1
-		mVjoyStatusOutputs[idx].put_data(state)
+		var ctrl = mControllers.get_node("vjoy_controller"+str(id))
+		if ctrl == null:
+			return
+		ctrl.mOutputPorts.status.put_data(state)
+
+func _send_update():
+	var data = get_node("update_packet").create_packet(mClientId, mControllers)
+	var s = ""
+	for i in range(0, data.size()):
+		#s += ("%2o " % data[i])
+		s += str(data[i]) + " "
+	print(s)
+	send_packet(data, mServerAddress, mServerUdpPort)
+	mSendUpdateCountdown = SEND_UPDATE_INTERVAL
 
 func send_packet(data, addr, port):
 	mUDP.set_send_address(addr, port)
 	mUDP.put_packet(data)
 
 func connect_to_server(address, port):
-	mHostname = address
+	mServerAddress = address
+	mServerTcpPort = port
 	if !mConnection.connect_to_server(address, port):
 		rcos.log_error(self, "Failed to initialize connection")
-

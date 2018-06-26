@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=1]
+[gd_scene load_steps=7 format=1]
 
 [ext_resource path="res://vjoy_client/vjoy_client.gd" type="Script" id=1]
 [ext_resource path="res://vjoy_client/graphics/icon.png" type="Texture" id=2]
 [ext_resource path="res://vjoy_client/connection.tscn" type="PackedScene" id=3]
-[ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=4]
-[ext_resource path="res://vjoy_client/vjoy_client_gui.tscn" type="PackedScene" id=5]
+[ext_resource path="res://vjoy_client/update_packet.tscn" type="PackedScene" id=4]
+[ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=5]
+[ext_resource path="res://vjoy_client/vjoy_client_gui.tscn" type="PackedScene" id=6]
 
 [node name="vjoy_client" type="Node"]
 
@@ -23,14 +24,18 @@ margin/bottom = -11.0
 texture = ExtResource( 2 )
 stretch_mode = 0
 
+[node name="controllers" type="Node" parent="."]
+
 [node name="connection" parent="." instance=ExtResource( 3 )]
 
-[node name="canvas" parent="." instance=ExtResource( 4 )]
+[node name="update_packet" parent="." instance=ExtResource( 4 )]
+
+[node name="canvas" parent="." instance=ExtResource( 5 )]
 
 rect = Rect2( 0, 0, 200, 400 )
 min_size = Vector2( 200, 400 )
 
-[node name="vjoy_client_gui" parent="canvas" instance=ExtResource( 5 )]
+[node name="vjoy_client_gui" parent="canvas" instance=ExtResource( 6 )]
 
 margin/right = 0.0
 
