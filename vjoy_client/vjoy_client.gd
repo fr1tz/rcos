@@ -15,7 +15,7 @@
 
 extends Node
 
-const SEND_UPDATE_INTERVAL = 1.00 # 0.05
+const SEND_UPDATE_INTERVAL = 0.05
 
 var gui = null
 
@@ -44,7 +44,7 @@ func _ready():
 func _fixed_process(delta):
 	mSendUpdateCountdown -= delta
 	if mSendUpdateCountdown <= 0:
-		_send_update()
+		send_update()
 
 func _process_message(msg):
 	prints("vjoy_client: _process_message():", msg)
@@ -57,7 +57,7 @@ func _process_message(msg):
 		for id in range(1, 17):
 			var ctrl = rlib.instance_scene("res://vjoy_client/vjoy_controller.tscn")
 			ctrl.set_name("vjoy_controller"+str(id))
-			ctrl.initialize(mServerHostname, id)
+			ctrl.initialize(self, mServerHostname, id)
 			mControllers.add_child(ctrl)
 		set_fixed_process(true)
 	elif type == "vjoy_status":
@@ -71,13 +71,19 @@ func _process_message(msg):
 
 func _send_update():
 	var data = get_node("update_packet").create_packet(mClientId, mControllers)
-	var s = ""
-	for i in range(0, data.size()):
-		#s += ("%2o " % data[i])
-		s += str(data[i]) + " "
-	print(s)
+#	var s = ""
+#	for i in range(0, data.size()):
+#		#s += ("%2o " % data[i])
+#		s += str(data[i]) + " "
+#	print(s)
 	send_packet(data, mServerAddress, mServerUdpPort)
 	mSendUpdateCountdown = SEND_UPDATE_INTERVAL
+
+func send_update():
+	if mSendUpdateCountdown == 0:
+		return
+	mSendUpdateCountdown = 0
+	call_deferred("_send_update")
 
 func send_packet(data, addr, port):
 	mUDP.set_send_address(addr, port)

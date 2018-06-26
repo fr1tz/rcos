@@ -15,6 +15,10 @@
 
 extends Node
 
+const INPUT_PORT_TYPE_AXIS = 0
+const INPUT_PORT_TYPE_BUTTON = 1
+
+var mVjoyClient = null
 var mId = -1
 var mDirty = false
 var mState = {
@@ -59,42 +63,6 @@ func _exit_tree():
 	for port in mButtonInputPorts:
 		data_router.remove_port(port)
 
-func _on_input_data_changed(data, port):
-	set_dirty()
-
-func initialize(server_hostname, id):
-	var prefix = server_hostname.to_lower()+"/vjoy_server/vjoy"+str(id)
-	mId = id
-	mDirty = false
-	mOutputPorts.status = data_router.add_output_port(prefix+"/status")
-	mInputPorts.axis_x = data_router.add_input_port(prefix+"/axis_x")
-	mInputPorts.axis_y = data_router.add_input_port(prefix+"/axis_y")
-	mInputPorts.axis_z = data_router.add_input_port(prefix+"/axis_z")
-	mInputPorts.axis_x_rot = data_router.add_input_port(prefix+"/axis_x_rot")
-	mInputPorts.axis_y_rot = data_router.add_input_port(prefix+"/axis_y_rot")
-	mInputPorts.axis_z_rot = data_router.add_input_port(prefix+"/axis_z_rot")
-	mInputPorts.slider1 = data_router.add_input_port(prefix+"/slider1")
-	mInputPorts.slider2 = data_router.add_input_port(prefix+"/slider2")
-	for i in range(0, 128):
-		var button_input_port = data_router.add_input_port(prefix+"/button"+str(i+1))
-		mButtonInputPorts.push_back(button_input_port)
-	for port in mInputPorts.values():
-		port.connect("data_changed", self, "_on_input_data_changed", [port])
-	for port in mButtonInputPorts:
-		port.connect("data_changed", self, "_on_input_data_changed", [port])
-
-func get_id():
-	return mId
-
-func set_dirty():
-	mDirty = true
-
-func clear_dirty():
-	mDirty = false
-
-func is_dirty():
-	return mDirty
-
 func _data2float(data):
 	if data != null:
 		return clamp(float(data), -1, 1)
@@ -105,15 +73,48 @@ func _data2bool(data):
 		return bool(data)
 	return false
 
-func get_state():
-	mState.axis_x = _data2float(mInputPorts.axis_x.get_data())
-	mState.axis_y = _data2float(mInputPorts.axis_y.get_data())
-	mState.axis_z = _data2float(mInputPorts.axis_z.get_data())
-	mState.axis_x_rot = _data2float(mInputPorts.axis_x_rot.get_data())
-	mState.axis_y_rot = _data2float(mInputPorts.axis_y_rot.get_data())
-	mState.axis_z_rot = _data2float(mInputPorts.axis_z_rot.get_data())
-	mState.slider1 = _data2float(mInputPorts.slider1.get_data())
-	mState.slider2 = _data2float(mInputPorts.slider2.get_data())
+func _input_port_data_changed(old_data, new_data, port):
+	var input_port_type = port.get_meta("input_port_type")
+	if input_port_type == INPUT_PORT_TYPE_AXIS:
+		old_data = _data2float(old_data)
+		new_data = _data2float(new_data)
+		mState[port.get_name()] = new_data
+		if new_data != old_data && (old_data == 0 || new_data == 0):
+			mVjoyClient.send_update()
+	elif input_port_type == INPUT_PORT_TYPE_BUTTON:
+		old_data = _data2bool(old_data)
+		new_data = _data2bool(new_data)
+		var button_idx = port.get_meta("button_idx")
+		mState.buttons[button_idx] = new_data
+		if new_data != old_data:
+			mVjoyClient.send_update() 
+
+func initialize(vjoy_client, server_hostname, id):
+	mVjoyClient = vjoy_client
+	mId = id
+	mDirty = false
+	var prefix = server_hostname.to_lower()+"/vjoy_server/vjoy"+str(id)
+	mOutputPorts.status = data_router.add_output_port(prefix+"/status")
+	mInputPorts.axis_x = data_router.add_input_port(prefix+"/axis_x")
+	mInputPorts.axis_y = data_router.add_input_port(prefix+"/axis_y")
+	mInputPorts.axis_z = data_router.add_input_port(prefix+"/axis_z")
+	mInputPorts.axis_x_rot = data_router.add_input_port(prefix+"/axis_x_rot")
+	mInputPorts.axis_y_rot = data_router.add_input_port(prefix+"/axis_y_rot")
+	mInputPorts.axis_z_rot = data_router.add_input_port(prefix+"/axis_z_rot")
+	mInputPorts.slider1 = data_router.add_input_port(prefix+"/slider1")
+	mInputPorts.slider2 = data_router.add_input_port(prefix+"/slider2")
+	for port in mInputPorts.values():
+		port.set_meta("input_port_type", INPUT_PORT_TYPE_AXIS)
+		port.connect("data_changed", self, "_input_port_data_changed", [port])
 	for i in range(0, 128):
-		mState.buttons[i] = _data2bool(mButtonInputPorts[i].get_data())
+		var port = data_router.add_input_port(prefix+"/button"+str(i+1))
+		port.set_meta("input_port_type", INPUT_PORT_TYPE_BUTTON)
+		port.set_meta("button_idx", i)
+		port.connect("data_changed", self, "_input_port_data_changed", [port])
+		mButtonInputPorts.push_back(port)
+
+func get_id():
+	return mId
+
+func get_state():
 	return mState
