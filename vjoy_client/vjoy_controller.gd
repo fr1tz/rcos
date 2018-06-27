@@ -17,10 +17,21 @@ extends Node
 
 const INPUT_PORT_TYPE_AXIS = 0
 const INPUT_PORT_TYPE_BUTTON = 1
+const AXIS_NAMES = [
+	"axis_x",
+	"axis_y",
+	"axis_z",
+	"axis_x_rot",
+	"axis_y_rot",
+	"axis_z_rot",
+	"slider1",
+	"slider2",
+]
 
 var mVjoyClient = null
 var mId = -1
 var mDirty = false
+var mPortPathsPrefix = ""
 var mState = {
 	"axis_x": 0,
 	"axis_y": 0,
@@ -32,20 +43,9 @@ var mState = {
 	"slider2": 0,
 	"buttons": []
 }
-var mOutputPorts = {
-	"status": null
-}
-var mInputPorts = {
-	"axis_x": null,
-	"axis_y": null,
-	"axis_z": null,
-	"axis_x_rot": null,
-	"axis_y_rot": null,
-	"axis_z_rot": null,
-	"slider1": null,
-	"slider2": null
-}
-var mButtonInputPorts = []
+var mOutputPorts = {}
+var mInputPorts = {}
+var mButtonInputPorts = {}
 
 func _init():
 	mState.buttons.resize(128)
@@ -60,7 +60,7 @@ func _exit_tree():
 		data_router.remove_port(port)
 	for port in mInputPorts.values():
 		data_router.remove_port(port)
-	for port in mButtonInputPorts:
+	for port in mButtonInputPorts.values():
 		data_router.remove_port(port)
 
 func _data2float(data):
@@ -93,28 +93,43 @@ func initialize(vjoy_client, server_hostname, id):
 	mVjoyClient = vjoy_client
 	mId = id
 	mDirty = false
-	var prefix = server_hostname.to_lower()+"/vjoy_server/vjoy"+str(id)
-	mOutputPorts.status = data_router.add_output_port(prefix+"/status")
-	mInputPorts.axis_x = data_router.add_input_port(prefix+"/axis_x")
-	mInputPorts.axis_y = data_router.add_input_port(prefix+"/axis_y")
-	mInputPorts.axis_z = data_router.add_input_port(prefix+"/axis_z")
-	mInputPorts.axis_x_rot = data_router.add_input_port(prefix+"/axis_x_rot")
-	mInputPorts.axis_y_rot = data_router.add_input_port(prefix+"/axis_y_rot")
-	mInputPorts.axis_z_rot = data_router.add_input_port(prefix+"/axis_z_rot")
-	mInputPorts.slider1 = data_router.add_input_port(prefix+"/slider1")
-	mInputPorts.slider2 = data_router.add_input_port(prefix+"/slider2")
-	for port in mInputPorts.values():
-		port.set_meta("input_port_type", INPUT_PORT_TYPE_AXIS)
-		port.connect("data_changed", self, "_input_port_data_changed", [port])
-	for i in range(0, 128):
-		var port = data_router.add_input_port(prefix+"/button"+str(i+1))
-		port.set_meta("input_port_type", INPUT_PORT_TYPE_BUTTON)
-		port.set_meta("button_idx", i)
-		port.connect("data_changed", self, "_input_port_data_changed", [port])
-		mButtonInputPorts.push_back(port)
+	mPortPathsPrefix = server_hostname.to_lower()+"/vjoy_server/vjoy"+str(mId)
+	mOutputPorts["status"] = data_router.add_output_port(mPortPathsPrefix+"/status")
 
 func get_id():
 	return mId
 
 func get_state():
 	return mState
+
+func vjoy_config_changed(prop_name, prop_value):
+	for axis_name in AXIS_NAMES:
+		if prop_name == axis_name:
+			var port_path = mPortPathsPrefix+"/"+axis_name
+			if prop_value == "enabled":
+				if !mInputPorts.has(axis_name):
+					var port = data_router.add_input_port(port_path)
+					port.set_meta("input_port_type", INPUT_PORT_TYPE_AXIS)
+					port.connect("data_changed", self, "_input_port_data_changed", [port])
+					mInputPorts[axis_name] = port
+			else:
+				if mInputPorts.has(axis_name):
+					data_router.remove_port(mInputPorts[axis_name])
+					mInputPorts.erase(axis_name)
+				mState[axis_name] = 0
+	if prop_name == "num_buttons":
+		var num_buttons = int(prop_value)
+		for button_idx in range(0, 128):
+			var port_path = mPortPathsPrefix+"/button"+str(button_idx+1)
+			if button_idx < num_buttons:
+				if !mButtonInputPorts.has(button_idx):
+					var port = data_router.add_input_port(port_path)
+					port.set_meta("input_port_type", INPUT_PORT_TYPE_BUTTON)
+					port.set_meta("button_idx", button_idx)
+					port.connect("data_changed", self, "_input_port_data_changed", [port])
+					mButtonInputPorts[button_idx] = port
+			else:
+				if mButtonInputPorts.has(button_idx):
+					data_router.remove_port(mButtonInputPorts[button_idx])
+					mButtonInputPorts.erase(button_idx)
+				mState.buttons[button_idx] = false

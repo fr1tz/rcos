@@ -60,9 +60,15 @@ func _process_message(msg):
 			ctrl.initialize(self, mServerHostname, id)
 			mControllers.add_child(ctrl)
 		set_fixed_process(true)
+	elif type == "vjoy_config":
+		var id = rlib.hd(args); args = rlib.tl(args)
+		var prop_name = rlib.hd(args); args = rlib.tl(args)
+		var prop_value = rlib.hd(args);
+		var ctrl = mControllers.get_node("vjoy_controller"+str(id))
+		if ctrl:
+			ctrl.vjoy_config_changed(prop_name, prop_value)
 	elif type == "vjoy_status":
-		var id = rlib.hd(args)
-		args = rlib.tl(args)
+		var id = rlib.hd(args); args = rlib.tl(args)
 		var state = rlib.hd(args)
 		var ctrl = mControllers.get_node("vjoy_controller"+str(id))
 		if ctrl == null:
