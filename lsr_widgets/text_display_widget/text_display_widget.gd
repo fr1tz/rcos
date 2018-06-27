@@ -20,10 +20,15 @@ var mInputPort = null
 func _ready():
 	var port_path_prefix = "local/text_display_widget"+str(get_meta("widget_id"))
 	mInputPort = data_router.add_input_port(port_path_prefix+"/text")
-	mInputPort.connect("data_changed", self, "_set_text")
+	mInputPort.connect("data_changed", self, "_on_input_data_changed")
 
 func _exit_tree():
 	data_router.remove_port(mInputPort)
 
-func _set_text(data):
-	get_node("main_canvas/gui/Panel/Label").set_text(str(data))
+func _on_input_data_changed(old_data, new_data):
+	if new_data != null:
+		set_text(new_data)
+
+func set_text(data):
+	var string = str(data)
+	get_node("main_canvas/gui/Panel/Label").set_text(string)
