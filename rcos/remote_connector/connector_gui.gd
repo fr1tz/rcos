@@ -15,17 +15,18 @@
 
 extends Panel
 
-var mInterfaceWidgetContainers = null
-var mInfoWidget = null
+onready var mInterfaceWidgetContainers = get_node("interfaces_panel/interfaces_scroller/interfaces_list")
+onready var mInfoWidget = get_node("info_panel/info_widget")
+onready var mOpenConnectionButton = get_node("buttons/open_connection")
+onready var mOpenConnectionDialog = get_node("open_connection_dialog")
+
 var mSelectedInterfaceWidget = null
 
 func _ready():
 	get_viewport().connect("display", self, "_on_displayed")
 	get_viewport().connect("conceal", self, "_on_concealed")
 	get_viewport().connect("size_changed", self, "_on_size_changed")
-	get_node("buttons").connect("button_selected", self, "_show_tab")
-	mInterfaceWidgetContainers = get_node("interfaces_panel/interfaces_scroller/interfaces_list")
-	mInfoWidget = get_node("info_panel/info_widget")
+	mOpenConnectionButton.connect("pressed", mOpenConnectionDialog, "set_hidden", [false])
 
 func _show_tab(idx):
 	get_node("tabs").set_current_tab(idx)

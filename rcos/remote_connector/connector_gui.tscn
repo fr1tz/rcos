@@ -1,11 +1,10 @@
-[gd_scene load_steps=8 format=1]
+[gd_scene load_steps=7 format=1]
 
-[ext_resource path="res://rcos/remote_connector/connector_gui.gd" type="Script" id=1]
-[ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=2]
-[ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=3]
-[ext_resource path="res://rcos/remote_connector/graphics/icon.scanner.png" type="Texture" id=4]
-[ext_resource path="res://rcos/remote_connector/graphics/icon.favs.png" type="Texture" id=5]
-[ext_resource path="res://rcos/remote_connector/graphics/icon.custom.png" type="Texture" id=6]
+[ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://rcos/remote_connector/connector_gui.gd" type="Script" id=2]
+[ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=3]
+[ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=4]
+[ext_resource path="res://rcos/remote_connector/open_connection_dialog.tscn" type="PackedScene" id=5]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -28,14 +27,16 @@ focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
+theme/theme = ExtResource( 1 )
 margin/left = 0.0
 margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 0.0
-script/script = ExtResource( 1 )
+script/script = ExtResource( 2 )
 
 [node name="interfaces_panel" type="Panel" parent="."]
 
+editor/display_folded = true
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false
@@ -43,12 +44,12 @@ focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 0.0
+margin/top = 40.0
 margin/right = 0.0
 margin/bottom = 100.0
 custom_styles/panel = SubResource( 1 )
 
-[node name="interfaces_scroller" parent="interfaces_panel" instance=ExtResource( 2 )]
+[node name="interfaces_scroller" parent="interfaces_panel" instance=ExtResource( 3 )]
 
 margin/left = 2.0
 margin/top = 2.0
@@ -70,10 +71,98 @@ margin/bottom = 0.0
 custom_constants/separation = 1
 alignment = 0
 
-[node name="scroller_input_area" parent="interfaces_panel/interfaces_scroller" instance=ExtResource( 3 )]
+[node name="scroller_input_area" parent="interfaces_panel/interfaces_scroller" instance=ExtResource( 4 )]
+
+[node name="buttons" type="ReferenceFrame" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 200.0
+margin/bottom = 40.0
+
+[node name="open_connection" type="Button" parent="buttons"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "New"
+flat = false
+
+[node name="button" type="Button" parent="buttons"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 40.0
+margin/top = 0.0
+margin/right = 80.0
+margin/bottom = 40.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+flat = false
+
+[node name="button1" type="Button" parent="buttons"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 80.0
+margin/top = 0.0
+margin/right = 120.0
+margin/bottom = 40.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+flat = false
+
+[node name="button2" type="Button" parent="buttons"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 120.0
+margin/top = 0.0
+margin/right = 160.0
+margin/bottom = 40.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+flat = false
+
+[node name="button3" type="Button" parent="buttons"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 160.0
+margin/top = 0.0
+margin/right = 200.0
+margin/bottom = 40.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+flat = false
 
 [node name="info_panel" type="Panel" parent="."]
 
+editor/display_folded = true
 anchor/top = 1
 anchor/right = 1
 anchor/bottom = 1
@@ -114,76 +203,8 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="tabs" type="TabContainer" parent="."]
+[node name="open_connection_dialog" parent="." instance=ExtResource( 5 )]
 
 visibility/visible = false
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 40.0
-margin/right = 0.0
-margin/bottom = 0.0
-tab_align = 0
-tabs_visible = false
-
-[node name="favorites" type="ReferenceFrame" parent="tabs"]
-
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 4.0
-margin/top = 8.0
-margin/right = 4.0
-margin/bottom = 4.0
-
-[node name="custom" type="ReferenceFrame" parent="tabs"]
-
-visibility/visible = false
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 4.0
-margin/top = 8.0
-margin/right = 4.0
-margin/bottom = 4.0
-
-[node name="buttons" type="HButtonArray" parent="."]
-
-visibility/visible = false
-anchor/right = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 80.0
-margin/bottom = 40.0
-custom_constants/button_separator = 0
-custom_constants/icon_separator = 0
-flat = false
-button/count = 3
-button/min_button_size = 40.0
-button/align = 0
-button/0/text = ""
-button/0/tooltip = ""
-button/0/icon = ExtResource( 4 )
-button/1/text = ""
-button/1/tooltip = ""
-button/1/icon = ExtResource( 5 )
-button/2/text = ""
-button/2/tooltip = ""
-button/2/icon = ExtResource( 6 )
-button/selected = 0
 
 
