@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=1]
+[gd_scene load_steps=6 format=1]
 
 [ext_resource path="res://lsr_widgets/text_display_widget/text_display_widget.gd" type="Script" id=1]
+[ext_resource path="res://rcos/fonts/ponyo/Ponyo.otf" type="DynamicFontData" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -27,6 +28,14 @@ dark_color = Color( 0.84375, 0.84375, 0.84375, 1 )
 border_size = 2
 border_blend = true
 draw_bg = true
+
+[sub_resource type="DynamicFont" id=3]
+
+font/size = 16
+extra_spacing/top = 4
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 2 )
 
 [node name="text_display_widget" type="Node"]
 
@@ -82,9 +91,10 @@ size_flags/vertical = 0
 margin/left = 2.0
 margin/top = 2.0
 margin/right = 2.0
-margin/bottom = 2.0
-align = 1
+margin/bottom = 3.0
+custom_fonts/font = SubResource( 3 )
 valign = 1
+clip_text = true
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
