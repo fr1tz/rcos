@@ -18,6 +18,7 @@ extends Node
 var mInputPort = null
 
 func _ready():
+	get_node("main_canvas/gui/invisible_button").connect("pressed", self, "_on_widget_pressed")
 	var port_path_prefix = "local/text_display_widget"+str(get_meta("widget_id"))
 	mInputPort = data_router.add_input_port(port_path_prefix+"/text")
 	mInputPort.connect("data_changed", self, "_on_input_data_changed")
@@ -28,6 +29,9 @@ func _exit_tree():
 func _on_input_data_changed(old_data, new_data):
 	if new_data != null:
 		set_text(new_data)
+
+func _on_widget_pressed():
+	OS.set_clipboard(get_node("main_canvas/gui/Panel/Label").get_text())
 
 func set_text(data):
 	var string = str(data)
