@@ -27,6 +27,7 @@ var mTmpDirPath = ""
 var mModuleInfo = {}
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
+var mURLHandlers = {}
 var mTasks = []
 
 func _init():
@@ -41,6 +42,8 @@ func _init():
 	mModuleInfo = _find_modules()
 	add_user_signal("module_added")
 	add_user_signal("module_removed")
+	add_user_signal("url_handler_added")
+	add_user_signal("url_handler_removed")
 	add_user_signal("task_list_changed")
 	add_user_signal("task_added")
 	add_user_signal("task_changed")
@@ -195,6 +198,25 @@ func add_service(service_node):
 	services_node.add_child(service_node)
 	return true
 
-func open_connection(todo):
-	#TODO
-	pass
+func add_url_handler(scheme, open_func):
+	if mURLHandlers.has(scheme):
+		return false
+	mURLHandlers[scheme] = open_func
+	emit_signal("url_handler_added", scheme)
+	return true
+
+func remove_url_handler(scheme):
+	if !mURLHandlers.has(scheme):
+		return true
+	mURLHandlers.erase(scheme)
+	emit_signal("url_handler_removed", scheme)
+	return true
+
+func open(url):
+	var n = url.find(":")
+	if n < 1:
+		return false
+	var scheme = url.left(n)
+	if !mURLHandlers.has(scheme):
+		return false
+	mURLHandlers[scheme].call_func(url)
