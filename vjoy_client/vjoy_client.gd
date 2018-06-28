@@ -31,6 +31,8 @@ var mUDP = PacketPeerUDP.new()
 var mSendUpdateCountdown = SEND_UPDATE_INTERVAL
 
 func _ready():
+	var logger = rcos.spawn_module("logger")
+	logger.set_filter(str(rcos.get_path_to(self)))
 	mControllers = get_node("controllers")
 	mConnection = get_node("connection")
 	mConnection.connect("message_received", self, "_process_message")
@@ -47,7 +49,7 @@ func _fixed_process(delta):
 		send_update()
 
 func _process_message(msg):
-	prints("vjoy_client: _process_message():", msg)
+	rcos.log_debug(self, ["vjoy_client: _process_message():", msg])
 	var type = rlib.hd(msg)
 	var args = rlib.tl(msg)
 	if type == "init":

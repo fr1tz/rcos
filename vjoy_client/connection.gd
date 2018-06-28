@@ -1,4 +1,4 @@
-# Copyright © 2017, 2018 Michael Goldener <mg@wasted.ch>
+# Copyright © 2018 Michael Goldener <mg@wasted.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,17 +30,17 @@ func _ready():
 func _process_io():
 	var status = mStream.get_status()
 	if status == StreamPeerTCP.STATUS_CONNECTING:
-		print("connecting")
+		rcos.log_debug(self, "connecting")
 	elif status == StreamPeerTCP.STATUS_CONNECTED:
 		_receive_data()
 		_process_data()
 	else:
-		prints("error:", status)
+		rcos.log_error(self, ["error:", status])
 
 func _receive_data():
 	if mStream.get_available_bytes() == 0:
 		return
-	#prints("bytes available:", mStream.get_available_bytes())
+	#rcos.log_debug(self, ["bytes available:", mStream.get_available_bytes())
 	var r = mStream.get_partial_data(mStream.get_available_bytes())
 	var error = r[0]
 	var data = r[1]
@@ -76,3 +76,4 @@ func connect_to_server(address, port):
 	if mStream.connect(address, port) != OK:
 		return false
 	get_node("io_timer").start()
+	return true
