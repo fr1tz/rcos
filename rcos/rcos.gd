@@ -213,10 +213,10 @@ func remove_url_handler(scheme):
 	return true
 
 func open(url):
+	var scheme = url
 	var n = url.find(":")
-	if n < 1:
-		return false
-	var scheme = url.left(n)
+	if n >= 1:
+		scheme = url.left(n)
 	if !mURLHandlers.has(scheme):
 		return false
 	mURLHandlers[scheme].call_func(url)
