@@ -22,4 +22,5 @@ func _ready():
 	rcos.spawn_module("lsr_widgets")
 	rcos.spawn_module("vrchost_ap_detector")
 	rcos.spawn_module("vjoy_server_detector")
+	rcos.spawn_module("rfb_connector")
 	queue_free()
