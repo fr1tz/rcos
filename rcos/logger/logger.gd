@@ -16,29 +16,38 @@
 extends Node
 
 var mTaskId = -1
+var mFilter = null
 
 func _ready():
-	mTaskId = rcos.add_task()
-	var task_name = "Logger"
-	var task_icon = get_node("icon").get_texture()
-	var task_canvas = get_node("canvas")
-	var task_ops = [
-		[ "kill", funcref(self, "kill") ]
-	]
-	rcos.set_task_name(mTaskId, task_name)
-	rcos.set_task_icon(mTaskId, task_icon)
-	rcos.set_task_canvas(mTaskId, task_canvas)
-	rcos.set_task_ops(mTaskId, task_ops)
+	var task_properties = {
+		"name": "Logger",
+		"icon": get_node("icon").get_texture(),
+		"canvas": get_node("canvas"),
+	}
+	mTaskId = rcos.add_task(task_properties)
 	rcos.connect("new_log_entry3", self, "_on_new_log_entry")
 
 func _on_new_log_entry(source_node, level, content):
 	var source_path = str(source_node.get_path())
 	if source_path.begins_with("/root/rcos"):
 		source_path = source_path.right(6)
-	content = str(content).replace("\n", "\n  ")
-	var entry = level + " " + source_path + "\n  " + content + "\n"
+	source_path = "[color=grey]" + source_path + "[/color]"
+	content = str(content)
+	if level == "error":
+		content = "[color=red]"+content+"[/color]"
+	elif level == "notice":
+		content = "[color=orange]"+content+"[/color]"
+	var entry = source_path + "\n" + content + "\n"
+	if mFilter != null:
+		if entry.find(mFilter) == -1:
+			return
+		entry = content + "\n"
+	get_node("canvas/logger_gui/log").add_entry(entry)
 
 func kill():
 	rcos.log_debug(self, ["kill()"])
 	rcos.remove_task(mTaskId)
 	queue_free()
+
+func set_filter(expr):
+	mFilter = expr
