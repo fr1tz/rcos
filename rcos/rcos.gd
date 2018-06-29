@@ -23,6 +23,9 @@ var mNextPort = {
 	PORT_TYPE_UDP: 22000
 }
 
+var mOutputPorts = {}
+var mInputPorts = {}
+
 var mTmpDirPath = ""
 var mModuleInfo = {}
 var mNextAvailableModuleId = 1
@@ -53,6 +56,18 @@ func _init():
 func _ready():
 	var root_canvas_script = load("res://rcos/root_canvas.gd")
 	get_node("/root").set_script(root_canvas_script)
+	_add_io_ports()
+
+func _add_io_ports():
+	var port_path_prefix = "local/rcos"
+	mInputPorts["open"] = data_router.add_input_port(port_path_prefix+"/open")
+	for port in mInputPorts.values():
+		port.connect("data_changed", self, "_on_input_data_changed", [port])
+
+func _on_input_data_changed(old_data, new_data, port):
+	if port.get_name() == "open":
+		if new_data != null:
+			open(str(new_data))
 
 func _add_log_entry(source_node, level, content):
 	emit_signal("new_log_entry3", source_node, level, content)
