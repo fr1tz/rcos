@@ -29,7 +29,7 @@ func _init():
 	add_user_signal("connection_added")
 	add_user_signal("connection_removed")
 
-func _add_port(port_path, port_type):
+func _add_port(port_path, port_type, initial_data = null):
 	var parent_node = null
 	if port_type == PORT_TYPE_INPUT:
 		parent_node = mInputPorts
@@ -39,7 +39,7 @@ func _add_port(port_path, port_type):
 		return null
 	var node_names = port_path.split("/", false)
 	for i in range(0, node_names.size()):
-		var node_name = node_names[i]
+		var node_name = node_names[i].replace(":", "_")
 		if i == node_names.size() - 1:
 			var new_node = null
 			if port_type == PORT_TYPE_INPUT:
@@ -49,6 +49,7 @@ func _add_port(port_path, port_type):
 				new_node = rlib.instance_scene("res://data_router/output_port.tscn")
 				new_node.add_to_group("data_router_output_ports")
 			new_node.set_name(node_name)
+			new_node.put_data(initial_data)
 			parent_node.add_child(new_node)
 			if port_type == PORT_TYPE_INPUT:
 				emit_signal("input_port_added", new_node)
@@ -89,11 +90,11 @@ func remove_port(port_node):
 	elif port_type == PORT_TYPE_OUTPUT:
 		emit_signal("output_port_removed", port_path)
 
-func add_input_port(port_path):
-	return _add_port(port_path, PORT_TYPE_INPUT)
+func add_input_port(port_path, initial_data = null):
+	return _add_port(port_path, PORT_TYPE_INPUT, initial_data)
 
-func add_output_port(port_path):
-	return _add_port(port_path, PORT_TYPE_OUTPUT)
+func add_output_port(port_path, initial_data = null):
+	return _add_port(port_path, PORT_TYPE_OUTPUT, initial_data)
 
 func has_input_port(port_path):
 	return mInputPorts.has_node(port_path)
