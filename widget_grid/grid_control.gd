@@ -21,6 +21,7 @@ var mOverlayDrawNodes = {}
 var mEditMode = false
 var mSelectedWidgetContainer = null
 var mIndexToWidgetContainer = []
+var mKeyboardInputContainer = null
 
 onready var mWidgetContainers = get_node("widget_containers")
 onready var mOverlay = get_node("overlay")
@@ -34,6 +35,10 @@ func _ready():
 	rcos.enable_canvas_input(self)
 
 func _canvas_input(event):
+	if event.type == InputEvent.KEY && mKeyboardInputContainer != null:
+		var canvas = mKeyboardInputContainer.get_widget_canvas()
+		canvas.send_key_event(event)
+		return
 	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
 	var touch = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON)
 	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)
@@ -53,6 +58,7 @@ func _canvas_input(event):
 			for c in get_widget_containers():
 				if c.get_global_rect().has_point(event.pos):
 					mIndexToWidgetContainer[index] = c
+					mKeyboardInputContainer = c
 					container = c
 					canvas = c.get_widget_canvas()
 					down = true
