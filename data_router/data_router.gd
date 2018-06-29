@@ -96,6 +96,16 @@ func add_input_port(port_path, initial_data = null):
 func add_output_port(port_path, initial_data = null):
 	return _add_port(port_path, PORT_TYPE_OUTPUT, initial_data)
 
+func get_input_port(port_path):
+	if mInputPorts.has_node(port_path):
+		return mInputPorts.get_node(port_path)
+	return null
+
+func get_output_port(port_path):
+	if mOutputPorts.has_node(port_path):
+		return mOutputPorts.get_node(port_path)
+	return null
+
 func has_input_port(port_path):
 	return mInputPorts.has_node(port_path)
 
