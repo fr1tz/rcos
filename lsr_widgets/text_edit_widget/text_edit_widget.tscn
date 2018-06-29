@@ -1,0 +1,103 @@
+[gd_scene load_steps=6 format=1]
+
+[ext_resource path="res://lsr_widgets/text_edit_widget/text_edit_widget.gd" type="Script" id=1]
+[ext_resource path="res://rcos/fonts/ponyo/Ponyo.otf" type="DynamicFontData" id=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 0.480469, 0.480469, 0.480469, 1 )
+light_color = Color( 0.882813, 0.882813, 0.882813, 1 )
+dark_color = Color( 0.234375, 0.234375, 0.234375, 1 )
+border_size = 2
+border_blend = true
+draw_bg = true
+
+[sub_resource type="StyleBoxFlat" id=2]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 0, 0, 0, 1 )
+light_color = Color( 0.226563, 0.226563, 0.226563, 1 )
+dark_color = Color( 0.84375, 0.84375, 0.84375, 1 )
+border_size = 2
+border_blend = true
+draw_bg = true
+
+[sub_resource type="DynamicFont" id=3]
+
+font/size = 16
+extra_spacing/top = 4
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 2 )
+
+[node name="text_edit_widget" type="Node"]
+
+script/script = ExtResource( 1 )
+
+[node name="main_canvas" type="Control" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 120.0
+margin/bottom = 40.0
+
+[node name="gui" type="Panel" parent="main_canvas"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_styles/panel = SubResource( 1 )
+
+[node name="frame" type="Panel" parent="main_canvas/gui"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 5.0
+margin/top = 5.0
+margin/right = 5.0
+margin/bottom = 5.0
+custom_styles/panel = SubResource( 2 )
+
+[node name="text_editor" type="TextEdit" parent="main_canvas/gui/frame"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 2.0
+margin/top = 2.0
+margin/right = 2.0
+margin/bottom = 3.0
+custom_fonts/font = SubResource( 3 )
+syntax_highlighting = false
+show_line_numbers = false
+highlight_all_occurrences = false
+caret/block_caret = true
+caret/caret_blink = true
+caret/caret_blink_speed = 0.65
+
+
