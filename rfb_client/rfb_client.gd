@@ -24,6 +24,8 @@ var mServerAddress = null
 var mServerTcpPort = -1
 var mServerHostname = null
 var mConnection = null
+var mOutputPorts = {}
+var mInputPorts = {}
 
 func _ready():
 	gui = get_node("canvas/rfb_client_gui")
@@ -38,10 +40,68 @@ func _ready():
 	}
 	mTaskId = rcos.add_task(task_properties)
 	mConnection = get_node("connection")
+	mConnection.connect("connection_established", self, "_connection_established")
+	mConnection.connect("connection_error", self, "_connection_error")
+	mConnection.connect("bell_msg_received", self, "_bell_msg_received")
+	mConnection.connect("server_cut_text_msg_received", self, "server_cut_text_msg_received")
 
 func _exit_tree():
 	if mTaskId != -1:
 		rcos.remove_task(mTaskId)
+	_remove_io_ports()
+
+func _add_io_ports():
+	var hostname = mServerAddress
+	var words = mConnection.get_desktop_name().split(" ", false)
+	if words[0] != "":
+		hostname = words[0]
+		var sep_pos = words[0].find(":")
+		if sep_pos > 0:
+			hostname = words[0].left(sep_pos)
+	var prefix 
+	if mServerTcpPort >= 5900 && mServerTcpPort <= 5999:
+		prefix = hostname.to_lower()+"/rfb:"+str(mServerTcpPort-5900)
+	else:
+		prefix = hostname.to_lower()+"/rfb::"+str(mServerTcpPort)
+	mOutputPorts["bell"] = data_router.add_output_port(prefix+"/bell", false)
+	mOutputPorts["clipboard"] = data_router.add_output_port(prefix+"/clipboard", "")
+	for port_name in ["clipboard", "send_text"]:
+		var port_path = prefix+"/"+port_name
+		var port = data_router.add_input_port(port_path)
+		port.connect("data_changed", self, "_input_port_data_changed", [port])
+		mInputPorts[port_name] = port
+
+func _remove_io_ports():
+	for port in mOutputPorts.values():
+		data_router.remove_port(port)
+	for port in mInputPorts.values():
+		data_router.remove_port(port)
+
+func _input_port_data_changed(old_data, new_data, port):
+	var port_name = port.get_name()
+	if port_name == "clipboard":
+		var text = ""
+		if new_data != null:
+			text = str(new_data)
+		mConnection.send_clipboard(text)
+	elif port_name == "send_text":
+		var text = ""
+		if new_data != null:
+			text = str(new_data)
+		mConnection.send_text(text)
+
+func _bell_msg_received():
+	mOutputPorts["bell"].put_data(true)
+	mOutputPorts["bell"].put_data(false)
+
+func server_cut_text_msg_received(text):
+	mOutputPorts["clipboard"].put_data(text)
+
+func _connection_established():
+	_add_io_ports()
+
+func _connection_error(status):
+	_remove_io_ports()
 
 func connect_to_server(address, port):
 	rcos.log_notice(self, "Opening connection to "+address+":"+str(port))

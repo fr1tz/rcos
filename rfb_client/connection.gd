@@ -19,6 +19,21 @@ const PROTOCOL_VERSION_3_3 = 0
 const PROTOCOL_VERSION_3_7 = 1
 const PROTOCOL_VERSION_3_8 = 2
 
+# Client -> server msg types
+const MSG_TYPE_SET_PIXEL_FORMAT = 0
+const MSG_TYPE_SET_ENCODINGS = 2
+const MSG_TYPE_FRAMEBUFFER_UPDATE_REQUEST = 3
+const MSG_TYPE_KEY_EVENT = 4
+const MSG_TYPE_POINTER_EVENT = 5
+const MSG_TYPE_CLIENT_CUT_TEXT = 6
+
+# Server -> client msg types
+const MSG_TYPE_FRAMEBUFFER_UPDATE = 0
+const MSG_TYPE_SET_COLOUR_MAP_ENTRIES = 1
+const MSG_TYPE_BELL = 2
+const MSG_TYPE_SERVER_CUT_TEXT = 3
+
+# Connection state
 const CS_ERROR = -1
 const CS_NOT_CONNECTED = 0
 const CS_RECEIVE_PROTOCOL_VERSION = 1
@@ -36,6 +51,13 @@ var mReceiveBuffer = RawArray()
 var mSendBuffer = RawArray()
 var mConnectionState = CS_NOT_CONNECTED
 var mProtocolVersion = -1
+var mDesktopName = ""
+
+func _init():
+	add_user_signal("connection_established")
+	add_user_signal("connection_error")
+	add_user_signal("server_cut_text_msg_received")
+	add_user_signal("bell_msg_received")
 
 func _ready():
 	get_node("io_timer").connect("timeout", self, "_process_io")
@@ -72,6 +94,7 @@ func _process_io():
 		_send_data()
 	else:
 		rcos.log_debug(self, ["error:", status])
+		emit_signal("connection_error", status)
 
 func _send_data():
 	if mSendBuffer.size() == 0:
@@ -254,20 +277,42 @@ func _process_server_init_msg(data):
 	name_data.invert()
 	name_data.resize(name_data.size()-24)
 	name_data.invert()
-	var name = name_data.get_string_from_ascii()
-	rcos.log_debug(self, ["name:", name])
+	mDesktopName = name_data.get_string_from_ascii()
+	rcos.log_debug(self, ["desktop name:", mDesktopName])
 	rcos.log_debug(self, ["width:", framebuffer_width])
 	rcos.log_debug(self, ["height:", framebuffer_height])
 	mConnectionState = CS_RECEIVE_SERVER_MESSAGES
+	emit_signal("connection_established")
 	return msg_length
 
 func _process_server_msg(data):
+	if data.size() == 0:
+		return 0
 	var s = ""
-	if data.size() > 0:
-		for i in range(0, mReceiveBuffer.size()):
-			#s += ("%2o " % data[i])
-			s += str(mReceiveBuffer[i]) + " "
-		rcos.log_debug(self, [data.size(), ":", s])
+	for i in range(0, mReceiveBuffer.size()):
+		#s += ("%2o " % data[i])
+		s += str(mReceiveBuffer[i]) + " "
+	rcos.log_debug(self, [data.size(), ":", s])
+	if data[0] == MSG_TYPE_FRAMEBUFFER_UPDATE:
+		return data.size()
+	elif data[0] == MSG_TYPE_SET_COLOUR_MAP_ENTRIES:
+		return data.size()
+	elif data[0] == MSG_TYPE_BELL:
+		rcos.log_debug(self, "got bell msg")
+		emit_signal("bell_msg_received")
+		return 1
+	elif data[0] == MSG_TYPE_SERVER_CUT_TEXT:
+		var text_length = _decode_uint32(data[4], data[5], data[6], data[7])
+		var msg_length = 8 + text_length
+		var text_data = RawArray()
+		text_data.append_array(data)
+		text_data.invert()
+		text_data.resize(text_data.size()-8)
+		text_data.invert()
+		var text = text_data.get_string_from_ascii()
+		rcos.log_debug(self, "got server_cut_text msg: " + text)
+		emit_signal("server_cut_text_msg_received", text)
+		return data.size()
 	return data.size()
 
 func connect_to_server(address, port):
@@ -278,12 +323,15 @@ func connect_to_server(address, port):
 	get_node("io_timer").start()
 	return true
 
+func get_desktop_name():
+	return mDesktopName
+
 func send_data(data):
 	mSendBuffer.append_array(data)
 
 func send_clipboard(text):
 	var client_cut_text_msg = RawArray()
-	client_cut_text_msg.append(6)
+	client_cut_text_msg.append(MSG_TYPE_CLIENT_CUT_TEXT)
 	client_cut_text_msg.append(PADDING_BYTE)
 	client_cut_text_msg.append(PADDING_BYTE)
 	client_cut_text_msg.append(PADDING_BYTE)
@@ -296,7 +344,7 @@ func send_char(c):
 		return
 	var key = c.to_ascii()[0]
 	var key_event_msg = RawArray()
-	key_event_msg.append(4)
+	key_event_msg.append(MSG_TYPE_KEY_EVENT)
 	key_event_msg.append(1)
 	key_event_msg.append(PADDING_BYTE)
 	key_event_msg.append(PADDING_BYTE)
@@ -304,3 +352,7 @@ func send_char(c):
 	send_data(key_event_msg)
 	key_event_msg.set(1, 0)
 	send_data(key_event_msg)
+
+func send_text(text):
+	for c in text:
+		send_char(c)
