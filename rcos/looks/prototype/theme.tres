@@ -7,7 +7,7 @@
 [ext_resource path="res://rcos/looks/prototype/graphics/checkbox.checked.png" type="Texture" id=5]
 [ext_resource path="res://rcos/looks/prototype/graphics/checkbox.unchecked.png" type="Texture" id=6]
 [ext_resource path="res://rcos/looks/prototype/graphics/slider_grabber.png" type="Texture" id=7]
-[ext_resource path="res://rcos/fonts/ponyo/Ponyo.otf" type="DynamicFontData" id=8]
+[ext_resource path="res://rcos/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=8]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
