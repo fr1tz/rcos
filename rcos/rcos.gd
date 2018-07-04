@@ -59,13 +59,13 @@ func _ready():
 	_add_io_ports()
 
 func _add_io_ports():
-	var port_path_prefix = "local/rcos"
-	mInputPorts["open"] = data_router.add_input_port(port_path_prefix+"/open")
+	var port_path_prefix = "local/"
+	mInputPorts["open(url)"] = data_router.add_input_port(port_path_prefix+"/open(url)")
 	for port in mInputPorts.values():
 		port.connect("data_changed", self, "_on_input_data_changed", [port])
 
 func _on_input_data_changed(old_data, new_data, port):
-	if port.get_name() == "open":
+	if port.get_name() == "open(url)":
 		if new_data != null:
 			open(str(new_data))
 
