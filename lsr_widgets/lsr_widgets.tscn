@@ -1,10 +1,9 @@
-[gd_scene load_steps=6 format=1]
+[gd_scene load_steps=5 format=1]
 
 [ext_resource path="res://lsr_widgets/data_transfer_button/data_transfer_button_factory.tscn" type="PackedScene" id=1]
 [ext_resource path="res://lsr_widgets/text_display_widget/text_display_widget_factory.tscn" type="PackedScene" id=2]
 [ext_resource path="res://lsr_widgets/gamepad_widgets/gamepad_widgets_factory.tscn" type="PackedScene" id=3]
-[ext_resource path="res://lsr_widgets/data_transfer_widget/data_transfer_widget_factory.tscn" type="PackedScene" id=4]
-[ext_resource path="res://lsr_widgets/text_edit_widget/text_edit_widget_factory.tscn" type="PackedScene" id=5]
+[ext_resource path="res://lsr_widgets/text_edit_widget/text_edit_widget_factory.tscn" type="PackedScene" id=4]
 
 [node name="lsr_widgets" type="Node"]
 
@@ -14,8 +13,6 @@
 
 [node name="gamepad_widgets_factory" parent="." instance=ExtResource( 3 )]
 
-[node name="data_transfer_widget_factory" parent="." instance=ExtResource( 4 )]
-
-[node name="text_edit_widget_factory" parent="." instance=ExtResource( 5 )]
+[node name="text_edit_widget_factory" parent="." instance=ExtResource( 4 )]
 
 
