@@ -2,5 +2,5 @@ open.png / open.xcf are based on:
 
 'folder-open-button-icon-symbol'
 By Clker-Free-Vector-Images (https://pixabay.com/en/users/Clker-Free-Vector-Images-3736/) 
-License: CC0 Creative Commons (Free for commercial use, No attribution required)
-obtained from https://pixabay.com/en/folder-open-button-icon-symbol-35945/
+License: CC0 Creative Commons (https://creativecommons.org/publicdomain/zero/1.0/deed.en)
+Obtained from https://pixabay.com/en/folder-open-button-icon-symbol-35945/
