@@ -239,5 +239,13 @@ func get_node_icon(node, icon_size):
 	var node_name = node.get_name()
 	if node_name == "clipboard":
 		return load("res://data_router/icons/32/clipboard.png")
+	elif node_name == "mouse":
+		return load("res://data_router/icons/32/mouse.png")
+	elif node_name == "keyboard":
+		return load("res://data_router/icons/32/keyboard.png")
+	elif node_name == "button":
+		return load("res://data_router/icons/32/button.png")
+	elif node_name == "buttons":
+		return load("res://data_router/icons/32/buttons.png")
 	# If all else fails, return default node icon.
 	return load("res://data_router/icons/32/node.png")
