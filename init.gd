@@ -18,6 +18,7 @@ extends Node
 func _ready():
 	rcos.spawn_module("system_clipboard_io_ports")
 	rcos.spawn_module("system_sensors_io_ports")
+	rcos.spawn_module("local_mouse_io_ports")
 	rcos.spawn_module("remote_connector")
 	rcos.spawn_module("data_connector")
 	rcos.spawn_module("widget_grid")
