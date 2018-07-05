@@ -18,6 +18,10 @@ extends Node
 var mData = null
 var mConnections = []
 
+func _init():
+	add_user_signal("data_access")
+	add_user_signal("connections_changed")
+
 func _ready():
 	pass
 
@@ -25,24 +29,32 @@ func add_connection(input_node):
 	if mConnections.has(input_node):
 		return true
 	mConnections.push_back(input_node)
+	emit_signal("connections_changed")
 	if mData != null:
 		put_data(mData)
 	return true
 
 func remove_connection(input_node):
+	if !mConnections.has(input_node):
+		return true
 	mConnections.erase(input_node)
+	emit_signal("connections_changed")
 	return true
 
 func get_connections():
 	return mConnections
 
+func is_connected():
+	return mConnections.size() > 0
+
 func get_port_path():
 	return data_router.get_node("output_ports").get_path_to(self)
 
-func get_data():
+func access_data():
+	emit_signal("data_access")
 	return mData
 
 func put_data(data):
 	mData = data
 	for input_node in mConnections:
-		input_node.put_data(data)
+		input_node.put_data(mData)
