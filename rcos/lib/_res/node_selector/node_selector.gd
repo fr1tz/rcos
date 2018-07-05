@@ -42,6 +42,7 @@ func _refresh():
 	var n = mCurrentNode
 	while n != mRootNode.get_parent():
 		var item = Button.new()
+		item.set_custom_minimum_size(Vector2(40, 40))
 		item.set_text(n.get_name())
 		items.add_child(item)
 		items.move_child(item, 0)
@@ -55,13 +56,17 @@ func _refresh():
 		var item = rlib.instance_scene("res://rcos/lib/_res/node_selector/node_item.tscn")
 		item.set_custom_minimum_size(Vector2(200, 40))
 		item.set_size(Vector2(200, 40))
-		item.set_text(c.get_name())
 		items.add_child(item)
+		var label = c.get_name()
 		if c.get_child_count() == 0:
 			item.connect("pressed", self, "_item_selected", [item])
 		else:
-			item.set_text(item.get_text() + " >")
+			label += " >"
 			item.connect("pressed", self, "_set_current_node", [c])
+		item.set_text(label)
+		var icon = data_router.get_node_icon(c, 32)
+		if icon:
+			item.set_icon(icon)
 
 func _cancel():
 	emit_signal("canceled")

@@ -18,7 +18,12 @@ extends Button
 func _ready():
 	pass
 
-func _input_event(event):
-	#prints(get_name(), "_input_event", event)
-	return
+func set_icon(texture):
+	get_node("icon").set_texture(texture)
+
+func get_text():
+	return get_node("label").get_text()
+
+func set_text(text):
+	get_node("label").set_text(text)
 	
