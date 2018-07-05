@@ -21,6 +21,9 @@ const PORT_TYPE_OUTPUT = 1
 onready var mInputPorts = get_node("input_ports")
 onready var mOutputPorts = get_node("output_ports")
 
+var mNodeIcons = {}
+var mNodeIconsKeys = []
+
 func _init():
 	add_user_signal("input_port_added")
 	add_user_signal("output_port_added")
@@ -190,3 +193,51 @@ func remove_connection(output, input):
 	if success:
 		emit_signal("connection_removed", output_port_node, input_port_node)
 	return success
+
+func set_node_icon(path, texture, icon_size):
+	if !mNodeIcons.has(path):
+		mNodeIcons[path] = {}
+	mNodeIcons[path][icon_size] = texture
+	mNodeIconsKeys = mNodeIcons.keys()
+	mNodeIconsKeys.sort()
+	mNodeIconsKeys.invert()
+
+func get_node_icon(node, icon_size):
+	# Has node a custom icon?
+	if node.has_meta("icon"+str(icon_size)):
+		return node.get_meta("icon"+str(icon_size))
+	var node_path 
+	if mOutputPorts.is_a_parent_of(node):
+		node_path = str(mOutputPorts.get_path_to(node))
+	elif mInputPorts.is_a_parent_of(node):
+		node_path = str(mInputPorts.get_path_to(node))
+	else:
+		return load("res://data_router/icons/32/node.png")
+	# Has a custom icon been set for this node via data_router.set_node_icon()?
+	if mNodeIcons.has(node_path):
+		if mNodeIcons[node_path].has(icon_size):
+				return mNodeIcons[node_path][icon_size] 
+	# Try to find an appropriate icon
+	if icon_size != 32:
+		return null
+	if node.has_method("put_data"): # Is node an i/o port?
+		# Icon based on i/o port data type.
+		if node.has_meta("data_type"):
+			var data_type = node.get_meta("data_type")
+			if data_type == "string":
+				return load("res://data_router/icons/32/data_type_string.png")
+			elif data_type == "bool":
+				return load("res://data_router/icons/32/data_type_bool.png")
+		# Icon based on i/o port name.
+		var port_name = node.get_name()
+		if port_name == "text":
+			return load("res://data_router/icons/32/data_type_string.png")
+		elif port_name == "pressed":
+			return load("res://data_router/icons/32/data_type_bool.png")
+		return load("res://data_router/icons/32/io_port.png")
+	# Node is not an i/o port.
+	var node_name = node.get_name()
+	if node_name == "clipboard":
+		return load("res://data_router/icons/32/clipboard.png")
+	# If all else fails, return default node icon.
+	return load("res://data_router/icons/32/node.png")
