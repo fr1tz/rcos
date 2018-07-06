@@ -15,6 +15,29 @@
 
 extends Node
 
+var mIconByNodeName = {
+	"clipboard": load("res://data_router/icons/32/clipboard.png"),
+	"mouse": load("res://data_router/icons/32/mouse.png"),
+	"keyboard": load("res://data_router/icons/32/keyboard.png"),
+	"pointer": load("res://data_router/icons/32/pointer.png"),
+	"button": load("res://data_router/icons/32/button.png"),
+	"buttons": load("res://data_router/icons/32/buttons.png"),
+	"joystick": load("res://data_router/icons/32/joystick.png"),
+	"joysticks": load("res://data_router/icons/32/joysticks.png"),
+	"text": load("res://data_router/icons/32/data_type_string.png"),
+	"pressed": load("res://data_router/icons/32/data_type_bool.png")
+}
+
+var mIconByParentNodeName = {
+	"buttons": load("res://data_router/icons/32/button.png"),
+	"joysticks": load("res://data_router/icons/32/joystick.png")
+}
+
+var mIconByPortDataType = {
+	"string": load("res://data_router/icons/32/data_type_string.png"),
+	"bool": load("res://data_router/icons/32/data_type_bool.png")
+}
+
 const PORT_TYPE_INPUT = 0
 const PORT_TYPE_OUTPUT = 1
 
@@ -224,28 +247,19 @@ func get_node_icon(node, icon_size):
 		# Icon based on i/o port data type.
 		if node.has_meta("data_type"):
 			var data_type = node.get_meta("data_type")
-			if data_type == "string":
-				return load("res://data_router/icons/32/data_type_string.png")
-			elif data_type == "bool":
-				return load("res://data_router/icons/32/data_type_bool.png")
+			if mIconByPortDataType.has(data_type):
+				return mIconByPortDataType[data_type]
 		# Icon based on i/o port name.
-		var port_name = node.get_name()
-		if port_name == "text":
-			return load("res://data_router/icons/32/data_type_string.png")
-		elif port_name == "pressed":
-			return load("res://data_router/icons/32/data_type_bool.png")
+		var node_name = node.get_name()
+		if mIconByNodeName.has(node_name):
+			return mIconByNodeName[node_name]
 		return load("res://data_router/icons/32/io_port.png")
 	# Node is not an i/o port.
 	var node_name = node.get_name()
-	if node_name == "clipboard":
-		return load("res://data_router/icons/32/clipboard.png")
-	elif node_name == "mouse":
-		return load("res://data_router/icons/32/mouse.png")
-	elif node_name == "keyboard":
-		return load("res://data_router/icons/32/keyboard.png")
-	elif node_name == "button":
-		return load("res://data_router/icons/32/button.png")
-	elif node_name == "buttons":
-		return load("res://data_router/icons/32/buttons.png")
+	if mIconByNodeName.has(node_name):
+		return mIconByNodeName[node_name]
+	var parent_node_name = node.get_parent().get_name()
+	if mIconByParentNodeName.has(parent_node_name):
+		return mIconByParentNodeName[parent_node_name]
 	# If all else fails, return default node icon.
 	return load("res://data_router/icons/32/node.png")
