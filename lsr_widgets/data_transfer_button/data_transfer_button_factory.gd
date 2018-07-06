@@ -18,10 +18,10 @@ extends Node
 func _ready():
 	rcos.add_task({
 			"type": "widget_factory",
-			"product_name": "Data Transfer Widget",
-			"product_id": "lsr_widgets.data_transfer_widget",
+			"product_name": "Data Transfer Button",
+			"product_id": "lsr_widgets.data_transfer_button",
 			"create_widget_func": funcref(self, "create_widget")
 		})
 
 func create_widget():
-	return rlib.instance_scene("res://lsr_widgets/data_transfer_widget/data_transfer_widget.tscn")
+	return rlib.instance_scene("res://lsr_widgets/data_transfer_button/data_transfer_button.tscn")
