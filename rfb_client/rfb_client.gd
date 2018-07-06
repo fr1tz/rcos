@@ -19,13 +19,29 @@ const SEND_UPDATE_INTERVAL = 0.05
 
 var gui = null
 
+enum InputPortId {
+	CLIPBOARD_TEXT,
+	KB_TYPE_TEXT,
+	KB_PRESS_KEY,
+	KB_RELEASE_KEY,
+	PTR_POS,
+	PTR_POS_X,
+	PTR_POS_Y,
+	PTR_SPEED,
+	PTR_SPEED_X,
+	PTR_SPEED_Y,
+	PTR_BUTTON
+}
+
 var mTaskId = -1
 var mServerAddress = null
 var mServerTcpPort = -1
 var mServerHostname = null
 var mConnection = null
-var mOutputPorts = {}
-var mInputPorts = {}
+var mOutputPortsMeta = {}
+var mInputPortsMeta = {}
+var mOutputPorts = []
+var mInputPorts = []
 
 func _ready():
 	gui = get_node("canvas/rfb_client_gui")
@@ -44,6 +60,7 @@ func _ready():
 	mConnection.connect("connection_error", self, "_connection_error")
 	mConnection.connect("bell_msg_received", self, "_bell_msg_received")
 	mConnection.connect("server_cut_text_msg_received", self, "server_cut_text_msg_received")
+	gui.get_node("pointer_speed_multiplier").connect("text_entered", mConnection, "set_pointer_speed_multiplier")
 
 func _exit_tree():
 	if mTaskId != -1:
@@ -63,39 +80,136 @@ func _add_io_ports():
 		prefix = hostname.to_lower()+"/rfb:"+str(mServerTcpPort-5900)
 	else:
 		prefix = hostname.to_lower()+"/rfb::"+str(mServerTcpPort)
-	mOutputPorts["bell"] = data_router.add_output_port(prefix+"/bell", false)
-	mOutputPorts["clipboard"] = data_router.add_output_port(prefix+"/clipboard", "")
-	for port_name in ["clipboard", "send_text"]:
-		var port_path = prefix+"/"+port_name
-		var port = data_router.add_input_port(port_path)
+	_add_output_ports(prefix)
+	_add_input_ports(prefix)
+
+func _add_output_ports(prefix):
+	mOutputPorts.push_back(data_router.add_output_port(prefix+"/bell", false))
+	mOutputPorts.push_back(data_router.add_output_port(prefix+"/clipboard", ""))
+
+func _add_input_ports(prefix):
+	mInputPortsMeta["clipboard/text"] = {
+		"port_class": CLIPBOARD_TEXT,
+		"data_type": "string"
+	}
+	mInputPortsMeta["keyboard/type_text(text)"] = {
+		"port_class": KB_TYPE_TEXT,
+		"data_type": "string"
+	}
+	mInputPortsMeta["keyboard/press_key(x11_keysym)"] = {
+		"port_class": CLIPBOARD_TEXT,
+		"data_type": "string"
+	}
+	mInputPortsMeta["keyboard/release_key(x11_keysym)"] = {
+		"port_class": CLIPBOARD_TEXT,
+		"data_type": "string"
+	}
+	mInputPortsMeta["pointer/pos/xy"] = {
+		"port_class": PTR_POS,
+		"data_type": "vec2"
+	}
+	mInputPortsMeta["pointer/pos/x"] = {
+		"port_class": PTR_POS_X,
+		"data_type": "number"
+	}
+	mInputPortsMeta["pointer/pos/y"] = {
+		"port_class": PTR_POS_Y,
+		"data_type": "number"
+	}
+	mInputPortsMeta["pointer/speed/xy"] = {
+		"port_class": PTR_SPEED,
+		"data_type": "vec2"
+	}
+	mInputPortsMeta["pointer/speed/x"] = {
+		"port_class": PTR_SPEED_X,
+		"data_type": "number"
+	}
+	mInputPortsMeta["pointer/speed/y"] = {
+		"port_class": PTR_SPEED_Y,
+		"data_type": "number"
+	}
+	for i in range(1, 9):
+		mInputPortsMeta["pointer/buttons/"+str(i)+"/pressed"] = {
+			"port_class": PTR_BUTTON,
+			"data_type": "bool",
+			"button_num": i
+		}
+	for port_path in mInputPortsMeta.keys():
+		var port = data_router.add_input_port(prefix+"/"+port_path)
+		for meta_name in mInputPortsMeta[port_path].keys():
+			var meta_value = mInputPortsMeta[port_path][meta_name]
+			port.set_meta(meta_name, meta_value)
 		port.connect("data_changed", self, "_input_port_data_changed", [port])
-		mInputPorts[port_name] = port
+		mInputPorts.push_back(port)
 
 func _remove_io_ports():
-	for port in mOutputPorts.values():
+	for port in mOutputPorts:
 		data_router.remove_port(port)
-	for port in mInputPorts.values():
+	for port in mInputPorts:
 		data_router.remove_port(port)
 
 func _input_port_data_changed(old_data, new_data, port):
-	var port_name = port.get_name()
-	if port_name == "clipboard":
+	var port_class = port.get_meta("port_class")
+	if port_class == CLIPBOARD_TEXT:
 		var text = ""
 		if new_data != null:
 			text = str(new_data)
 		mConnection.send_clipboard(text)
-	elif port_name == "send_text":
+	elif port_class == KB_TYPE_TEXT:
 		var text = ""
 		if new_data != null:
 			text = str(new_data)
-		mConnection.send_text(text)
+		mConnection.send_text(text) 
+	elif port_class == KB_PRESS_KEY:
+		if new_data != null:
+			var keysym = int(new_data)
+			mConnection.set_key_pressed(keysym, true)
+	elif port_class == KB_RELEASE_KEY:
+		if new_data != null:
+			var keysym = int(new_data)
+			mConnection.set_key_pressed(keysym, false)
+	elif port_class == PTR_POS:
+		var x = 0
+		var y = 0
+		if typeof(new_data) == TYPE_VECTOR2 || typeof(new_data) == TYPE_VECTOR3:
+			x = new_data.x
+			y = new_data.y
+		elif typeof(new_data) == TYPE_STRING:
+			var words = new_data.split(" ")
+			if words.size() > 0: x = words[0]
+			if words.size() > 1: y = words[1]
+		mConnection.set_pointer_pos_x(x)
+		mConnection.set_pointer_pos_y(y)
+	elif port_class == PTR_POS_X:
+		mConnection.set_pointer_pos_x(new_data)
+	elif port_class == PTR_POS_Y:
+		mConnection.set_pointer_pos_y(new_data)
+	elif port_class == PTR_SPEED:
+		var x = 0
+		var y = 0
+		if typeof(new_data) == TYPE_VECTOR2 || typeof(new_data) == TYPE_VECTOR3:
+			x = new_data.x
+			y = new_data.y
+		elif typeof(new_data) == TYPE_STRING:
+			var words = new_data.split(" ", false)
+			if words.size() > 0: x = words[0]
+			if words.size() > 1: y = words[1]
+		mConnection.set_pointer_speed_x(x)
+		mConnection.set_pointer_speed_y(y)
+	elif port_class == PTR_SPEED_X:
+		mConnection.set_pointer_speed_x(new_data)
+	elif port_class == PTR_SPEED_Y:
+		mConnection.set_pointer_speed_y(new_data)
+	elif port_class == PTR_BUTTON:
+		var button_num = port.get_meta("button_num")
+		mConnection.set_button_pressed(button_num, new_data)
 
 func _bell_msg_received():
-	mOutputPorts["bell"].put_data(true)
-	mOutputPorts["bell"].put_data(false)
+	mOutputPorts[0].put_data(true)
+	mOutputPorts[0].put_data(false)
 
 func server_cut_text_msg_received(text):
-	mOutputPorts["clipboard"].put_data(text)
+	mOutputPorts[1].put_data(text)
 
 func _connection_established():
 	_add_io_ports()

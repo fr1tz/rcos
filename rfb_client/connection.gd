@@ -52,6 +52,19 @@ var mSendBuffer = RawArray()
 var mConnectionState = CS_NOT_CONNECTED
 var mProtocolVersion = -1
 var mDesktopName = ""
+var mFramebufferWidth = 0
+var mFramebufferHeight = 0
+var mPointer = {
+	"fpos_x": 0,
+	"fpos_y": 0,
+	"ipos_x": -1,
+	"ipos_y": -1,
+	"speed_x": 0,
+	"speed_y": 0,
+	"speed_multiplier": 20,
+	"button_mask": 0,
+	"dirty": false
+}
 
 func _init():
 	add_user_signal("connection_established")
@@ -60,7 +73,9 @@ func _init():
 	add_user_signal("bell_msg_received")
 
 func _ready():
-	get_node("io_timer").connect("timeout", self, "_process_io")
+	get_node("read_data_timer").connect("timeout", self, "_read_data")
+	get_node("send_data_timer").connect("timeout", self, "_send_data")
+	get_node("update_pointer_timer").connect("timeout", self, "_update_pointer")
 
 func _decode_uint16(b1, b2):
 	var value = b2
@@ -74,7 +89,15 @@ func _decode_uint32(b1, b2, b3, b4):
 	value |= (b1 << 24)
 	return value
 
+func _encode_uint16(value):
+	value = int(value)
+	var bytes = RawArray()
+	bytes.append((value & 0xFF00) >> 8)
+	bytes.append((value & 0x00FF))
+	return bytes
+
 func _encode_uint32(value):
+	value = int(value)
 	var bytes = RawArray()
 	bytes.append((value & 0xFF000000) >> 24)
 	bytes.append((value & 0x00FF0000) >> 16)
@@ -82,7 +105,7 @@ func _encode_uint32(value):
 	bytes.append((value & 0x000000FF))
 	return bytes
 
-func _process_io():
+func _read_data():
 	var status = mStream.get_status()
 	if status == StreamPeerTCP.STATUS_CONNECTING:
 		rcos.log_debug(self, "connecting")
@@ -91,7 +114,6 @@ func _process_io():
 			mConnectionState = CS_RECEIVE_PROTOCOL_VERSION
 		_receive_data()
 		_process_data()
-		_send_data()
 	else:
 		rcos.log_debug(self, ["error:", status])
 		emit_signal("connection_error", status)
@@ -108,6 +130,8 @@ func _send_data():
 	mSendBuffer.invert()
 	mSendBuffer.resize(mSendBuffer.size()-nbytes)
 	mSendBuffer.invert()
+	if mSendBuffer.size() == 0:
+		get_node("send_data_timer").stop()
 
 func _receive_data():
 	if mStream.get_available_bytes() == 0:
@@ -266,8 +290,8 @@ func _process_server_init_msg(data):
 	rcos.log_debug(self, "_process_server_init_msg()")
 	if data.size() < 24:
 		return 0
-	var framebuffer_width = _decode_uint16(data[0], data[1])
-	var framebuffer_height = _decode_uint16(data[2], data[3])
+	mFramebufferWidth = _decode_uint16(data[0], data[1])
+	mFramebufferHeight = _decode_uint16(data[2], data[3])
 	var name_length= _decode_uint32(data[20], data[21], data[22], data[23])
 	var msg_length = 24 + name_length
 	if data.size() < msg_length:
@@ -279,10 +303,12 @@ func _process_server_init_msg(data):
 	name_data.invert()
 	mDesktopName = name_data.get_string_from_ascii()
 	rcos.log_debug(self, ["desktop name:", mDesktopName])
-	rcos.log_debug(self, ["width:", framebuffer_width])
-	rcos.log_debug(self, ["height:", framebuffer_height])
+	rcos.log_debug(self, ["width:", mFramebufferWidth])
+	rcos.log_debug(self, ["height:", mFramebufferHeight])
 	mConnectionState = CS_RECEIVE_SERVER_MESSAGES
 	emit_signal("connection_established")
+	set_fixed_process(true)
+	get_node("update_pointer_timer").start()
 	return msg_length
 
 func _process_server_msg(data):
@@ -315,19 +341,42 @@ func _process_server_msg(data):
 		return data.size()
 	return data.size()
 
+func _update_pointer():
+	mPointer.fpos_x += mPointer.speed_x * mPointer.speed_multiplier
+	mPointer.fpos_y += mPointer.speed_y * mPointer.speed_multiplier
+	mPointer.fpos_x = clamp(mPointer.fpos_x, 0, mFramebufferWidth)
+	mPointer.fpos_y = clamp(mPointer.fpos_y, 0, mFramebufferHeight)
+	if int(mPointer.fpos_x) != mPointer.ipos_x \
+	|| int(mPointer.fpos_y) != mPointer.ipos_y:
+		mPointer.dirty = true
+	if !mPointer.dirty:
+		return
+	rcos.log_debug(self, ["sending poiner event", mPointer.fpos_x, mPointer.fpos_y, mPointer.button_mask])
+	var pointer_event_msg = RawArray()
+	pointer_event_msg.append(MSG_TYPE_POINTER_EVENT)
+	pointer_event_msg.append(mPointer.button_mask)
+	pointer_event_msg.append_array(_encode_uint16(mPointer.fpos_x))
+	pointer_event_msg.append_array(_encode_uint16(mPointer.fpos_y))
+	send_data(pointer_event_msg)
+	mPointer.ipos_x = int(mPointer.fpos_x)
+	mPointer.ipos_y = int(mPointer.fpos_y)
+	mPointer.dirty = false
+
 func connect_to_server(address, port):
 	mConnectionState = CS_NOT_CONNECTED
 	mStream = StreamPeerTCP.new()
 	if mStream.connect(address, port) != OK:
 		return false
-	get_node("io_timer").start()
+	get_node("read_data_timer").start()
 	return true
 
 func get_desktop_name():
 	return mDesktopName
 
 func send_data(data):
+	get_node("send_data_timer").start()
 	mSendBuffer.append_array(data)
+	_send_data()
 
 func send_clipboard(text):
 	var client_cut_text_msg = RawArray()
@@ -339,16 +388,25 @@ func send_clipboard(text):
 	client_cut_text_msg.append_array(text.to_ascii())
 	send_data(client_cut_text_msg)
 
+func set_key_pressed(keysym, pressed = true):
+	var key_event_msg = RawArray()
+	key_event_msg.append(MSG_TYPE_KEY_EVENT)
+	key_event_msg.append(pressed)
+	key_event_msg.append(PADDING_BYTE)
+	key_event_msg.append(PADDING_BYTE)
+	key_event_msg.append_array(_encode_uint32(keysym))
+	send_data(key_event_msg)
+
 func send_char(c):
 	if c == null || c.length() != 1:
 		return
-	var key = c.to_ascii()[0]
+	var keysym = c.to_ascii()[0]
 	var key_event_msg = RawArray()
 	key_event_msg.append(MSG_TYPE_KEY_EVENT)
 	key_event_msg.append(1)
 	key_event_msg.append(PADDING_BYTE)
 	key_event_msg.append(PADDING_BYTE)
-	key_event_msg.append_array(_encode_uint32(key))
+	key_event_msg.append_array(_encode_uint32(keysym))
 	send_data(key_event_msg)
 	key_event_msg.set(1, 0)
 	send_data(key_event_msg)
@@ -356,3 +414,66 @@ func send_char(c):
 func send_text(text):
 	for c in text:
 		send_char(c)
+
+func set_pointer_pos_x(val):
+	if typeof(val) == TYPE_INT:
+		val = val
+	elif typeof(val) == TYPE_REAL:
+		val = val*mFramebufferWidth
+	elif typeof(val) == TYPE_VECTOR2 || typeof(val) == TYPE_VECTOR3:
+		val = val.x
+	elif typeof(val) == TYPE_STRING:
+		if val.find(".") >= 0:
+			val = float(val)*mFramebufferWidth
+		else:
+			val = int(val)
+	else:
+		val = 0
+	mPointer.fpos_x = clamp(val, 0, mFramebufferWidth)
+
+func set_pointer_pos_y(val):
+	if typeof(val) == TYPE_INT:
+		val = val
+	elif typeof(val) == TYPE_REAL:
+		val = val*mFramebufferHeight
+	elif typeof(val) == TYPE_VECTOR2 || typeof(val) == TYPE_VECTOR3:
+		val = val.x
+	elif typeof(val) == TYPE_STRING:
+		if val.find(".") >= 0:
+			val = float(val)*mFramebufferHeight
+		else:
+			val = int(val)
+	else:
+		val = 0
+	mPointer.fpos_y = clamp(val, 0, mFramebufferHeight)
+
+func set_pointer_speed_x(val):
+	if val == null:
+		val = 0
+	else:
+		val = float(val)
+	mPointer.speed_x = clamp(val, -10, 10)
+
+func set_pointer_speed_y(val):
+	if val == null:
+		val = 0
+	else:
+		val = float(val)
+	mPointer.speed_y = clamp(val, -10, 10)
+
+func set_pointer_speed_multiplier(val):
+	if val == null:
+		val = 10
+	else:
+		val = float(val)
+	mPointer.speed_multiplier = clamp(val, 1, 100)
+
+func set_button_pressed(button_num, val):
+	var pressed = false
+	if val != null:
+		pressed = bool(val)
+	if pressed:
+		mPointer.button_mask |= (1 << (button_num-1))
+	else:
+		mPointer.button_mask &= ~(1 << (button_num-1))
+	mPointer.dirty = true

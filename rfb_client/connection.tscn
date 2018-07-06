@@ -6,7 +6,21 @@
 
 script/script = ExtResource( 1 )
 
-[node name="io_timer" type="Timer" parent="."]
+[node name="read_data_timer" type="Timer" parent="."]
+
+process_mode = 1
+wait_time = 0.1
+one_shot = false
+autostart = false
+
+[node name="send_data_timer" type="Timer" parent="."]
+
+process_mode = 1
+wait_time = 0.05
+one_shot = false
+autostart = false
+
+[node name="update_pointer_timer" type="Timer" parent="."]
 
 process_mode = 1
 wait_time = 0.1
