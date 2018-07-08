@@ -23,8 +23,9 @@ onready var mTextEditor = get_node("main_canvas/gui/frame/text_editor")
 func _ready():
 	var port_path_prefix = "local/text_edit_widget"+str(get_meta("widget_id"))
 	mInputPorts["text"] = data_router.add_input_port(port_path_prefix+"/text")
+	mInputPorts["text"] = data_router.add_input_port(port_path_prefix+"/append(line)")
 	for port in mInputPorts.values():
-		port.connect("data_changed", self, "_on_input_data_changed")
+		port.connect("data_changed", self, "_on_input_port_data_changed", [port])
 	mOutputPorts["text"] = data_router.add_output_port(port_path_prefix+"/text")
 	mTextEditor.connect("text_changed", self, "_on_text_changed")
 
@@ -37,9 +38,17 @@ func _exit_tree():
 func _on_text_changed():
 	mOutputPorts["text"].put_data(mTextEditor.get_text())
 
-func _on_input_data_changed(old_data, new_data):
-	if new_data != null:
-		mTextEditor.set_text(str(new_data))
+func _on_input_port_data_changed(old_data, new_data, port):
+	if port.get_name() == "text":
+		if new_data != null:
+			mTextEditor.set_text(str(new_data))
+	elif port.get_name() == "append(line)":
+		if new_data != null:
+			var line = str(new_data)
+			if !line.ends_with("\n"):
+				line += "\n"
+			mTextEditor.set_text(mTextEditor.get_text()+line)
+			mTextEditor.cursor_set_line(mTextEditor.get_line_count(), true)
 
 #-------------------------------------------------------------------------------
 # Common Widget API
