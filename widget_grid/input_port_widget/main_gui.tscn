@@ -59,17 +59,18 @@ custom_styles/panel = SubResource( 2 )
 
 [node name="icon" type="TextureFrame" parent="frame"]
 
-anchor/right = 1
-anchor/bottom = 1
+anchor/left = 3
+anchor/top = 3
+anchor/right = 3
+anchor/bottom = 3
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-expand = true
+margin/left = 16.0
+margin/top = 16.0
+margin/right = -16.0
+margin/bottom = -16.0
 stretch_mode = 0
 
 

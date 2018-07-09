@@ -16,7 +16,7 @@ size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 120.0
+margin/right = 40.0
 margin/bottom = 40.0
 
 [node name="main_gui" parent="main_canvas" instance=ExtResource( 2 )]
