@@ -49,7 +49,7 @@ func _add_io_ports():
 		var port = data_router.add_output_port(port_path)
 		port.set_meta("data_type", "string")
 		port.set_meta("port_id", port_id)
-		port.connect("data_accessed", self, "_output_port_data_accessed", [port])
+		port.connect("data_access", self, "_output_port_data_access", [port])
 		port.connect("connections_changed", self, "_output_port_connections_changed", [port])
 		mOutputPorts[port_id] = port
 
@@ -63,7 +63,7 @@ func _fixed_process(delta):
 	if mOutputPorts[TEXT].mData != OS.get_clipboard():
 		mOutputPorts[TEXT].put_data(OS.get_clipboard())
 
-func _output_port_data_accessed(port):
+func _output_port_data_access(port):
 	var port_id = port.get_meta("port_id")
 	if port_id == TEXT:
 		port.put_data(OS.get_clipboard())
