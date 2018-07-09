@@ -20,6 +20,18 @@ var mWidgetFactoryTasks = []
 
 func _ready():
 	_log_debug("_ready()")
+	rcos.add_task({
+			"type": "widget_factory",
+			"product_name": "Output Port Widget",
+			"product_id": "widget_grid.output_port_widget",
+			"create_widget_func": funcref(self, "create_output_port_widget")
+		})
+	rcos.add_task({
+			"type": "widget_factory",
+			"product_name": "Input Port Widget",
+			"product_id": "widget_grid.input_port_widget",
+			"create_widget_func": funcref(self, "create_input_port_widget")
+		})
 	create_widget_grid()
 	rcos.connect("task_added", self, "_on_task_added")
 	rcos.connect("task_removed", self, "_on_task_removed")
@@ -77,3 +89,9 @@ func create_widget_grid():
 
 func get_widget_tasks():
 	return mWidgetFactoryTasks
+
+func create_output_port_widget():
+	return rlib.instance_scene("res://widget_grid/output_port_widget/output_port_widget.tscn")
+
+func create_input_port_widget():
+	return rlib.instance_scene("res://widget_grid/input_port_widget/input_port_widget.tscn")

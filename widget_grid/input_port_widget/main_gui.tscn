@@ -1,0 +1,75 @@
+[gd_scene load_steps=4 format=1]
+
+[ext_resource path="res://widget_grid/input_port_widget/main_gui.gd" type="Script" id=1]
+
+[sub_resource type="StyleBoxFlat" id=3]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 0.480469, 0.480469, 0.480469, 1 )
+light_color = Color( 0.882813, 0.882813, 0.882813, 1 )
+dark_color = Color( 0.234375, 0.234375, 0.234375, 1 )
+border_size = 2
+border_blend = true
+draw_bg = true
+
+[sub_resource type="StyleBoxFlat" id=2]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 0.326884, 0.298309, 0.664063, 1 )
+light_color = Color( 0.226563, 0.226563, 0.226563, 1 )
+dark_color = Color( 0.84375, 0.84375, 0.84375, 1 )
+border_size = 2
+border_blend = true
+draw_bg = true
+
+[node name="main_gui" type="Panel"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_styles/panel = SubResource( 3 )
+script/script = ExtResource( 1 )
+
+[node name="frame" type="Panel" parent="."]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 2.0
+margin/top = 2.0
+margin/right = 2.0
+margin/bottom = 2.0
+custom_styles/panel = SubResource( 2 )
+
+[node name="icon" type="TextureFrame" parent="frame"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+expand = true
+stretch_mode = 0
+
+
