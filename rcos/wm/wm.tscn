@@ -48,6 +48,7 @@ color = Color( 0.258824, 0.388235, 0.560784, 1 )
 
 [node name="desktop" type="ReferenceFrame" parent="."]
 
+editor/display_folded = true
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false
@@ -67,5 +68,31 @@ margin/right = 0.0
 margin/bottom = 0.0
 
 [node name="taskbar" parent="." instance=ExtResource( 3 )]
+
+[node name="overlay" type="Control" parent="."]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="dangling_controls" type="Control" parent="overlay"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
 
 
