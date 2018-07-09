@@ -15,6 +15,8 @@
 
 extends ColorFrame
 
+onready var gui = get_node("wm")
+
 const PORT_TYPE_TCP = 0
 const PORT_TYPE_UDP = 1
 
