@@ -23,4 +23,4 @@ func set_icon(texture):
 
 func set_label(text):
 	mLabel.set_text(text)
-	mLabel.set_pos(get_size()/2 - mLabel.get_size()/2 - Vector2(0, 16))
+	mLabel.set_pos(get_size()/2 - mLabel.get_size()/2 - Vector2(0, 24))
