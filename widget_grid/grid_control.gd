@@ -34,6 +34,15 @@ func _ready():
 	rcos.connect("task_added", self, "_on_task_added")
 	rcos.enable_canvas_input(self)
 
+func _compute_widget_canvas_pos(local_canvas_pos, widget_container):
+	var canvas = widget_container.get_widget_canvas()
+	var win_rect = widget_container.get_global_rect()
+	var win_center = win_rect.pos + win_rect.size/2
+	var rot = widget_container.get_widget_rotation()
+	var vec = (local_canvas_pos - win_center).rotated(-rot)
+	var widget_canvas_pos = canvas.get_rect().size/2 + vec
+	return widget_canvas_pos
+
 func _canvas_input(event):
 	if event.type == InputEvent.KEY && mKeyboardInputContainer != null:
 		var canvas = mKeyboardInputContainer.get_widget_canvas()
@@ -45,9 +54,7 @@ func _canvas_input(event):
 	if !touch && !drag:
 		return
 	var container = null
-	var canvas = null
 	var index = 0
-	var fpos = null
 	var down = null
 	if touchscreen && event.index < 8:
 		index = event.index
@@ -60,32 +67,35 @@ func _canvas_input(event):
 					mIndexToWidgetContainer[index] = c
 					mKeyboardInputContainer = c
 					container = c
-					canvas = c.get_widget_canvas()
 					down = true
 					break
 		else:
+			if rcos.gui.get_dangling_control(index) != null:
+				for c in get_widget_containers():
+					if c.get_widget_canvas() == null:
+						continue
+					if c.get_global_rect().has_point(event.pos):
+						var fpos = _compute_widget_canvas_pos(event.pos, c)
+						c.get_widget_canvas().update_input(index, fpos, false)
+						break
 			var widget_container = mIndexToWidgetContainer[index]
 			if widget_container == null:
 				return
 			mIndexToWidgetContainer[index] = null
 			container = widget_container
-			canvas = widget_container.get_widget_canvas()
 			down = false
 	else:
 		var widget_container = mIndexToWidgetContainer[index]
 		if widget_container == null:
 			return
 		container = widget_container
-		canvas = widget_container.get_widget_canvas()
 		down = null
-	if container == null || canvas == null:
+	if container == null:
 		return
-	var win_rect = container.get_global_rect()
-	var win_center = win_rect.pos + win_rect.size/2
-	var rot = container.get_widget_rotation()
-	var vec = (event.pos - win_center).rotated(-rot)
-	var canvas_pos = canvas.get_rect().size/2 + vec
-	var fpos = canvas_pos
+	var canvas = container.get_widget_canvas()
+	if canvas == null:
+		return
+	var fpos = _compute_widget_canvas_pos(event.pos, container)
 	canvas.update_input(index, fpos, down)
 
 func _on_reshape_control_clicked(reshape_control):
