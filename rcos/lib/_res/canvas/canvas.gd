@@ -106,29 +106,7 @@ func update_input(index, fpos, down):
 				prints(get_name(), "update_input(): calling input():", ev)
 			input(ev)
 	# Produce touchscreen input events.
-	if down != prev_down:
-		var ev = InputEvent()
-		ev.type = InputEvent.SCREEN_TOUCH
-		ev.device = 0
-		ev.ID = get_next_input_event_id()
-		ev.index = index
-		ev.pos = pos
-		ev.x = pos.x
-		ev.y = pos.y
-		ev.pressed = down
-		_call_canvas_input(ev)
-#		var ev = {
-#			type = InputEvent.SCREEN_TOUCH,
-#			device = 0,
-#			ID = get_next_input_event_id(),
-#			index = index,
-#			pos = pos,
-#			x = pos.x,
-#			y = pos.y,
-#			pressed = down,
-#		}
-#		_call_canvas_input(ev)
-	elif down && prev_down:
+	if down && prev_down:
 		var ev = InputEvent()
 		ev.type = InputEvent.SCREEN_DRAG
 		ev.device = 0
@@ -158,6 +136,28 @@ func update_input(index, fpos, down):
 #			speed = rpos,
 #			speed_x = rpos.x,
 #			speed_y = rpos.y,
+#		}
+#		_call_canvas_input(ev)
+	else:
+		var ev = InputEvent()
+		ev.type = InputEvent.SCREEN_TOUCH
+		ev.device = 0
+		ev.ID = get_next_input_event_id()
+		ev.index = index
+		ev.pos = pos
+		ev.x = pos.x
+		ev.y = pos.y
+		ev.pressed = down
+		_call_canvas_input(ev)
+#		var ev = {
+#			type = InputEvent.SCREEN_TOUCH,
+#			device = 0,
+#			ID = get_next_input_event_id(),
+#			index = index,
+#			pos = pos,
+#			x = pos.x,
+#			y = pos.y,
+#			pressed = down,
 #		}
 #		_call_canvas_input(ev)
 
