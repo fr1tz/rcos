@@ -3,8 +3,8 @@
 Note: RC/OS is still in early development, so take the description
       below with a grain of salt.
 
-RC/OS is a remote control / data routing application capable of running 
-on top of Android, iOS, Linux, Windows & MacOS X.
+RC/OS is a free and open-source remote control / data routing application
+capable of running on top of Android, iOS, Linux, MS Windows & MacOS X.
 
 It uses a kitchen-sink approach and aims to be able to communicate with
 as many existing devices/services as possible.
