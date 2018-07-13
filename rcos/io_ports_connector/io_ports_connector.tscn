@@ -1,11 +1,11 @@
 [gd_scene load_steps=5 format=1]
 
-[ext_resource path="res://rcos/data_connector/data_connector.gd" type="Script" id=1]
-[ext_resource path="res://rcos/data_connector/graphics/icon.png" type="Texture" id=2]
+[ext_resource path="res://rcos/io_ports_connector/io_ports_connector.gd" type="Script" id=1]
+[ext_resource path="res://rcos/io_ports_connector/graphics/icon.png" type="Texture" id=2]
 [ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=3]
-[ext_resource path="res://rcos/data_connector/data_connector_gui.tscn" type="PackedScene" id=4]
+[ext_resource path="res://rcos/io_ports_connector/io_ports_connector_gui.tscn" type="PackedScene" id=4]
 
-[node name="data_connector" type="Node"]
+[node name="io_ports_connector" type="Node"]
 
 script/script = ExtResource( 1 )
 
@@ -27,6 +27,6 @@ stretch_mode = 0
 rect = Rect2( 0, 0, 200, 400 )
 min_size = Vector2( 200, 400 )
 
-[node name="data_connector_gui" parent="canvas" instance=ExtResource( 4 )]
+[node name="io_ports_connector_gui" parent="canvas" instance=ExtResource( 4 )]
 
 

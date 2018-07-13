@@ -21,7 +21,7 @@ var mTaskId = -1
 
 func _ready():
 	var task_properties = {
-		"name": "Data Connector",
+		"name": "I/O Ports Connector",
 		"icon": get_node("icon").get_texture(),
 		"canvas": get_node("canvas"),
 	}

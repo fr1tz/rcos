@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://rcos/data_connector/data_connector_gui.gd" type="Script" id=2]
+[ext_resource path="res://rcos/io_ports_connector/io_ports_connector_gui.gd" type="Script" id=2]
 [ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=3]
 [ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=4]
 [ext_resource path="res://rcos/lib/node_selector.tscn" type="PackedScene" id=5]
@@ -36,7 +36,7 @@ func _input_event(event):
 	prints(get_name(), \"_input_event\", event)
 	"
 
-[node name="data_connector_gui" type="Panel"]
+[node name="io_ports_connector_gui" type="Panel"]
 
 anchor/right = 1
 anchor/bottom = 1

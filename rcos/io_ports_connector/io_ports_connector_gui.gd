@@ -69,7 +69,7 @@ func _connections_changed():
 		c.queue_free()
 	var connections = data_router.get_connections()
 	for connection in connections:
-		var item = rlib.instance_scene("res://rcos/data_connector/connection_item.tscn")
+		var item = rlib.instance_scene("res://rcos/io_ports_connector/connection_item.tscn")
 		item.initialize(connection.output, connection.input)
 		mConnectionItems.add_child(item)
 
@@ -87,7 +87,7 @@ func _add_connection_item(output, input, disabled = false):
 	var key = output_path+"->"+input_path
 	if mConnectionItemsByKey.has(key):
 		return mConnectionItemsByKey[key]
-	var item = rlib.instance_scene("res://rcos/data_connector/connection_item.tscn")
+	var item = rlib.instance_scene("res://rcos/io_ports_connector/connection_item.tscn")
 	item.initialize(output_path, input_path, disabled)
 	item.connect("pressed", self, "_connection_item_selected", [item])
 	get_node("items_container/items").add_child(item)
