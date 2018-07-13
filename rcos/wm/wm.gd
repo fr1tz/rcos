@@ -77,9 +77,11 @@ func _canvas_input(event):
 		return
 	var dangling_control = mDanglingControls[index]
 	dangling_control.set_pos(event.pos - dangling_control.get_size()/2)
+	if mTaskbar.get_rect().has_point(event.pos):
+		mTaskbar.select_task_by_pos(event.pos)
 	if touch && !event.pressed:
 		get_node("overlay/dangling_controls").remove_child(dangling_control)
-		dangling_control.queue_free()
+		dangling_control.free()
 		mDanglingControls.erase(index)
 		if mDanglingControls.size() == 0:
 			rcos.disable_canvas_input(self)
@@ -165,6 +167,7 @@ func pick_up_control(control, index):
 		get_node("overlay/dangling_controls").remove_child(old_control)
 		old_control.queue_free()
 		mDanglingControls.erase(index)
+	control.get_parent().remove_child(control)
 	get_node("overlay/dangling_controls").add_child(control)
 	control.set_pos(pos - control.get_size()/2)
 	mDanglingControls[index] = control

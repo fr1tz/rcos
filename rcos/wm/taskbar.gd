@@ -92,3 +92,11 @@ func mark_active_task(task_id):
 			item.mark_active()
 		else:
 			item.mark_inactive()
+
+func select_task_by_pos(pos):
+	var items = get_node("items_scroller/items")
+	for item in items.get_children():
+		if item.get_global_rect().has_point(pos):
+			emit_signal("task_selected", item.get_task_id())
+			item.mark_active()
+			return
