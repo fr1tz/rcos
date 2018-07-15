@@ -33,7 +33,7 @@ var mModuleInfo = {}
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
 var mURLHandlers = {}
-var mTasks = []
+var mTaskNodes = {} # Task ID -> Task Node
 
 func _init():
 	OS.set_target_fps(30)
@@ -140,40 +140,55 @@ func get_modules():
 func get_tmp_dir():
 	return mTmpDirPath
 
-func add_task(properties):
-	var task = properties
-	task["id"] = mNextAvailableTaskId
+func add_task(properties, parent_task_id = -1):
+	var parent_node = get_node("tasks")
+	if parent_task_id >= 0:
+		if !mTaskNodes.has(parent_task_id):
+			return -1
+		parent_node = mTaskNodes[parent_task_id]
+	var task_id = mNextAvailableTaskId
 	mNextAvailableTaskId += 1
-	mTasks.append(task)
-	call_deferred("emit_signal", "task_added", task)
-	call_deferred("emit_signal", "task_list_changed")
-	return task.id
+	var task_node = rlib.instance_scene("res://rcos/task.tscn")
+	task_node.set_name(str(task_id)) 
+	task_node.properties = properties
+	parent_node.add_child(task_node)
+	mTaskNodes[task_id] = task_node
+	emit_signal("task_added", task_node)
+	emit_signal("task_list_changed")
+	return task_id
 
 func change_task(task_id, properties):
-	for task in mTasks:
-		if task.id == task_id:
-			for key in properties.keys():
-				task[key] = properties[key]
-			call_deferred("emit_signal", "task_changed", task)
-			call_deferred("emit_signal", "task_list_changed")
-			return
+	if !mTaskNodes.has(task_id):
+		return false
+	var task_node = mTaskNodes[task_id]
+	for key in properties.keys():
+		task_node.properties[key] = properties[key]
+	emit_signal("task_changed", task_node)
+	emit_signal("task_list_changed")
+	return true
 
 func remove_task(task_id):
-	for task in mTasks:
-		if task.id == task_id:
-			mTasks.erase(task)
-			call_deferred("emit_signal", "task_removed", task)
-			call_deferred("emit_signal", "task_list_changed")
-			return
+	if !mTaskNodes.has(task_id):
+		return true
+	var task_node = mTaskNodes[task_id]
+	emit_signal("task_removed", task_node)
+	mTaskNodes.erase(task_id)
+	task_node.get_parent().remove_child(task_node)
+	task_node.free()
+	emit_signal("task_list_changed")
+	return true
 
-func get_task(task_id):
-	for task in mTasks:
-		if task.id == task_id:
-			return task
-	return null
+func get_task_properties(task_id):
+	if !mTaskNodes.has(task_id):
+		return null
+	var properties = {}
+	var task_node = mTaskNodes[task_id]
+	for key in task_node.properties.keys():
+		properties[key] = task_node.properties[key]
+	return properties
 
 func get_task_list():
-	return mTasks
+	return mTaskNodes
 
 func listen(object, port_type):
 	if !mNextPort.has(port_type):
