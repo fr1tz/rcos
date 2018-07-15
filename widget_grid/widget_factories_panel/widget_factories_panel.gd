@@ -25,10 +25,11 @@ func _on_item_selected(item, task_id):
 
 func update_available_widgets(widget_factory_tasks):
 	for item in mWidgetFactoryList.get_children():
-		item.queue_free()
-	for task in widget_factory_tasks:
-		var item = rlib.instance_scene("res://widget_grid/widget_factory_item.tscn")
-		item.set_widget_factory_task(task)
-		item.connect("pressed", self, "_on_item_selected", [item, task.id])
+		mWidgetFactoryList.remove_child(item)
+		item.free()
+	for task_id in widget_factory_tasks:
+		var item = rlib.instance_scene("res://widget_grid/widget_factories_panel/widget_factory_item.tscn")
+		item.set_widget_factory_task_id(task_id)
+		item.connect("pressed", self, "_on_item_selected", [item, task_id])
 		mWidgetFactoryList.add_child(item)
 

@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=1]
 
-[ext_resource path="res://widget_grid/grid_control.gd" type="Script" id=1]
-[ext_resource path="res://widget_grid/grid_control_overlay.gd" type="Script" id=2]
+[ext_resource path="res://widget_grid/widget_grid_control/widget_grid_control.gd" type="Script" id=1]
+[ext_resource path="res://widget_grid/widget_grid_control/overlay.tscn" type="PackedScene" id=2]
 
-[node name="grid" type="ColorFrame"]
+[node name="widget_grid_control" type="ColorFrame"]
 
 focus/ignore_mouse = true
 focus/stop_mouse = true
@@ -29,18 +29,6 @@ margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
 
-[node name="overlay" type="Control" parent="."]
-
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = true
-focus/stop_mouse = false
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-script/script = ExtResource( 2 )
+[node name="overlay" parent="." instance=ExtResource( 2 )]
 
 

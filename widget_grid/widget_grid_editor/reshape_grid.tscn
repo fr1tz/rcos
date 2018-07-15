@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=1]
 
 [ext_resource path="res://widget_grid/graphics/grid.png" type="Texture" id=1]
-[ext_resource path="res://widget_grid/reshape_grid.gd" type="Script" id=2]
+[ext_resource path="res://widget_grid/widget_grid_editor/reshape_grid.gd" type="Script" id=2]
 
 [node name="reshape_grid" type="TextureFrame"]
 

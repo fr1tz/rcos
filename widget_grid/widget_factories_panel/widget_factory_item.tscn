@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://widget_grid/widget_factory_item.gd" type="Script" id=1]
+[ext_resource path="res://widget_grid/widget_factories_panel/widget_factory_item.gd" type="Script" id=1]
 
 [node name="widget_factory_item" type="Button"]
 

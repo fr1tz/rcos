@@ -37,7 +37,7 @@ func _canvas_input(event):
 		emit_signal("dragged", index)
 
 func set_icon(texture):
-	get_node("frame/icon").set_texture(texture)
+	get_node("icon").set_texture(texture)
 
 func get_icon():
-	return get_node("frame/icon").get_texture()
+	return get_node("icon").get_texture()

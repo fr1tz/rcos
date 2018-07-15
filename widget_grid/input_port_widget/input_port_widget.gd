@@ -49,7 +49,10 @@ func load_widget_config_string(config_string):
 
 func create_widget_config_string():
 	var port_path = get_config_gui().get_port_path()
-	var icon_path = get_main_gui().get_icon().get_path()
+	var icon_path = ""
+	var icon = get_main_gui().get_icon()
+	if icon:
+		icon_path = icon.get_path()
 	var widget_config = {
 		"port_path": port_path,
 		"icon_path": icon_path

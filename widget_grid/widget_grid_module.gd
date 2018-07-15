@@ -15,11 +15,15 @@
 
 extends Node
 
-var mWidgetGridGuis = []
-var mWidgetFactoryTasks = []
-
 func _ready():
 	_log_debug("_ready()")
+	var dir = Directory.new()
+	if !dir.dir_exists("user://etc/widget_grids"):
+		dir.make_dir_recursive("user://etc/widget_grids")
+	var service = rlib.instance_scene("res://widget_grid/widget_grid_service.tscn")
+	service._module = self
+	if !rcos.add_service(service):
+		rcos.log_error(self, "Unable to add widget_grid service")
 	rcos.add_task({
 			"type": "widget_factory",
 			"product_name": "Output Port Widget",
@@ -32,16 +36,6 @@ func _ready():
 			"product_id": "widget_grid.input_port_widget",
 			"create_widget_func": funcref(self, "create_input_port_widget")
 		})
-	create_widget_grid()
-	rcos.connect("task_added", self, "_on_task_added")
-	rcos.connect("task_removed", self, "_on_task_removed")
-#	var modules = rcos.get_modules()
-#	for module_id in modules.keys():
-#		var module = modules[module_id]
-#		prints(module_id, module.get_name())
-	var task_list = rcos.get_task_list()
-	for task in task_list:
-		_on_task_added(task)
 	_log_notice("Ready")
 
 func _log_debug(content):
@@ -53,42 +47,13 @@ func _log_notice(content):
 func _log_error(content):
 	rcos.log_error(self, content)
 
-func _on_task_changed(task):
-	return
-
-func _on_task_added(task):
-	if !task.has("type") || task.type != "widget_factory":
-		return
-	if mWidgetFactoryTasks.has(task):
-		return
-	mWidgetFactoryTasks.push_back(task)
-	for grid_widget_gui in mWidgetGridGuis:
-		grid_widget_gui.update_available_widgets(mWidgetFactoryTasks)
-
-func _on_task_removed():
-	pass
-
-func create_widget_grid():
-	var canvas = rlib.instance_scene("res://rcos/lib/canvas.tscn")
-	canvas.min_size = Vector2(200, 400)
-	get_node("canvases").add_child(canvas)
-	var gui = rlib.instance_scene("res://widget_grid/gui.tscn")
-	canvas.add_child(gui)
-	var task_properties = {
-		"name": "Widget Grid",
-		"icon": get_node("icon").get_texture(),
-		"canvas": canvas,
-		"ops": {
-			"kill": funcref(gui, "kill"),
-			"go_back": funcref(gui, "go_back")
-		}
-	}
-	var task_id = rcos.add_task(task_properties)
-	gui.init(self, task_id)
-	mWidgetGridGuis.push_back(gui)
-
-func get_widget_tasks():
-	return mWidgetFactoryTasks
+func add_widget_grid_editor():
+	var num = 1
+	while get_node("widget_grid_editors").has_node(str(num)):
+		num += 1
+	var editor = rlib.instance_scene("res://widget_grid/widget_grid_editor/widget_grid_editor.tscn")
+	editor.set_name(str(num))
+	get_node("widget_grid_editors").add_child(editor)
 
 func create_output_port_widget():
 	return rlib.instance_scene("res://widget_grid/output_port_widget/output_port_widget.tscn")

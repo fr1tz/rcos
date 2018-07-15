@@ -15,18 +15,20 @@
 
 extends ColorFrame
 
+var mIOPortsPathPrefix = ""
 var mWidgetHostApi = null
 var mNextWidgetId = 1
 var mOverlayDrawNodes = {}
 var mEditMode = false
-var mSelectedWidgetContainer = null
 var mIndexToWidgetContainer = []
 var mKeyboardInputContainer = null
+var mLoadingFromFile = false
 
 onready var mWidgetContainers = get_node("widget_containers")
 onready var mOverlay = get_node("overlay")
 
 func _ready():
+	mIOPortsPathPrefix = "local/widget_grid_"+str(get_instance_ID())+"/"
 	mWidgetHostApi = preload("widget_host_api.gd").new(self)
 	for i in range(0, 8):
 		mIndexToWidgetContainer.push_back(null)
@@ -62,7 +64,9 @@ func _canvas_input(event):
 		if event.pressed:
 			if !get_global_rect().has_point(event.pos):
 				return
-			for c in get_widget_containers():
+			var containers = get_widget_containers()
+			containers.invert()
+			for c in containers:
 				if c.get_global_rect().has_point(event.pos):
 					mIndexToWidgetContainer[index] = c
 					mKeyboardInputContainer = c
@@ -71,7 +75,9 @@ func _canvas_input(event):
 					break
 		else:
 			if rcos.gui.get_dangling_control(index) != null:
-				for c in get_widget_containers():
+				var containers = get_widget_containers()
+				containers.invert()
+				for c in containers:
 					if c.get_widget_canvas() == null:
 						continue
 					if c.get_global_rect().has_point(event.pos):
@@ -98,38 +104,52 @@ func _canvas_input(event):
 	var fpos = _compute_widget_canvas_pos(event.pos, container)
 	canvas.update_input(index, fpos, down)
 
-func _on_reshape_control_clicked(reshape_control):
-	if mSelectedWidgetContainer != null:
-		if reshape_control == mSelectedWidgetContainer.get_reshape_control():
-			return
-	if mSelectedWidgetContainer:
-		mSelectedWidgetContainer.get_reshape_control().deselect()
-	mSelectedWidgetContainer = reshape_control.get_control()
-	reshape_control.select()
+func _add_widget_to_container(widget, container):
+	var widget_name = container.get_widget_name()
+	var io_ports_path_prefix = mIOPortsPathPrefix+widget_name+"/"
+	container.add_widget(widget, io_ports_path_prefix)
+
+func _update_widget_margins():
+	if mLoadingFromFile:
+		return
+	for c in mWidgetContainers.get_children():
+		c.set_self_opacity(1.0)
+		c.set_widget_margin(0)
+	for c1 in mWidgetContainers.get_children():
+		var current_rect = c1.get_rect()
+		current_rect.pos += Vector2(1, 1)
+		current_rect.size -= Vector2(2, 2)
+		for c2 in mWidgetContainers.get_children():
+			if c2 != c1 && c2.get_rect().encloses(current_rect):
+				c1.set_self_opacity(0.0)
+				c1.set_widget_margin(2)
+				break
+
+func set_io_ports_path_prefix(prefix):
+	mIOPortsPathPrefix = prefix
 
 func add_widget_container():
-	var widget_container = rlib.instance_scene("res://widget_grid/widget_container.tscn")
-	mWidgetContainers.add_child(widget_container)
-	widget_container.toggle_edit_mode(mEditMode)
-	widget_container.connect("item_rect_changed", self, "update_size")
-	var reshape_control = widget_container.get_reshape_control()
-	reshape_control.connect("clicked", self, "_on_reshape_control_clicked", [reshape_control])
-	update_size()
-	return widget_container
+	var container = rlib.instance_scene("res://widget_grid/widget_grid_control/widget_container.tscn")
+	mWidgetContainers.add_child(container)
+	container.connect("item_rect_changed", self, "_update_widget_margins")
+	return container
 
 func add_widget(widget_factory_task_id, pos):
-	var task = rcos.get_task(widget_factory_task_id)
-	if !task.has("product_id"):
+	var properties = rcos.get_task_properties(widget_factory_task_id)
+	if !properties.has("product_id") || !properties.has("product_name"):
 		return
-	var widget_id = mNextWidgetId
-	mNextWidgetId += 1
-	var widget_product_id = task.product_id
-	var widget = task.create_widget_func.call_func()
+	var widget_product_id = properties.product_id
+	var widget = properties.create_widget_func.call_func()
 	if widget == null:
 		return
+	var widget_name = properties.product_name.to_lower().replace(" ", "_")
+	var i = 1
+	while mWidgetContainers.has_node(widget_name+str(i)+"_container"):
+		i += 1
+	widget_name += str(i)
 	var widget_container = add_widget_container()
-	widget_container.init(mWidgetHostApi, widget_id, task.product_id)
-	widget_container.add_widget(widget)
+	widget_container.init(mWidgetHostApi, widget_name, properties.product_id)
+	_add_widget_to_container(widget, widget_container)
 	widget_container.set_pos(pos)
 
 func toggle_edit_mode(edit_mode):
@@ -138,8 +158,6 @@ func toggle_edit_mode(edit_mode):
 	else:
 		rcos.enable_canvas_input(self)
 	mEditMode = edit_mode
-	for widget_container in mWidgetContainers.get_children():
-		widget_container.toggle_edit_mode(edit_mode)
 
 func update_size():
 	var w = 0
@@ -150,36 +168,6 @@ func update_size():
 		if p.x > w: w = p.x
 		if p.y > h: h = p.y
 	set_size(Vector2(w, h))
-
-func get_selected_widget_container():
-	return mSelectedWidgetContainer
-
-func raiselower_selected_widget():
-	if mSelectedWidgetContainer == null:
-		return
-	var pos = mSelectedWidgetContainer.get_position_in_parent()
-	if pos != mWidgetContainers.get_child_count() - 1:
-		pos = mWidgetContainers.get_child_count() - 1
-	else:
-		pos = 0
-	mWidgetContainers.move_child(mSelectedWidgetContainer, pos)
-
-func rotate_selected_widget():
-	if mSelectedWidgetContainer == null:
-		return
-	mSelectedWidgetContainer.rotate()
-
-func configure_selected_widget():
-	if mSelectedWidgetContainer == null:
-		return
-	mSelectedWidgetContainer.configure()
-
-func delete_selected_widget():
-	if mSelectedWidgetContainer == null:
-		return
-	mSelectedWidgetContainer.queue_free()
-	mSelectedWidgetContainer = null
-	update_size()
 
 func enable_overlay_draw(node):
 	if mOverlayDrawNodes.has(node):
@@ -222,14 +210,11 @@ func clear():
 		widget_container.queue_free()
 	mNextWidgetId = 1
 
-func save_to_file():
+func save_to_file(filename):
 	if mWidgetContainers.get_child_count() == 0:
 		return
-	var dir = Directory.new()
-	if !dir.dir_exists("user://etc"):
-		dir.make_dir_recursive("user://etc")
 	var file = File.new()
-	if file.open("user://etc/widget_grid_conf.json", File.WRITE) != OK:
+	if file.open(filename, File.WRITE) != OK:
 		return
 	var config = {
 		"version": 0,
@@ -238,7 +223,7 @@ func save_to_file():
 	for widget_container in get_widget_containers():
 		var pos = widget_container.get_pos()
 		var size = widget_container.get_size()
-		var widget_id = widget_container.get_widget_id()
+		var widget_name = widget_container.get_widget_name()
 		var widget_product_id = widget_container.get_widget_product_id()
 		var widget_orientation = widget_container.get_widget_orientation()
 		var widget_config_string = widget_container.get_widget_config_string()
@@ -247,7 +232,7 @@ func save_to_file():
 			"y": pos.y,
 			"width": size.x,
 			"height": size.y,
-			"widget_id": widget_id,
+			"widget_name": widget_name,
 			"widget_product_id": widget_product_id,
 			"widget_orientation": widget_orientation,
 			"widget_config_string": widget_config_string
@@ -256,48 +241,57 @@ func save_to_file():
 	file.store_buffer(config.to_json().to_utf8())
 	file.close()
 
-func load_from_file():
+func load_from_file(filename):
 	clear()
 	var file = File.new()
-	if file.open("user://etc/widget_grid_conf.json", File.READ) != OK:
+	if file.open(filename, File.READ) != OK:
 		return
 	var text = file.get_buffer(file.get_len()).get_string_from_utf8()
 	file.close()
 	var config = {}
-	if config.parse_json(text) != OK:
+	if config.parse_json(text) != OK || config.empty():
 		return
-	var tasks = rcos.get_task_list()
+	mLoadingFromFile = true
+	var tasks_list = rcos.get_task_list()
 	if config.version == 0:
 		for c in config.widget_containers:
 			var widget_container = add_widget_container()
-			widget_container.init(mWidgetHostApi, c.widget_id, c.widget_product_id, c.widget_orientation, c.widget_config_string)
-			if c.widget_id >= mNextWidgetId:
-				mNextWidgetId = c.widget_id + 1
-			for task in tasks:
-				if !task.has("type") || !task.has("product_id") || !task.has("create_widget_func"):
-					continue
-				if task.type == "widget_factory" && task.product_id == c.widget_product_id:
-					var widget = task.create_widget_func.call_func()
-					if widget == null:
-						break
-					widget_container.add_widget(widget)
+			widget_container.init(mWidgetHostApi, c.widget_name, c.widget_product_id, \
+				c.widget_orientation, c.widget_config_string)
 			widget_container.set_pos(Vector2(c.x, c.y))
 			widget_container.set_size(Vector2(c.width, c.height))
+			for task in tasks_list.values():
+				if !task.properties.has("type") \
+				|| !task.properties.has("product_id") \
+				|| !task.properties.has("create_widget_func"):
+					continue
+				if task.properties.type == "widget_factory" \
+				&& task.properties.product_id == c.widget_product_id:
+					var widget = task.properties.create_widget_func.call_func()
+					if widget == null:
+						break
+					_add_widget_to_container(widget, widget_container)
+	mLoadingFromFile = false
+	_update_widget_margins()
 
 func _on_task_added(task):
-	if !task.has("type") || !task.has("product_id") || !task.has("create_widget_func"):
+	if !task.properties.has("type") \
+	|| !task.properties.has("product_id") \
+	|| !task.properties.has("create_widget_func"):
 		return
-	if task.type != "widget_factory":
+	if task.properties.type != "widget_factory":
 		return
 	for widget_container in get_widget_containers():
 		if widget_container.get_widget() != null:
 			continue
-		if task.product_id == widget_container.get_widget_product_id():
+		if task.properties.product_id == widget_container.get_widget_product_id():
 			var widget = task.create_widget_func.call_func()
 			if widget == null:
 				return
+			var widget_name = widget_container.get_widget_name()
 			var pos = widget_container.get_pos()
 			var size = widget_container.get_size()
-			widget_container.add_widget(widget)
+			_add_widget_to_container(widget, widget_container)
 			widget_container.set_pos(pos)
 			widget_container.set_size(size)
+

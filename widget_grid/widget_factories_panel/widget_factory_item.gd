@@ -15,11 +15,12 @@
 
 extends Button
 
-var mWidgetFactoryTask = null
+var mWidgetFactoryTaskId = -1
 
-func set_widget_factory_task(widget_factory_task):
-	mWidgetFactoryTask = widget_factory_task
-	set_text(mWidgetFactoryTask.product_name)
+func set_widget_factory_task_id(widget_factory_task_id):
+	mWidgetFactoryTaskId = widget_factory_task_id
+	var properties = rcos.get_task_properties(widget_factory_task_id)
+	set_text(properties.product_name)
 
-func get_widget_factory_task():
-	return mWidgetFactoryTask
+func get_widget_factory_task_id():
+	return mWidgetFactoryTaskId

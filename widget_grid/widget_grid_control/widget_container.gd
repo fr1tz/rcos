@@ -22,9 +22,8 @@ const ORIENTATION_W = 3
 
 var mWidgetHostApi = null
 var mEditMode = false
-var mReshapeControl = null
 var mWidget = null
-var mWidgetId = -1
+var mWidgetName = -1
 var mWidgetOrientation = ORIENTATION_N
 var mWidgetProductId = ""
 var mWidgetConfigString = ""
@@ -35,8 +34,6 @@ onready var mContent = get_node("content")
 onready var mViewportSprite = get_node("viewport_sprite")
 
 func _ready():
-	mReshapeControl = get_node("reshape_control")
-	mReshapeControl.set_control(self)
 	connect("resized", self, "_resized")
 
 func _resized():
@@ -84,30 +81,32 @@ func _config_task_go_back():
 	mConfigTaskId = -1
 	return true
 
-func init(widget_host_api, widget_id, widget_product_id = "", widget_orientation = ORIENTATION_N, widget_config_string = ""):
+func init(widget_host_api, widget_name, widget_product_id = "", widget_orientation = ORIENTATION_N, widget_config_string = ""):
 	mWidgetHostApi = widget_host_api
-	mWidgetId = widget_id
+	mWidgetName = widget_name
 	mWidgetProductId = widget_product_id
 	mWidgetOrientation = widget_orientation
 	mWidgetConfigString = widget_config_string
+	set_name(mWidgetName+"_container")
 	get_node("widget_product_id_label").set_text(mWidgetProductId)
 
-func add_widget(widget):
+func add_widget(widget, widget_io_ports_path_prefix):
 	if widget == null || !widget.has_node("main_canvas"):
 		return
 	mWidget = widget
 	var main_canvas = null
-	var main_canvas_size = Vector2(40, 40)
-	var main_canvas_min_size = Vector2(40, 40)
+	#var main_canvas_size = Vector2(40, 40)
+	var main_canvas_size = get_size()
+	var main_canvas_min_size = Vector2(20, 20)
 	var config_canvas = null
 	var config_canvas_size = Vector2(40, 40)
 	var main_canvas_placeholder = mWidget.get_node("main_canvas")
-	main_canvas_size.x = main_canvas_placeholder.get_margin(MARGIN_RIGHT)
-	main_canvas_size.y = main_canvas_placeholder.get_margin(MARGIN_BOTTOM)
-	main_canvas_min_size = main_canvas_placeholder.get_custom_minimum_size()
+	#main_canvas_size.x = main_canvas_placeholder.get_margin(MARGIN_RIGHT)
+	#main_canvas_size.y = main_canvas_placeholder.get_margin(MARGIN_BOTTOM)
+	#main_canvas_min_size = main_canvas_placeholder.get_custom_minimum_size()
 	main_canvas = rlib.instance_scene("res://rcos/lib/canvas.tscn")
 	main_canvas_placeholder.replace_by(main_canvas)
-	main_canvas_placeholder.queue_free()
+	main_canvas_placeholder.free()
 	main_canvas.set_rect(Rect2(Vector2(0, 0), main_canvas_size))
 	main_canvas.set_name("main_canvas")
 	main_canvas.min_size = main_canvas_min_size
@@ -118,20 +117,20 @@ func add_widget(widget):
 		config_canvas_size.y = config_canvas_placeholder.get_margin(MARGIN_BOTTOM)
 		config_canvas = rlib.instance_scene("res://rcos/lib/canvas.tscn")
 		config_canvas_placeholder.replace_by(config_canvas)
-		config_canvas_placeholder.queue_free()
+		config_canvas_placeholder.free()
 		config_canvas.resizable = false
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas_size))
 		config_canvas.set_name("config_canvas")
+	rlib.set_meta_recursive(mWidget, "widget_io_ports_path_prefix", widget_io_ports_path_prefix)
 	rlib.set_meta_recursive(mWidget, "widget_host_api", mWidgetHostApi)
-	rlib.set_meta_recursive(mWidget, "widget_id", mWidgetId)
 	rlib.set_meta_recursive(mWidget, "widget_root_node", mWidget)
 	mContent.add_child(mWidget)
 	if mWidgetConfigString != "" && mWidget.has_method("load_widget_config_string"):
 		mWidget.load_widget_config_string(mWidgetConfigString)
 	if config_canvas:
 		config_canvas.set_rect(Rect2(Vector2(0, 0), config_canvas.get_child(0).get_size()))
-	var size = get_widget_canvas().get_rect().size
-	set_size(size)
+	var size = get_size()
+	#set_size(size)
 	main_canvas.resize(size)
 #	mWidgetWindow.set_pos(Vector2(0, 0))
 #	mWidgetWindow.set_size(size)
@@ -141,15 +140,11 @@ func add_widget(widget):
 	mViewportSprite.set_viewport_path(main_canvas.get_path())
 	get_node("widget_product_id_label").set_hidden(true)
 
-func toggle_edit_mode(edit_mode):
-	mEditMode = edit_mode
-	mReshapeControl.set_hidden(!edit_mode)
-
 func get_widget():
 	return mWidget
 
-func get_widget_id():
-	return mWidgetId
+func get_widget_name():
+	return mWidgetName
 
 func get_widget_product_id():
 	return mWidgetProductId
@@ -173,25 +168,30 @@ func get_config_canvas():
 func get_widget_rotation():
 	return mViewportSprite.get_rot()
 
-func get_reshape_control():
-	return mReshapeControl
-
 func rotate():
 	mWidgetOrientation += 1
 	if mWidgetOrientation == 4:
 		mWidgetOrientation = 0
 	_resized()
 
-func configure():
+func set_widget_margin(margin):
+	var canvas = get_widget_canvas()
+	if canvas == null: 
+		return
+	canvas.resize(get_size() - Vector2(margin*2, margin*2))
+
+func configure(config_task_parent_task_id):
 	var config_canvas = get_config_canvas()
 	if config_canvas == null:
 		return
 	if mConfigTaskId == -1:
 		var task_properties = {
-			"name": "Widget Settings",
+			"name": mWidget.get_name()+" Settings",
+			"icon": load("res://widget_grid/graphics/icons/widget_settings.png"),
 			"canvas": config_canvas,
 			"ops": {
 				"go_back": funcref(self, "_config_task_go_back")
-			}
+			},
+			"focus_wanted": true
 		}
-		mConfigTaskId = rcos.add_task(task_properties)
+		mConfigTaskId = rcos.add_task(task_properties, config_task_parent_task_id)
