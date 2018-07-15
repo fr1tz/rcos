@@ -21,7 +21,7 @@ onready var mDesktop = get_node("desktop")
 onready var mWindow = get_node("desktop/window")
 onready var mTaskbar = get_node("taskbar")
 
-var mActiveTask = null
+var mActiveTaskId = -1
 var mDanglingControls = {}
 
 func _notification(what):
@@ -31,27 +31,28 @@ func _notification(what):
 func _escape():
 	var taskbar_was_hidden = mTaskbar.is_hidden()
 	mTaskbar.set_hidden(false)
-	if mActiveTask.has("ops") && mActiveTask.ops.has("go_back"):
-		var ret = mActiveTask.ops["go_back"].call_func()
+	var properties = rcos.get_task_properties(mActiveTaskId)
+	if properties != null \
+	&& properties.has("ops") \
+	&& properties.ops.has("go_back"):
+		var ret = properties.ops["go_back"].call_func()
 		if ret:
 			return
 	if taskbar_was_hidden:
 		return
-	if mActiveTask == rcos.get_task_list()[0]:
-		get_tree().quit()
-	else:
-		show_task(rcos.get_task_list()[0].id)
+	get_tree().quit()
 
 func _ready():
 	connect("resized", self, "_resized")
+	rcos.connect("task_added", self, "_on_task_added")
+	rcos.connect("task_removed", self, "_on_task_removed")
 	rcos.connect("task_changed", self, "_on_task_changed")
-	rcos.connect("task_list_changed", self, "_on_task_list_changed")
 	mTaskbar.connect("task_selected", self, "show_task")
 	#set_process_input(true)
 
 func _resized():
-	if mActiveTask != null:
-		show_task(mActiveTask.id)
+	if mActiveTaskId != null:
+		show_task(mActiveTaskId)
 #	var root_canvas = get_node("root_window").get_canvas()
 #	if root_canvas == null:
 #		return
@@ -86,33 +87,42 @@ func _canvas_input(event):
 		if mDanglingControls.size() == 0:
 			rcos.disable_canvas_input(self)
 
-func _on_task_changed(task):
-	if task == mActiveTask:
-		show_task(task.id)
+func _on_task_added(task):
+	mTaskbar.add_task(task)
+	show_task(task.get_id())
 
-func _on_task_list_changed():
-	var task_list = rcos.get_task_list()
-	if mActiveTask == null:
-		var task_id = task_list[task_list.size()-1].id
-		show_task(task_id)
+func _on_task_removed(task):
+	mTaskbar.remove_task(task)
+	var parent_task = task.get_parent()
+	if parent_task != rcos.get_node("tasks"):
+		show_task(parent_task.get_id())
+	elif task.get_index() > 0:
+		var sibling_task = parent_task.get_child(task.get_index()-1)
+		show_task(sibling_task.get_id())
+	show_task(-1)
+
+func _on_task_changed(task):
+	mTaskbar.change_task(task)
+	if task.get_id() == mActiveTaskId:
+		show_task(task.get_id())
 
 func show_task(task_id):
-	var task = rcos.get_task(task_id)
-	if task == null:
+	var properties = rcos.get_task_properties(task_id)
+	if properties == null:
 		return
-	if !task.has("canvas"):
+	if !properties.has("canvas"):
 		return
-	mActiveTask = task
-	var canvas = mActiveTask.canvas
+	mActiveTaskId = task_id
+	var canvas = properties.canvas
 	var fullscreen = false
 	var frame_rect = Rect2(Vector2(0, 0), mDesktop.get_rect().size)
-	if mActiveTask.has("fullscreen") && mActiveTask.fullscreen:
+	if properties.has("fullscreen") && properties.fullscreen:
 		fullscreen = true
 		frame_rect = Rect2(Vector2(0, 0), get_rect().size)
 	var window_rotated = false
 	var window_rect = Rect2(Vector2(0, 0), canvas.get_rect().size)
-	if mActiveTask.has("canvas_region") && mActiveTask.canvas_region != null:
-		window_rect = Rect2(Vector2(0, 0), mActiveTask.canvas_region.size)
+	if properties.has("canvas_region") && properties.canvas_region != null:
+		window_rect = Rect2(Vector2(0, 0), properties.canvas_region.size)
 	if canvas.resizable:
 		mWindow.set_rotation_deg(0)
 		if canvas.min_size.x > frame_rect.size.x \
@@ -148,8 +158,8 @@ func show_task(task_id):
 			mWindow.set_rotation_deg(0)
 			mWindow.set_size(Vector2(window_rect.size.x, window_rect.size.y))
 	var canvas_region = canvas.get_rect()
-	if mActiveTask.has("canvas_region"):
-		canvas_region = mActiveTask.canvas_region
+	if properties.has("canvas_region"):
+		canvas_region = properties.canvas_region
 	mWindow.show_canvas(canvas, canvas_region)
 	mTaskbar.set_hidden(fullscreen)
 	mTaskbar.mark_active_task(task_id)

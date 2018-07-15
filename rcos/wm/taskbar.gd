@@ -24,9 +24,6 @@ func _init():
 	add_user_signal("task_selected")
 
 func _ready():
-	rcos.connect("task_added", self, "_on_task_added")
-	rcos.connect("task_changed", self, "_on_task_changed")
-	rcos.connect("task_removed", self, "_on_task_removed")
 	var items_scroller = get_node("items_scroller")
 	items_scroller.connect("scrolling_started", self, "show_titles")
 	items_scroller.connect("scrolling_stopped", self, "hide_titles")
@@ -44,37 +41,6 @@ func _on_ops_button_pressed():
 	var op = ops[0]
 	op[1].call_func()
 
-func _on_task_added(task):
-	if task.has("type") && task.type == "widget_factory":
-		return
-	var items = get_node("items_scroller/items")
-	var item = load("res://rcos/wm/taskbar_item.tscn").instance()
-	item.add_to_group(mTaskbarItemsGroup)
-	item.set_task_id(task.id)
-	if task.has("name"):
-		item.set_title(task.name)
-	if task.has("icon"):
-		item.set_icon(task.icon)
-	item.hide_title()
-	item.connect("selected", self, "_item_selected", [task.id])
-	items.add_child(item)
-
-func _on_task_changed(task):
-	var items = get_node("items_scroller/items")
-	for item in items.get_children():
-		if item.get_task_id() == task.id:
-			item.set_title(task.name)
-			item.set_icon(task.icon)
-			return
-
-func _on_task_removed(task):
-	var items = get_node("items_scroller/items")
-	for item in items.get_children():
-		if item.get_task_id() == task.id:
-			items.remove_child(item)
-			item.queue_free()
-			return
-
 func _item_selected(task_id):
 	emit_signal("task_selected", task_id)
 
@@ -83,6 +49,46 @@ func show_titles():
 
 func hide_titles():
 	get_tree().call_group(0, mTaskbarItemsGroup, "hide_title")
+
+func get_num_task_items():
+	return get_node("items_scroller/items").get_child_count()
+
+func add_task(task):
+	if task.properties.has("type") && task.properties.type == "widget_factory":
+		return
+	var items = get_node("items_scroller/items")
+	var item = load("res://rcos/wm/taskbar_item.tscn").instance()
+	item.add_to_group(mTaskbarItemsGroup)
+	item.set_task_id(task.get_id())
+	if task.properties.has("name"):
+		item.set_title(task.properties.name)
+	if task.properties.has("icon"):
+		item.set_icon(task.properties.icon)
+	item.hide_title()
+	item.connect("selected", self, "_item_selected", [task.get_id()])
+	items.add_child(item)
+	var parent_task_id = task.get_parent_task_id()
+	if parent_task_id > 0:
+		for c in items.get_children():
+			if c.get_task_id() == parent_task_id:
+				items.move_child(item, c.get_index()+1)
+				break
+
+func change_task(task):
+	var items = get_node("items_scroller/items")
+	for item in items.get_children():
+		if item.get_task_id() == task.get_id():
+			item.set_title(task.properties.name)
+			item.set_icon(task.properties.icon)
+			return
+
+func remove_task(task):
+	var items = get_node("items_scroller/items")
+	for item in items.get_children():
+		if item.get_task_id() == task.get_id():
+			items.remove_child(item)
+			item.queue_free()
+			return
 
 func mark_active_task(task_id):
 	mActiveTaskId = task_id
