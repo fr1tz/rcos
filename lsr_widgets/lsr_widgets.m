@@ -1,7 +1,7 @@
 [module]
 
 
-desc="LSR Widgets"
+desc="Provides various widgets"
 
 
 path="lsr_widgets.tscn"
