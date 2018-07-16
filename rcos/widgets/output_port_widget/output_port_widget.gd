@@ -22,7 +22,7 @@ func _create_dangling_control(index):
 	var output_port = data_router.get_output_port(get_config_gui().get_port_path())
 	if output_port == null:
 		return
-	var data_control = rlib.instance_scene("res://widget_grid/output_port_widget/data_control.tscn")
+	var data_control = rlib.instance_scene("res://rcos/widgets/output_port_widget/data_control.tscn")
 	add_child(data_control)
 	data_control.set_icon(get_main_gui().get_icon())
 	data_control.set_label(get_config_gui().get_port_path())

@@ -24,18 +24,6 @@ func _ready():
 	service._module = self
 	if !rcos.add_service(service):
 		rcos.log_error(self, "Unable to add widget_grid service")
-	rcos.add_task({
-			"type": "widget_factory",
-			"product_name": "Output Port Widget",
-			"product_id": "widget_grid.output_port_widget",
-			"create_widget_func": funcref(self, "create_output_port_widget")
-		})
-	rcos.add_task({
-			"type": "widget_factory",
-			"product_name": "Input Port Widget",
-			"product_id": "widget_grid.input_port_widget",
-			"create_widget_func": funcref(self, "create_input_port_widget")
-		})
 	_log_notice("Ready")
 
 func _log_debug(content):
@@ -54,9 +42,3 @@ func add_widget_grid_editor():
 	var editor = rlib.instance_scene("res://widget_grid/widget_grid_editor/widget_grid_editor.tscn")
 	editor.set_name(str(num))
 	get_node("widget_grid_editors").add_child(editor)
-
-func create_output_port_widget():
-	return rlib.instance_scene("res://widget_grid/output_port_widget/output_port_widget.tscn")
-
-func create_input_port_widget():
-	return rlib.instance_scene("res://widget_grid/input_port_widget/input_port_widget.tscn")

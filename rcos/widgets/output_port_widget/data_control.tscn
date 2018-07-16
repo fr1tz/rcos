@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://widget_grid/output_port_widget/data_control.gd" type="Script" id=2]
+[ext_resource path="res://rcos/widgets/output_port_widget/data_control.gd" type="Script" id=2]
 [ext_resource path="res://rcos/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=3]
 
 [sub_resource type="DynamicFont" id=1]

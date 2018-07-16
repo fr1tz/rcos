@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://widget_grid/output_port_widget/config_gui.gd" type="Script" id=2]
+[ext_resource path="res://rcos/widgets/output_port_widget/config_gui.gd" type="Script" id=2]
 [ext_resource path="res://rcos/lib/node_selector.tscn" type="PackedScene" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
