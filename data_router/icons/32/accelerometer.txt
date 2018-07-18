@@ -1,0 +1,8 @@
+accelerometer.png / accelerometer.xcf are based on:
+
+'accelerometer'
+Obtained from: https://thenounproject.com/search/?q=accelerometer&i=63278
+Author Name: Kevin Schumacher
+Author URL:  https://thenounproject.com/kevin.schumacher.schubox
+License Name: CC BY 3.0 US
+License URL: https://creativecommons.org/licenses/by/3.0/us/

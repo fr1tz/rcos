@@ -1,0 +1,11 @@
+tux.png / tux.xcf are based on:
+
+'Tux.svg'
+Obtained from: https://commons.wikimedia.org/wiki/File:Tux.svg
+Author Name: Larry Ewing (original drawing using GIMP)
+Author URL:  http://isc.tamu.edu/~lewing/
+Author Name: Simon Budig (vectorized version)
+Author URL: http://www.home.unix-ag.org/simon/
+See also: http://www.home.unix-ag.org/simon/penguin/README
+License Name: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+License URL: https://creativecommons.org/publicdomain/zero/1.0/
