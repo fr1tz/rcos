@@ -55,12 +55,15 @@ func _init():
 	add_user_signal("task_removed")
 	add_user_signal("new_log_entry3")
 	var model_name = OS.get_model_name()
+	var os_name = OS.get_name()
 	data_router.set_node_icon("local", load("res://data_router/icons/32/rcos.png"), 32)
 	# Select icon for localhost node
 	if model_name == "GenericDevice":
 		data_router.set_node_icon("localhost", load("res://data_router/icons/32/generic_device.png"), 32)
 	else:
 		data_router.set_node_icon("localhost", load("res://data_router/icons/32/smartphone.png"), 32)
+	data_router.set_node_icon("localhost/android", load("res://data_router/icons/32/android.png"), 32)
+	data_router.set_node_icon("localhost/windows", load("res://data_router/icons/32/windows_os.png"), 32)
 
 func _ready():
 	var root_canvas_script = load("res://rcos/root_canvas.gd")
