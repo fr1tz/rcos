@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=1]
+
+[ext_resource path="res://host_sensors_io_ports/host_sensors_io_ports.gd" type="Script" id=1]
+[ext_resource path="res://host_sensors_io_ports/sensor.tscn" type="PackedScene" id=2]
+
+[node name="host_sensors_io_ports" type="Node"]
+
+script/script = ExtResource( 1 )
+
+[node name="accelerometer" parent="." instance=ExtResource( 2 )]
+
+sensor = 0
+
+[node name="gravity" parent="." instance=ExtResource( 2 )]
+
+sensor = 1
+
+[node name="gyroscope" parent="." instance=ExtResource( 2 )]
+
+sensor = 2
+
+[node name="magnetometer" parent="." instance=ExtResource( 2 )]
+
+sensor = 3
+
+
