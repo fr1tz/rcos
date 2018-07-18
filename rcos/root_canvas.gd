@@ -28,6 +28,8 @@ func _ready():
 
 func _input(event):
 	mLastInputEventId = event.ID
+	if event.type == InputEvent.MOUSE_BUTTON && event.button_mask > 1:
+		return
 	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
 	var touch = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON)
 	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)
