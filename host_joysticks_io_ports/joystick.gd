@@ -38,16 +38,18 @@ func _add_io_ports():
 
 func add_output_ports(prefix):
 	for axis_index in range(0, 8):
-		var port = data_router.add_output_port(prefix+"/axis/"+str(axis_index+1))
+		var port = data_router.add_output_port(prefix+"/axis"+str(axis_index+1))
 		port.set_meta("port_type", PORT_TYPE_AXIS)
 		port.set_meta("axis_index", axis_index)
+		port.set_meta("icon32", load("res://data_router/icons/32/axis1.png"))
 		port.connect("data_access", self, "_output_port_data_access", [port])
 		port.connect("connections_changed", self, "_output_port_connections_changed", [port])
 		mOutputPorts.push_back(port)
 	for button_index in range(0, 16):
-		var port = data_router.add_output_port(prefix+"/buttons/"+str(button_index+1)+"/pressed")
+		var port = data_router.add_output_port(prefix+"/button"+str(button_index+1))
 		port.set_meta("port_type", PORT_TYPE_BUTTON)
 		port.set_meta("button_index", button_index)
+		port.set_meta("icon32", load("res://data_router/icons/32/button.png"))
 		port.connect("data_access", self, "_output_port_data_access", [port])
 		port.connect("connections_changed", self, "_output_port_connections_changed", [port])
 		mOutputPorts.push_back(port)
