@@ -71,7 +71,7 @@ func _ready():
 	_add_io_ports()
 
 func _add_io_ports():
-	var port_path_prefix = "local/"
+	var port_path_prefix = "rcos/"
 	var port = data_router.add_input_port(port_path_prefix+"/open(url)")
 	port.set_meta("data_type", "string")
 	port.set_meta("icon32", load("res://data_router/icons/32/open.png"))
