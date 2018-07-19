@@ -1,6 +1,8 @@
 buttons.png / buttons.xcf are based on:
 
-'I Like Buttons'
-By MazeNL77 (http://mazenl77.deviantart.com/)
-License: CreativeCommons CC-BY (https://creativecommons.org/licenses/by/3.0/deed.en)
-Obtained from https://commons.wikimedia.org/wiki/File:Perspective-Button-Stop-icon.png
+'Button'
+https://thenounproject.com/term/button/113108/
+Author Name: Michael Wohlwend
+Author URL:  https://thenounproject.com/michael.wohlwend
+License Name: Attribution 3.0 United States (CC BY 3.0 US)
+License URL: https://creativecommons.org/licenses/by/3.0/us/legalcode
