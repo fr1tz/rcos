@@ -35,7 +35,7 @@ func _exit_tree():
 
 func _add_io_ports():
 	var os_name = OS.get_name().to_lower().replace(" ", "_")
-	var port_path_prefix = "localhost/"+os_name+"/sensors"
+	var port_path_prefix = "localhost/sensors"
 	var icon = null
 	if sensor == ACCELEROMETER:
 		port_path_prefix += "/accelerometer"
