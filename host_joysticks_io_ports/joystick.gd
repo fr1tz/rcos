@@ -33,7 +33,7 @@ func _add_io_ports():
 		queue_free()
 		return
 	var os_name = OS.get_name().to_lower().replace(" ", "_")
-	var prefix = "localhost/"+os_name+"/joysticks/"+joystick_name+"["+str(mDevice)+"]"
+	var prefix = "localhost/joysticks/"+joystick_name+"["+str(mDevice)+"]"
 	add_output_ports(prefix)
 
 func add_output_ports(prefix):
