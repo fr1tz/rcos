@@ -69,7 +69,8 @@ func _add_output_ports(prefix):
 	speed_node.set_meta("icon32", load("res://data_router/icons/32/speedometer.png"))
 	# Buttons
 	for button_index in range(1, 17):
-		var port = data_router.add_output_port(prefix+"/buttons/"+str(button_index))
+		var pressed = Input.is_mouse_button_pressed(button_index)
+		var port = data_router.add_output_port(prefix+"/buttons/"+str(button_index), pressed)
 		port.set_meta("data_type", "bool")
 		port.set_meta("port_type", PORT_BUTTON)
 		port.set_meta("button_index", button_index)
