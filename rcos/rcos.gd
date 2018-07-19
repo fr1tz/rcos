@@ -56,7 +56,7 @@ func _init():
 	add_user_signal("new_log_entry3")
 	var model_name = OS.get_model_name()
 	var os_name = OS.get_name()
-	data_router.set_node_icon("local", load("res://data_router/icons/32/rcos.png"), 32)
+	data_router.set_node_icon("rcos", load("res://data_router/icons/32/rcos.png"), 32)
 	# Select icon for localhost node
 	if model_name == "GenericDevice":
 		data_router.set_node_icon("localhost", load("res://data_router/icons/32/generic_device.png"), 32)
