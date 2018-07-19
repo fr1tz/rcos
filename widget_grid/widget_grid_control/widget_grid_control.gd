@@ -151,6 +151,7 @@ func add_widget(widget_factory_task_id, pos):
 	widget_container.init(mWidgetHostApi, widget_name, properties.product_id)
 	_add_widget_to_container(widget, widget_container)
 	widget_container.set_pos(pos)
+	return widget_container
 
 func toggle_edit_mode(edit_mode):
 	if edit_mode:
