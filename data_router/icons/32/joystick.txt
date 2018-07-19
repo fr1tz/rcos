@@ -1,0 +1,8 @@
+joystick.png / joystick.xcf are based on:
+
+'joystick'
+https://thenounproject.com/term/joystick/139698/
+Author Name: Samy Menai
+Author URL:  https://thenounproject.com/samymenai
+License Name: Attribution 3.0 United States (CC BY 3.0 US)
+License URL: https://creativecommons.org/licenses/by/3.0/us/legalcode
