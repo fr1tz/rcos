@@ -1,15 +1,15 @@
 [gd_scene load_steps=12 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://rcos/io_ports_connector/connection_item.gd" type="Script" id=2]
+[ext_resource path="res://io_ports_connector/connection_item.gd" type="Script" id=2]
 [ext_resource path="res://rcos/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=3]
-[ext_resource path="res://rcos/io_ports_connector/graphics/existing_output_port.png" type="Texture" id=4]
-[ext_resource path="res://rcos/io_ports_connector/graphics/missing_output_port.png" type="Texture" id=5]
-[ext_resource path="res://rcos/io_ports_connector/graphics/existing_input_port.png" type="Texture" id=6]
-[ext_resource path="res://rcos/io_ports_connector/graphics/missing_input_port.png" type="Texture" id=7]
-[ext_resource path="res://rcos/io_ports_connector/graphics/active_connection.png" type="Texture" id=8]
-[ext_resource path="res://rcos/io_ports_connector/graphics/inactive_connection.png" type="Texture" id=9]
-[ext_resource path="res://rcos/io_ports_connector/graphics/disabled_connection.png" type="Texture" id=10]
+[ext_resource path="res://io_ports_connector/graphics/existing_output_port.png" type="Texture" id=4]
+[ext_resource path="res://io_ports_connector/graphics/missing_output_port.png" type="Texture" id=5]
+[ext_resource path="res://io_ports_connector/graphics/existing_input_port.png" type="Texture" id=6]
+[ext_resource path="res://io_ports_connector/graphics/missing_input_port.png" type="Texture" id=7]
+[ext_resource path="res://io_ports_connector/graphics/active_connection.png" type="Texture" id=8]
+[ext_resource path="res://io_ports_connector/graphics/inactive_connection.png" type="Texture" id=9]
+[ext_resource path="res://io_ports_connector/graphics/disabled_connection.png" type="Texture" id=10]
 
 [sub_resource type="DynamicFont" id=1]
 
