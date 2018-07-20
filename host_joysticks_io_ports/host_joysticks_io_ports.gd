@@ -38,4 +38,4 @@ func _joy_connection_changed(index, connected):
 	if connected:
 		_add_joystick(index)
 	else:
-		_remove_joystick()
+		_remove_joystick(index)
