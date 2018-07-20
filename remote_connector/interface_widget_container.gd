@@ -13,22 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+extends MarginContainer
 
-extends Node
-
-var gui = null
-
-var mTaskId = -1
+var mHostname = null
+var mInterfaceWidgets = null
 
 func _ready():
-	var service = rlib.instance_scene("res://rcos/remote_connector/connector_service.tscn")
-	service._connector = self
-	if !rcos.add_service(service):
-		rcos.log_error(self, "Unable to add connector service")
-	var task_properties = {
-		"name": "Remote Connector",
-		"icon": get_node("icon").get_texture(),
-		"canvas": get_node("canvas"),
-	}
-	mTaskId = rcos.add_task(task_properties)
-	gui = get_node("canvas/connector_gui")
+	mHostname = get_node("PanelContainer/MarginContainer/VBoxContainer/hostname")
+	mInterfaceWidgets = get_node("PanelContainer/MarginContainer/VBoxContainer/interface_widgets")
+	mHostname.set_text(get_name())
+
+func add_interface_widget():
+		var interface_widget = rlib.instance_scene("res://remote_connector/interface_widget.tscn")
+		mInterfaceWidgets.add_child(interface_widget)
+		return interface_widget
