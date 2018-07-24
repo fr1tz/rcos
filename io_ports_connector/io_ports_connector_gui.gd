@@ -141,7 +141,7 @@ func _save():
 		}
 		connections.push_back(connection)
 	var file = File.new()
-	if file.open("user://etc/data_router_conf.json", File.WRITE) != OK:
+	if file.open("user://etc/io_ports_connector.conf", File.WRITE) != OK:
 		return
 	var config = {
 		"version": 0,
@@ -152,7 +152,7 @@ func _save():
 
 func _load():
 	var file = File.new()
-	if file.open("user://etc/data_router_conf.json", File.READ) != OK:
+	if file.open("user://etc/io_ports_connector.conf", File.READ) != OK:
 		return
 	var text = file.get_buffer(file.get_len()).get_string_from_utf8()
 	file.close()
