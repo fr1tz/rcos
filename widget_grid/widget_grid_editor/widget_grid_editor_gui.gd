@@ -19,8 +19,10 @@ var mEditorId = -1
 var mTaskId = -1
 var mSelectedReshapeControl = null
 
-onready var mAddWidgetButton = get_node("button_area/add_widget_button")
 onready var mEditWidgetsButton = get_node("button_area/edit_widgets_button")
+onready var mAddWidgetButton = get_node("button_area/add_widget_button")
+onready var mAddOutputPortButton = get_node("button_area/add_output_port_button")
+onready var mAddInputPortButton = get_node("button_area/add_input_port_button")
 onready var mSaveButton = get_node("button_area/save_button")
 onready var mLoadButton = get_node("button_area/load_button")
 onready var mFullscreenButton = get_node("button_area/fullscreen_button")
@@ -33,10 +35,14 @@ onready var mGridControl = get_node("grid_area/grid_control")
 onready var mReshapeControls = get_node("grid_area/reshape_controls")
 onready var mReshapeGrid = get_node("grid_area/reshape_grid")
 onready var mWidgetFactoriesPanel = get_node("widget_factories_panel")
+onready var mOutputPortSelector = get_node("output_node_selector")
+onready var mInputPortSelector = get_node("input_node_selector")
 
 func _ready():
-	mAddWidgetButton.connect("pressed", self, "show_widget_factories_panel")
 	mEditWidgetsButton.connect("toggled", self, "toggle_edit_mode")
+	mAddWidgetButton.connect("pressed", self, "show_widget_factories_panel")
+	mAddOutputPortButton.connect("pressed", self, "show_output_port_selector")
+	mAddInputPortButton.connect("pressed", self, "show_input_port_selector")
 	mSaveButton.connect("pressed", self, "_save_to_file")
 	mLoadButton.connect("pressed", self, "_load_from_file")
 	mFullscreenButton.connect("pressed", self, "activate_fullscreen")
@@ -46,6 +52,10 @@ func _ready():
 	mDeleteWidgetButton.connect("pressed", self, "delete_selected_widget")
 	mConfigureWidgetButton.connect("pressed", self, "configure_selected_widget")
 	mWidgetFactoriesPanel.connect("item_selected", self, "_on_widget_factory_item_selected")
+	mOutputPortSelector.connect("canceled", self, "show_grid")
+	mOutputPortSelector.connect("node_selected", self, "_output_port_selected")
+	mInputPortSelector.connect("canceled", self, "show_grid")
+	mInputPortSelector.connect("node_selected", self, "_input_port_selected")	
 	var widget_grid_service = rcos.get_node("services/widget_grid_service")
 	update_available_widgets(widget_grid_service.get_widget_factory_tasks())
 	widget_grid_service.connect("widget_factory_tasks_changed", self, "update_available_widgets")
@@ -62,7 +72,27 @@ func _on_widget_factory_item_selected(item):
 	var task_id = item.get_widget_factory_task_id()
 	var pos = mGridControl.get_pos().abs()
 	mGridControl.add_widget(task_id, pos)
-	mWidgetFactoriesPanel.set_hidden(true)
+	show_grid()
+
+func _output_port_selected(node):
+	var srv = rcos.get_node("services/rcos_widgets_service")
+	var task_id = srv.get_widget_factory_task_id("output_port_widget")
+	if task_id == -1:
+		return
+	var container = mGridControl.add_widget(task_id, Vector2(0, 0))
+	var widget = container.get_widget()
+	widget.get_config_gui()._port_selected(node)
+	show_grid()
+
+func _input_port_selected(node):
+	var srv = rcos.get_node("services/rcos_widgets_service")
+	var task_id = srv.get_widget_factory_task_id("input_port_widget")
+	if task_id == -1:
+		return
+	var container = mGridControl.add_widget(task_id, Vector2(0, 0))
+	var widget = container.get_widget()
+	widget.get_config_gui()._port_selected(node)
+	show_grid()
 
 func _reshape_selected_widget_begin():
 	mReshapeGrid.clear_painted_rect()
@@ -145,8 +175,25 @@ func go_back():
 	mWidgetFactoriesPanel.set_hidden(true)
 	return true
 
+func show_grid():
+	mWidgetFactoriesPanel.set_hidden(true)
+	mOutputPortSelector.set_hidden(true)
+	mInputPortSelector.set_hidden(true)
+
 func show_widget_factories_panel():
 	mWidgetFactoriesPanel.set_hidden(false)
+	mOutputPortSelector.set_hidden(true)
+	mInputPortSelector.set_hidden(true)
+
+func show_output_port_selector():
+	mWidgetFactoriesPanel.set_hidden(true)
+	mOutputPortSelector.set_hidden(false)
+	mInputPortSelector.set_hidden(true)
+
+func show_input_port_selector():
+	mWidgetFactoriesPanel.set_hidden(true)
+	mOutputPortSelector.set_hidden(true)
+	mInputPortSelector.set_hidden(false)
 
 func _on_reshape_control_clicked(reshape_control):
 	if mSelectedReshapeControl != null:

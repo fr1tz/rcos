@@ -31,7 +31,7 @@ func _ready():
 		}
 	}
 	mTaskId = rcos.add_task(task_properties)
-	var io_ports_path_prefix = "local/widget_grid_"+get_name()
+	var io_ports_path_prefix = "rcos/widget_grid_"+get_name()
 	data_router.set_node_icon(io_ports_path_prefix, load("res://widget_grid/graphics/icons/widget_grid.png"), 32)
 	gui.init(get_name(), mTaskId, io_ports_path_prefix+"/")
 	gui._load_from_file()
