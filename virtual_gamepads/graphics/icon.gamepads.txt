@@ -1,0 +1,8 @@
+icon.gamepads.png / icon.gamepads.xcf are based on:
+
+'gamepad'
+Obtained from: https://thenounproject.com/term/gamepad/316559/
+Author Name: David
+Author URL:  https://thenounproject.com/kaxgyatso/
+License Name: CC BY 3.0 US
+License URL: https://creativecommons.org/licenses/by/3.0/us/
