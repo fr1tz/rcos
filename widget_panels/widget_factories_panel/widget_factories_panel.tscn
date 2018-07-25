@@ -1,0 +1,40 @@
+[gd_scene load_steps=4 format=1]
+
+[ext_resource path="res://widget_panels/widget_factories_panel/widget_factories_panel.gd" type="Script" id=1]
+[ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=2]
+[ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=3]
+
+[node name="widget_factories_panel" type="Panel"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+script/script = ExtResource( 1 )
+
+[node name="scroller_container" parent="." instance=ExtResource( 2 )]
+
+[node name="widget_factory_list" type="VBoxContainer" parent="scroller_container"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="scroller_input_area" parent="scroller_container" instance=ExtResource( 3 )]
+
+
