@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=1]
-
-[ext_resource path="res://lsr_widgets/gamepad_widgets/gamepad_widgets_factory.gd" type="Script" id=1]
-
-[node name="gamepad_widgets_factory" type="Node"]
-
-script/script = ExtResource( 1 )
-
-
