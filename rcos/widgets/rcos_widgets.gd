@@ -24,18 +24,23 @@ func _ready():
 	mService._module = self
 	if !rcos.add_service(mService):
 		rcos.log_error(self, "Unable to add rcos_widgets service")
-	mWidgetFactoryTaskIDs["output_port_widget"] = rcos.add_task({
-			"type": "widget_factory",
-			"product_name": "Output Port Widget",
-			"product_id": "rcos.output_port_widget",
-			"create_widget_func": funcref(self, "create_output_port_widget")
-		})
-	mWidgetFactoryTaskIDs["input_port_widget"] = rcos.add_task({
-			"type": "widget_factory",
-			"product_name": "Input Port Widget",
-			"product_id": "rcos.input_port_widget",
-			"create_widget_func": funcref(self, "create_input_port_widget")
-		})
+
+func _create_widget_factories():
+	var info_files = rlib.find_files("res://rcos/widgets/", "*.info")
+	for info_file in info_files:
+		var config_file = ConfigFile.new()
+		var err = config_file.load(info_file)
+		if err != OK:
+			log_error(self, "Error reading info file " + info_file + ": " + str(err))
+			continue
+		var basename = info_file.get_file().basename()
+		var product_name = config_file.get_value("widget", "name", basename)
+		var product_id = "rcos_widgets."+config_file.get_value("widget", "id", basename)
+		var path = config_file.get_value("widget", "path", info_file.basename()+".tscn")
+		var factory = rlib.instance_scene("res://rcos/widgets/widget_factory.tscn")
+		add_child(factory)
+		factory.set_name(basename+"_factory")
+		factory.initialize(product_name, product_id, path)
 
 func create_output_port_widget():
 	return rlib.instance_scene("res://rcos/widgets/output_port_widget/output_port_widget.tscn")
