@@ -40,7 +40,7 @@ func _exit_tree():
 	_remove_io_ports()
 
 func _add_io_ports():
-	var prefix = "pointer"
+	var prefix = "rcos/pointer"
 	_add_output_ports(prefix)
 	_add_input_ports(prefix)
 
