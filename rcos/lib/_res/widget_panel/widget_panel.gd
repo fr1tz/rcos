@@ -63,7 +63,6 @@ func _canvas_input(event):
 			for c in containers:
 				if c.get_global_rect().has_point(event.pos):
 					mIndexToWidgetContainer[index] = c
-					mKeyboardInputContainer = c
 					container = c
 					down = true
 					break
