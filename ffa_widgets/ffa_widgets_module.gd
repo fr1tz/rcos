@@ -19,7 +19,6 @@ func _ready():
 	_create_widget_factories()
 
 func _create_widget_factories():
-	var modules = {}
 	var info_files = rlib.find_files("res://ffa_widgets/", "*.info")
 	for info_file in info_files:
 		var config_file = ConfigFile.new()
@@ -31,7 +30,7 @@ func _create_widget_factories():
 		var product_name = config_file.get_value("widget", "name", basename)
 		var product_id = "ffa_widgets."+config_file.get_value("widget", "id", basename)
 		var path = config_file.get_value("widget", "path", info_file.basename()+".tscn")
-		var factory = rlib.instance_scene("res://ffa_widgets/widget_factory.tscn")
+		var factory = rlib.instance_scene("res://rcos/widgets/widget_factory.tscn")
 		add_child(factory)
 		factory.set_name(basename+"_factory")
 		factory.initialize(product_name, product_id, path)
