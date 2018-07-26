@@ -24,6 +24,7 @@ func _ready():
 	mService._module = self
 	if !rcos.add_service(mService):
 		rcos.log_error(self, "Unable to add rcos_widgets service")
+	_create_widget_factories()
 
 func _create_widget_factories():
 	var info_files = rlib.find_files("res://rcos/widgets/", "*.info")
@@ -41,9 +42,3 @@ func _create_widget_factories():
 		add_child(factory)
 		factory.set_name(basename+"_factory")
 		factory.initialize(product_name, product_id, path)
-
-func create_output_port_widget():
-	return rlib.instance_scene("res://rcos/widgets/output_port_widget/output_port_widget.tscn")
-
-func create_input_port_widget():
-	return rlib.instance_scene("res://rcos/widgets/input_port_widget/input_port_widget.tscn")
