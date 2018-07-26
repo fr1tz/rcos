@@ -130,11 +130,11 @@ func add_widget(widget_factory_task_id, pos):
 	var widget = properties.create_widget_func.call_func()
 	if widget == null:
 		return
-	var widget_name = properties.product_name.to_lower().replace(" ", "_")
+	var widget_name = widget.get_name()
 	var i = 1
-	while mWidgetContainers.has_node(widget_name+str(i)+"_container"):
+	while mWidgetContainers.has_node(widget_name+"."+str(i)+"_container"):
 		i += 1
-	widget_name += str(i)
+	widget_name += "."+str(i)
 	var widget_container = add_widget_container()
 	widget_container.init(mWidgetHostApi, widget_name, properties.product_id)
 	_add_widget_to_container(widget, widget_container)
