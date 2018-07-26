@@ -42,8 +42,3 @@ func create_output_port_widget():
 
 func create_input_port_widget():
 	return rlib.instance_scene("res://rcos/widgets/input_port_widget/input_port_widget.tscn")
-
-func get_widget_factory_task_id(widget_type):
-	if mWidgetFactoryTaskIDs.has(widget_type):
-		return mWidgetFactoryTaskIDs[widget_type]
-	return -1

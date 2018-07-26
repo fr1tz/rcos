@@ -14,9 +14,38 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var _module = null
+var mWidgetFactoryTaskIDs = []
 
-const OUTPUT_PORT_WIDGET = "output_port_widget"
-const INPUT_PORT_WIDGET = "input_port_widget"
+func _init():
+	add_user_signal("widget_factory_tasks_changed")
 
-func get_widget_factory_task_id(widget_type):
-	return _module.get_widget_factory_task_id(widget_type)
+func _ready():
+	rcos.connect("task_added", self, "_on_task_added")
+	rcos.connect("task_removed", self, "_on_task_removed")
+	var task_list = rcos.get_task_list()
+	for task in task_list.values():
+		_on_task_added(task)
+
+func _on_task_changed(task):
+	return
+
+func _on_task_added(task):
+	if !task.properties.has("type") || task.properties.type != "widget_factory":
+		return
+	if mWidgetFactoryTaskIDs.has(task.get_id()):
+		return
+	mWidgetFactoryTaskIDs.push_back(task.get_id())
+	emit_signal("widget_factory_tasks_changed", mWidgetFactoryTaskIDs)
+
+func _on_task_removed():
+	return
+
+func get_widget_factory_tasks():
+	return mWidgetFactoryTaskIDs
+
+func get_widget_factory_task_id(product_id):
+	for task_id in mWidgetFactoryTaskIDs:
+		var properties = rcos.get_task_properties(task_id)
+		if properties.product_id == product_id:
+			return task_id
+	return -1
