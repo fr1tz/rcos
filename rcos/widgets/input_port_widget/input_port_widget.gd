@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends Node
+extends ReferenceFrame
 
 func _ready():
 	get_main_gui().connect("dangling_control_dropped", self, "_dangling_control_dropped")
@@ -27,15 +27,15 @@ func _dangling_control_dropped(control):
 	var data = control.get_meta("data")
 	input_port.put_data(data)
 
-#-------------------------------------------------------------------------------
-# Common Widget API
-#-------------------------------------------------------------------------------
-
 func get_main_gui():
-	return get_node("main_canvas/main_gui")
+	return get_node("main_gui")
 
 func get_config_gui():
 	return get_node("config_canvas/config_gui")
+
+#-------------------------------------------------------------------------------
+# Common Widget API
+#-------------------------------------------------------------------------------
 
 func load_widget_config_string(config_string):
 	var widget_config = Dictionary()

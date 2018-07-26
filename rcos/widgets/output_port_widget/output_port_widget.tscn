@@ -4,25 +4,25 @@
 [ext_resource path="res://rcos/widgets/output_port_widget/main_gui.tscn" type="PackedScene" id=2]
 [ext_resource path="res://rcos/widgets/output_port_widget/config_gui.tscn" type="PackedScene" id=3]
 
-[node name="output_port_widget" type="Node"]
+[node name="output_port_widget" type="ReferenceFrame"]
 
-script/script = ExtResource( 1 )
-
-[node name="main_canvas" type="Control" parent="."]
-
+anchor/right = 1
+anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
+margin/right = 0.0
+margin/bottom = 0.0
+script/script = ExtResource( 1 )
 
-[node name="main_gui" parent="main_canvas" instance=ExtResource( 2 )]
+[node name="main_gui" parent="." instance=ExtResource( 2 )]
 
 [node name="config_canvas" type="Control" parent="."]
 
+visibility/visible = false
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2

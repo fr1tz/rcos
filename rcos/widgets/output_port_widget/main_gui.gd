@@ -22,9 +22,9 @@ func _init():
 
 func _ready():
 	mWidgetHost = get_meta("widget_host_api")
-	mWidgetHost.enable_canvas_input(self)
+	mWidgetHost.enable_widget_frame_input(self)
 
-func _canvas_input(event):
+func _widget_frame_input(event):
 	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
 	var touch = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON)
 	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)

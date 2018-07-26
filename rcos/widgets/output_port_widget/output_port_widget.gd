@@ -16,7 +16,7 @@
 extends Node
 
 func _ready():
-	get_main_gui().connect("dragged", self, "_create_dangling_control")
+	get_node("main_gui").connect("dragged", self, "_create_dangling_control")
 
 func _create_dangling_control(index):
 	var output_port = data_router.get_output_port(get_config_gui().get_port_path())
@@ -29,15 +29,15 @@ func _create_dangling_control(index):
 	data_control.set_meta("data", output_port.access_data())
 	rcos.gui.pick_up_control(data_control, index)
 
-#-------------------------------------------------------------------------------
-# Common Widget API
-#-------------------------------------------------------------------------------
-
 func get_main_gui():
-	return get_node("main_canvas/main_gui")
+	return get_node("main_gui")
 
 func get_config_gui():
 	return get_node("config_canvas/config_gui")
+
+#-------------------------------------------------------------------------------
+# Common Widget API
+#-------------------------------------------------------------------------------
 
 func load_widget_config_string(config_string):
 	var widget_config = Dictionary()
