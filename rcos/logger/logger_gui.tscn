@@ -1,16 +1,8 @@
-[gd_scene load_steps=5 format=1]
+[gd_scene load_steps=4 format=1]
 
 [ext_resource path="res://rcos/logger/logger_gui.gd" type="Script" id=1]
-[ext_resource path="res://rcos/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-12.fnt" type="BitmapFont" id=2]
 [ext_resource path="res://rcos/logger/log_control.gd" type="Script" id=3]
-
-[sub_resource type="DynamicFont" id=1]
-
-font/size = 14
-extra_spacing/bottom = -11
-font/use_mipmaps = false
-font/use_filter = false
-font/font = ExtResource( 2 )
 
 [node name="logger_gui" type="Panel"]
 
@@ -38,7 +30,7 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
-custom_fonts/normal_font = SubResource( 1 )
+custom_fonts/normal_font = ExtResource( 2 )
 bbcode/enabled = true
 bbcode/bbcode = ""
 visible_characters = -1
