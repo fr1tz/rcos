@@ -43,7 +43,7 @@ func _process_udp_datagram():
 		var announce = data.get_string_from_ascii()
 		if !announce.to_lower().begins_with("#vrchost-ap.hb"):
 			return
-		ap_node = rlib.instance_scene("res://vrc_host/vrchost_ap_detector/vrchost_ap.tscn")
+		ap_node = rlib.instance_scene("res://vrc/vrc_host/vrchost_ap_detector/vrchost_ap.tscn")
 		ap_node.set_name(ap_node_name)
 		ap_node.init(self, addr, port)
 		mAccessPoints.add_child(ap_node)
