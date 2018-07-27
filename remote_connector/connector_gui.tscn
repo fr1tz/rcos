@@ -1,10 +1,14 @@
-[gd_scene load_steps=7 format=1]
+[gd_scene load_steps=14 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://remote_connector/connector_gui.gd" type="Script" id=2]
 [ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=3]
 [ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=4]
-[ext_resource path="res://remote_connector/open_connection_dialog.tscn" type="PackedScene" id=5]
+[ext_resource path="res://rcos/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=5]
+[ext_resource path="res://remote_connector/graphics/scan.background.png" type="Texture" id=6]
+[ext_resource path="res://remote_connector/graphics/scan.spinner.png" type="Texture" id=7]
+[ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-12.fnt" type="BitmapFont" id=8]
+[ext_resource path="res://remote_connector/open_connection_dialog.tscn" type="PackedScene" id=9]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -18,6 +22,41 @@ dark_color = Color( 0.8, 0.8, 0.8, 1 )
 border_size = 2
 border_blend = true
 draw_bg = true
+
+[sub_resource type="DynamicFont" id=2]
+
+font/size = 16
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 5 )
+
+[sub_resource type="GDScript" id=3]
+
+script/source = "extends Panel
+
+var mClock = 0
+
+func _ready():
+	connect(\"visibility_changed\", self, \"_visibility_changed\")
+
+func _visibility_changed():
+	mClock = 0
+	set_fixed_process(!is_hidden())
+
+func _fixed_process(delta):
+	mClock += delta
+	var icon = get_node(\"spinner/icon\")
+	icon.set_rot(icon.get_rot() - delta*2)
+	var label = get_node(\"label\")
+	label.set_hidden(fmod(mClock, 0.5) > 0.25)
+"
+
+[sub_resource type="DynamicFont" id=4]
+
+font/size = 16
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 5 )
 
 [node name="connector_gui" type="Panel"]
 
@@ -36,7 +75,6 @@ script/script = ExtResource( 2 )
 
 [node name="interfaces_panel" type="Panel" parent="."]
 
-editor/display_folded = true
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false
@@ -94,13 +132,14 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
+custom_fonts/font = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-text = "New"
+text = ""
 flat = false
 
-[node name="button" type="Button" parent="buttons"]
+[node name="scan" type="Button" parent="buttons"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -110,9 +149,11 @@ margin/left = 40.0
 margin/top = 0.0
 margin/right = 80.0
 margin/bottom = 40.0
+custom_fonts/font = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
+text = ""
 flat = false
 
 [node name="button1" type="Button" parent="buttons"]
@@ -160,6 +201,71 @@ enabled_focus_mode = 2
 shortcut = null
 flat = false
 
+[node name="scan_progress" type="Panel" parent="."]
+
+visibility/visible = false
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 40.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 40.0
+script/script = SubResource( 3 )
+
+[node name="spinner" type="TextureFrame" parent="scan_progress"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
+texture = ExtResource( 6 )
+stretch_mode = 0
+
+[node name="icon" type="Sprite" parent="scan_progress/spinner"]
+
+transform/pos = Vector2( 20, 20 )
+texture = ExtResource( 7 )
+
+[node name="label" type="Label" parent="scan_progress"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 41.0
+margin/top = 14.0
+margin/right = 115.0
+margin/bottom = 26.0
+custom_fonts/font = ExtResource( 8 )
+text = "SCANNING NETWORK"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="cancel_button" type="Button" parent="scan_progress"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 120.0
+margin/top = 2.0
+margin/right = 158.0
+margin/bottom = 38.0
+custom_fonts/font = SubResource( 4 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
+
 [node name="info_panel" type="Panel" parent="."]
 
 editor/display_folded = true
@@ -203,7 +309,7 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="open_connection_dialog" parent="." instance=ExtResource( 5 )]
+[node name="open_connection_dialog" parent="." instance=ExtResource( 9 )]
 
 visibility/visible = false
 

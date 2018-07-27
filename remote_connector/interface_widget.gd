@@ -15,25 +15,29 @@
 
 extends Button
 
-var mInfo = ""
+var mURL = ""
+var mDesc = ""
 
 func _init():
-	add_user_signal("activated")
+	add_user_signal("selected")
 
 func _ready():
-	get_node("button").connect("pressed", self, "_emit_on_pressed_signal")
+	get_node("button").connect("pressed", self, "_selected")
 
-func _emit_on_pressed_signal():
-	emit_signal("pressed")
+func _selected():
+	emit_signal("selected")
 
 func activate():
-	emit_signal("activated")
+	rcos.open(mURL)
 
-func get_info():
-	return mInfo
+func get_desc():
+	return mDesc
+
+func set_url(url):
+	mURL = url
 
 func set_icon(tex):
 	get_node("icon").set_texture(tex)
 
-func set_info(info):
-	mInfo = info
+func set_desc(desc):
+	mDesc = desc
