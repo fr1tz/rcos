@@ -60,7 +60,7 @@ func _process_message(msg):
 		mServerUdpPort = int(rlib.hd(args)); args = rlib.tl(args)
 		mClientId = int(rlib.hd(args))
 		for id in range(1, 17):
-			var ctrl = rlib.instance_scene("res://vjoy_client/vjoy_controller.tscn")
+			var ctrl = rlib.instance_scene("res://vjoy/vjoy_client/vjoy_controller.tscn")
 			ctrl.set_name("vjoy_controller"+str(id))
 			ctrl.initialize(self, mServerHostname, id)
 			mControllers.add_child(ctrl)
