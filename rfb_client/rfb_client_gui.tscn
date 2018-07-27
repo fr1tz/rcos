@@ -49,6 +49,4 @@ caret/caret_blink_speed = 0.65
 
 [node name="open_connection_dialog" parent="." instance=ExtResource( 2 )]
 
-visibility/visible = false
-
 

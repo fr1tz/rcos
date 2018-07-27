@@ -19,7 +19,8 @@ const SEND_UPDATE_INTERVAL = 0.05
 
 var gui = null
 
-enum InputPortId {
+enum PortClass {
+	BELL,
 	CLIPBOARD_TEXT,
 	KB_TYPE_TEXT,
 	KB_PRESS_KEY,
@@ -84,8 +85,20 @@ func _add_io_ports():
 	_add_input_ports(prefix)
 
 func _add_output_ports(prefix):
-	mOutputPorts.push_back(data_router.add_output_port(prefix+"/bell", false))
-	mOutputPorts.push_back(data_router.add_output_port(prefix+"/clipboard", ""))
+	mOutputPortsMeta["bell"] = {
+		"port_class": BELL,
+		"data_type": "bool"
+	}
+	mOutputPortsMeta["clipboard/text"] = {
+		"port_class": CLIPBOARD_TEXT,
+		"data_type": "string"
+	}
+	for port_path in mOutputPortsMeta.keys():
+		var port = data_router.add_output_port(prefix+"/"+port_path, "")
+		for meta_name in mOutputPortsMeta[port_path].keys():
+			var meta_value = mOutputPortsMeta[port_path][meta_name]
+			port.set_meta(meta_name, meta_value)
+		mOutputPorts.push_back(port)
 
 func _add_input_ports(prefix):
 	mInputPortsMeta["clipboard/text"] = {
@@ -97,11 +110,11 @@ func _add_input_ports(prefix):
 		"data_type": "string"
 	}
 	mInputPortsMeta["keyboard/press_key(x11_keysym)"] = {
-		"port_class": CLIPBOARD_TEXT,
+		"port_class": KB_PRESS_KEY,
 		"data_type": "string"
 	}
 	mInputPortsMeta["keyboard/release_key(x11_keysym)"] = {
-		"port_class": CLIPBOARD_TEXT,
+		"port_class": KB_RELEASE_KEY,
 		"data_type": "string"
 	}
 	mInputPortsMeta["pointer/pos/xy"] = {

@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=1]
-
-[ext_resource path="res://rfb_client/rfb_connector/rfb_url_handler.tscn" type="PackedScene" id=1]
-
-[node name="rfb_connector" type="Node"]
-
-[node name="rfb_url_handler" parent="." instance=ExtResource( 1 )]
-
-
