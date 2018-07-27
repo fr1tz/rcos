@@ -69,6 +69,8 @@ func _ready():
 	var root_canvas_script = load("res://rcos/root_canvas.gd")
 	get_node("/root").set_script(root_canvas_script)
 	_add_io_ports()
+	if !add_service(rlib.instance_scene("res://rcos/network_scanner_service.tscn")):
+		log_error(self, "Unable to add network scanner service")
 	spawn_module("rcos_widgets")
 
 func _add_io_ports():
