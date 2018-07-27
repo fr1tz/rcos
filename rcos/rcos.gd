@@ -69,6 +69,7 @@ func _ready():
 	var root_canvas_script = load("res://rcos/root_canvas.gd")
 	get_node("/root").set_script(root_canvas_script)
 	_add_io_ports()
+	spawn_module("rcos_widgets")
 
 func _add_io_ports():
 	var port_path_prefix = "rcos/"

@@ -20,7 +20,6 @@ func _ready():
 	rcos.spawn_module("host_sensors_io_ports")
 	rcos.spawn_module("host_joysticks_io_ports")
 	rcos.spawn_module("pointer_io_ports")
-	rcos.spawn_module("rcos_widgets")
 	rcos.spawn_module("ffa_widgets")
 	rcos.spawn_module("remote_connector")
 	rcos.spawn_module("io_ports_connector")
