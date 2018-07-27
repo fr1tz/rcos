@@ -15,4 +15,10 @@
 
 extends Panel
 
+onready var mOpenConnectionDialog = get_node("open_connection_dialog")
 
+func _ready():
+	pass
+
+func get_open_connection_dialog():
+	return mOpenConnectionDialog

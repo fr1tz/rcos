@@ -31,6 +31,9 @@ var mUDP = PacketPeerUDP.new()
 var mSendUpdateCountdown = SEND_UPDATE_INTERVAL
 
 func _ready():
+	gui = get_node("canvas/vjoy_client_gui")
+	gui.get_open_connection_dialog().connect("cancel_button_pressed", self, "kill")
+	gui.get_open_connection_dialog().connect("connect_button_pressed", self, "connect_to_server")
 	var logger = rcos.spawn_module("logger")
 	logger.set_filter(str(rcos.get_path_to(self)))
 	mControllers = get_node("controllers")
@@ -102,3 +105,7 @@ func connect_to_server(address, port):
 	mServerTcpPort = port
 	if !mConnection.connect_to_server(address, port):
 		rcos.log_error(self, "Failed to initialize connection")
+	gui.get_open_connection_dialog().set_hidden(true)
+
+func kill():
+	queue_free()
