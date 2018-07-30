@@ -32,11 +32,6 @@ func _add_port_tester(port):
 func _port_open(port):
 	var url = "rfb://"+mHostAddress+":"+str(port-5900)
 	var host = mHostAddress
-	if mHostAddress == "127.0.0.1":
-		if OS.get_name() == "Windows":
-			var localhost_name = OS.get_environment("COMPUTERNAME")
-			if localhost_name != null:
-				host = localhost_name
 	var name = "RFB Server (:"+str(port-5900)+")"
 	var icon = load("res://rfb/rfb_client/graphics/icon.png")
 	var desc = rlib.join_array([
