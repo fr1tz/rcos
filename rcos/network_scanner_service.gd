@@ -25,6 +25,9 @@ func _ready():
 	get_node("abort_scan_timer").connect("timeout", self, "stop_scan")
 
 func _service_discovered(info):
+	if rcos.has_node("services/hostname_service"):
+		var hostname_service = rcos.get_node("services/hostname_service")
+		info.host = hostname_service.get_hostname(info.host)
 	emit_signal("service_discovered", info)
 
 func add_scanner(scene_path):
