@@ -11,6 +11,13 @@
 [ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=9]
 [ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-12.fnt" type="BitmapFont" id=10]
 
+[sub_resource type="StyleBoxEmpty" id=1]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
 [sub_resource type="StyleBoxEmpty" id=2]
 
 content_margin/left = -1.0
@@ -19,13 +26,6 @@ content_margin/top = -1.0
 content_margin/bottom = -1.0
 
 [sub_resource type="StyleBoxEmpty" id=3]
-
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
-
-[sub_resource type="StyleBoxEmpty" id=4]
 
 content_margin/left = -1.0
 content_margin/right = -1.0
@@ -57,9 +57,9 @@ CheckBox/icons/checked = ExtResource( 5 )
 CheckBox/icons/radio_checked = null
 CheckBox/icons/radio_unchecked = null
 CheckBox/icons/unchecked = ExtResource( 6 )
-CheckBox/styles/disabled = SubResource( 2 )
-CheckBox/styles/focus = SubResource( 3 )
-CheckBox/styles/hover = SubResource( 4 )
+CheckBox/styles/disabled = SubResource( 1 )
+CheckBox/styles/focus = SubResource( 2 )
+CheckBox/styles/hover = SubResource( 3 )
 CheckBox/styles/normal = null
 CheckBox/styles/pressed = null
 HButtonArray/colors/font_color = Color( 0.690196, 0.690196, 0.690196, 1 )
