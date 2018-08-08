@@ -2,7 +2,7 @@
 
 [ext_resource path="res://virtual_gamepads/multipad/multipad_control.gd" type="Script" id=1]
 [ext_resource path="res://virtual_gamepads/multipad/multipad.tscn" type="PackedScene" id=2]
-[ext_resource path="res://lsr_widgets/gamepad_widgets/main_gui/touchpad_icon.tscn" type="PackedScene" id=3]
+[ext_resource path="res://virtual_gamepads/multipad/multipad_icon.tscn" type="PackedScene" id=3]
 
 [node name="multipad_control" type="ReferenceFrame"]
 

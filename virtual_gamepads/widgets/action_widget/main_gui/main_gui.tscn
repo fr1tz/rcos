@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=1]
 
 [ext_resource path="res://virtual_gamepads/widgets/action_widget/main_gui/main_gui.gd" type="Script" id=1]
-[ext_resource path="res://lsr_widgets/gamepad_widgets/main_gui/pad.png" type="Texture" id=2]
+[ext_resource path="res://virtual_gamepads/widgets/action_widget/graphics/pad.png" type="Texture" id=2]
 
 [sub_resource type="StyleBoxTexture" id=1]
 

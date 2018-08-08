@@ -1,11 +1,11 @@
 [gd_scene load_steps=7 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://lsr_widgets/gamepad_widgets/config_gui/touchpad_config_gui.gd" type="Script" id=2]
-[ext_resource path="res://lsr_widgets/gamepad_widgets/config_gui/stick_config_gui.gd" type="Script" id=3]
-[ext_resource path="res://lsr_widgets/gamepad_widgets/config_gui/dpad_config_gui.gd" type="Script" id=4]
+[ext_resource path="res://virtual_gamepads/widgets/action_widget/config_gui/touchpad_config_gui.gd" type="Script" id=2]
+[ext_resource path="res://virtual_gamepads/widgets/action_widget/config_gui/stick_config_gui.gd" type="Script" id=3]
+[ext_resource path="res://virtual_gamepads/widgets/action_widget/config_gui/dpad_config_gui.gd" type="Script" id=4]
 [ext_resource path="res://rcos/looks/prototype/slider.tres" type="StyleBox" id=5]
-[ext_resource path="res://lsr_widgets/gamepad_widgets/config_gui/button_config_gui.gd" type="Script" id=6]
+[ext_resource path="res://virtual_gamepads/widgets/action_widget/config_gui/button_config_gui.gd" type="Script" id=6]
 
 [node name="touchpad_config_gui" type="Control"]
 
