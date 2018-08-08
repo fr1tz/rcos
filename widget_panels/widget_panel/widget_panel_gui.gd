@@ -76,7 +76,7 @@ func _on_widget_factory_item_selected(item):
 
 func _output_port_selected(node):
 	var srv = rcos.get_node("services/rcos_widgets_service")
-	var task_id = srv.get_widget_factory_task_id("output_port_widget")
+	var task_id = srv.get_widget_factory_task_id("rcos_widgets.output_port_widget")
 	if task_id == -1:
 		return
 	var container = mWidgetPanel.add_widget(task_id, Vector2(0, 0))
@@ -86,7 +86,7 @@ func _output_port_selected(node):
 
 func _input_port_selected(node):
 	var srv = rcos.get_node("services/rcos_widgets_service")
-	var task_id = srv.get_widget_factory_task_id("input_port_widget")
+	var task_id = srv.get_widget_factory_task_id("rcos_widgets.input_port_widget")
 	if task_id == -1:
 		return
 	var container = mWidgetPanel.add_widget(task_id, Vector2(0, 0))

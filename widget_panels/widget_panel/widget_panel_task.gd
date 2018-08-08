@@ -37,7 +37,7 @@ func initialize(panel_id, panel_label, parent_task_id):
 		}
 	}
 	mTaskId = rcos.add_task(task_properties, parent_task_id)
-	var io_ports_path_prefix = "rcos/"+panel_label
+	var io_ports_path_prefix = "rcos/"+panel_label.to_lower().replace(" ", "_")
 	data_router.set_node_icon(io_ports_path_prefix, load("res://widget_panels/graphics/icons/widget_panel.png"), 32)
 	gui.init(panel_id, mTaskId, io_ports_path_prefix+"/")
 	gui._load_from_file()
