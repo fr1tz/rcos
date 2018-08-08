@@ -211,13 +211,28 @@ func _process_security_msg(data):
 			return -1
 		var security_type = data[3]
 		rcos.log_debug(self, ["security_type:", security_type])
-		if security_type != 1:
+		if security_type == 0: # Error
+			var reason_length = _decode_uint32(data[4], data[5], data[6], data[7])
+			var msg_length = 8 + reason_length
+			if data.size() < msg_length:
+				return 0
+			var reason_data = RawArray()
+			reason_data.append_array(data)
+			reason_data.invert()
+			reason_data.resize(reason_data.size()-8)
+			reason_data.invert()
+			var reason = reason_data.get_string_from_ascii()
+			rcos.log_error(self, ["error:", reason])
 			return -1
-		var client_init_msg = RawArray()
-		client_init_msg.append(1) # request shared session
-		send_data(client_init_msg)
-		mConnectionState = CS_RECEIVE_SERVER_INIT_MSG
-		return 4
+		elif security_type == 1: # No Authentication
+			var client_init_msg = RawArray()
+			client_init_msg.append(1) # request shared session	
+			send_data(client_init_msg)
+			mConnectionState = CS_RECEIVE_SERVER_INIT_MSG
+			return 4
+		elif security_type == 2: # VNC Authentication 
+			rcos.log_error(self, ["error: vnc auth not implemented (TODO: implement vnc_client using libvnc)"])
+			return -1
 	else:
 		var num_security_types = data[0]
 		rcos.log_debug(self, ["num_security_types:", num_security_types])

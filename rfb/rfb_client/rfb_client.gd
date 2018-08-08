@@ -95,6 +95,7 @@ func _add_output_ports(prefix):
 	}
 	for port_path in mOutputPortsMeta.keys():
 		var port = data_router.add_output_port(prefix+"/"+port_path, "")
+		mOutputPortsMeta[port_path]["port"] = port
 		for meta_name in mOutputPortsMeta[port_path].keys():
 			var meta_value = mOutputPortsMeta[port_path][meta_name]
 			port.set_meta(meta_name, meta_value)
@@ -218,11 +219,11 @@ func _input_port_data_changed(old_data, new_data, port):
 		mConnection.set_button_pressed(button_num, new_data)
 
 func _bell_msg_received():
-	mOutputPorts[0].put_data(true)
-	mOutputPorts[0].put_data(false)
+	mOutputPortsMeta["bell"].port.put_data(true)
+	mOutputPortsMeta["bell"].port.put_data(false)
 
 func server_cut_text_msg_received(text):
-	mOutputPorts[1].put_data(text)
+	mOutputPortsMeta["clipboard/text"].port.put_data(text)
 
 func _connection_established():
 	_add_io_ports()
