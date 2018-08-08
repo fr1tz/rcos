@@ -54,7 +54,7 @@ func _process_announce(source_address, source_port, announce):
 	var protocol_version = int(words[1])
 	var server_tcp_port = int(words[2])
 	var url = "vjoy://"+source_address+":"+str(server_tcp_port)
-	var host = words[3]
+	var host = source_address
 	var name = "vJoy Server"
 	var icon = load("res://vjoy/vjoy_client/graphics/icon.png")
 	var desc = rlib.join_array([
