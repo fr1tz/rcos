@@ -1,4 +1,4 @@
-# Copyright © 2017, 2018 Michael Goldener <mg@wasted.ch>
+# Copyright © 2018 Michael Goldener <mg@wasted.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,10 +15,32 @@
 
 extends Panel
 
+onready var mMainDialog = get_node("main_dialog")
+onready var mOptionsDialog = get_node("options_dialog")
 onready var mOpenConnectionDialog = get_node("open_connection_dialog")
+onready var mConnectionStateDialog = get_node("connection_state_dialog")
+
+var mModule = null
+var mConnection = null
 
 func _ready():
-	pass
+	show_dialog("open_connection_dialog")
 
-func get_open_connection_dialog():
-	return mOpenConnectionDialog
+func _connection_state_changed(state):
+	if state == mConnection.CS_ERROR || state == mConnection.CS_CONNECTING:
+		show_dialog("connection_state_dialog")
+	elif state == mConnection.CS_RECEIVE_SERVER_MESSAGES:
+		show_dialog("main_dialog")
+
+func initialize(module, connection):
+	mModule = module
+	mConnection = connection
+	mConnection.connect("connection_state_changed", self, "_connection_state_changed")
+	mMainDialog.initialize(mModule, self, mConnection)
+	mOptionsDialog.initialize(mModule, self, mConnection)
+	mOpenConnectionDialog.initialize(mModule, self, mConnection)
+	mConnectionStateDialog.initialize(mModule, self, mConnection)
+
+func show_dialog(dialog_name):
+	for c in get_children():
+		c.set_hidden(c.get_name() != dialog_name)

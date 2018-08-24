@@ -15,25 +15,26 @@
 
 extends Panel
 
+onready var mFBViewer = get_node("fb_viewer")
+
 var mModule = null
 var mGui = null
 var mConnection = null
 
-func _init():
-	add_user_signal("cancel_button_pressed")
-	add_user_signal("connect_button_pressed")
-
-func _cancel_button_pressed():
-	emit_signal("cancel_button_pressed")
-
-func _connect_button_pressed():
-	var address = get_node("address_edit").get_text()
-	var port = int(get_node("port_edit").get_text())
-	mModule.connect_to_server(address, port)
+func _canvas_input(event):
+	if !is_visible():
+		return
+	if event.type == InputEvent.KEY:
+		mConnection.process_key_event(event)
 
 func initialize(module, gui, connection):
 	mModule = module
 	mGui = gui
 	mConnection = connection
-	get_node("cancel_button").connect("pressed", mModule, "kill")
-	get_node("connect_button").connect("pressed", self, "_connect_button_pressed")
+	mFBViewer.initialize(mConnection)
+	for i in range(1, 4):
+		var button = get_node("controls/button"+str(i))
+		button.connect("button_down", mConnection, "set_button_pressed", [i, true])
+		button.connect("button_up", mConnection, "set_button_pressed", [i, false])
+	get_node("controls/toggle_keyboard").connect("pressed", OS, "show_virtual_keyboard")
+	rcos.enable_canvas_input(self)

@@ -19,21 +19,8 @@ var mModule = null
 var mGui = null
 var mConnection = null
 
-func _init():
-	add_user_signal("cancel_button_pressed")
-	add_user_signal("connect_button_pressed")
-
-func _cancel_button_pressed():
-	emit_signal("cancel_button_pressed")
-
-func _connect_button_pressed():
-	var address = get_node("address_edit").get_text()
-	var port = int(get_node("port_edit").get_text())
-	mModule.connect_to_server(address, port)
-
 func initialize(module, gui, connection):
 	mModule = module
 	mGui = gui
 	mConnection = connection
-	get_node("cancel_button").connect("pressed", mModule, "kill")
-	get_node("connect_button").connect("pressed", self, "_connect_button_pressed")
+	get_node("pointer_speed_multiplier").connect("text_entered", mConnection, "set_pointer_speed_multiplier")

@@ -32,6 +32,4 @@ min_size = Vector2( 200, 400 )
 
 [node name="rfb_client_gui" parent="canvas" instance=ExtResource( 5 )]
 
-margin/right = 0.0
-
 

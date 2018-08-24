@@ -20,7 +20,7 @@ const PROTOCOL_VERSION_3_7 = 1
 const PROTOCOL_VERSION_3_8 = 2
 
 # Client -> server msg types
-const MSG_TYPE_SET_PIXEL_FORMAT = 0
+const MSG_TYPE_change_pixel_format = 0
 const MSG_TYPE_SET_ENCODINGS = 2
 const MSG_TYPE_FRAMEBUFFER_UPDATE_REQUEST = 3
 const MSG_TYPE_KEY_EVENT = 4
@@ -35,25 +35,54 @@ const MSG_TYPE_SERVER_CUT_TEXT = 3
 
 # Connection state
 const CS_ERROR = -1
-const CS_NOT_CONNECTED = 0
-const CS_RECEIVE_PROTOCOL_VERSION = 1
-const CS_RECEIVE_SECURITY_MSG = 2
-const CS_RECEIVE_SECURITY_RESULT_MSG = 3
-const CS_RECEIVE_SERVER_INIT_MSG = 4
-const CS_RECEIVE_SERVER_MESSAGES = 5
+const CS_READY_TO_CONNECT = 0
+const CS_CONNECTING = 1
+const CS_RECEIVE_PROTOCOL_VERSION = 2
+const CS_RECEIVE_SECURITY_MSG = 3
+const CS_WAITING_FOR_PASSWORD = 4
+const CS_RECEIVE_VNC_AUTH_CHALLENGE = 5
+const CS_RECEIVE_SECURITY_RESULT_MSG = 6
+const CS_RECEIVE_SERVER_INIT_MSG = 7
+const CS_RECEIVE_SERVER_MESSAGES = 8
+const CS_RECEIVE_FRAMEBUFFER_RECT = 9
 
 const PADDING_BYTE = 0
 
+onready var mIOPorts = get_node("io_ports")
+onready var mReadDataTimer = get_node("read_data_timer")
+onready var mSendDataTimer = get_node("send_data_timer")
+onready var mUpdatePointerTimer = get_node("update_pointer_timer")
+
+var mScancode2Keysym = load("res://rfb/rfb_client/scancode2keysym.gd").new()
+var mError = ""
 var mStream = null
 var mRemoteAddress = ""
 var mRemotePort = -1
+var mPassword = null
 var mReceiveBuffer = RawArray()
 var mSendBuffer = RawArray()
-var mConnectionState = CS_NOT_CONNECTED
+var mConnectionState = CS_READY_TO_CONNECT
+var mConnectionStateData = {}
 var mProtocolVersion = -1
 var mDesktopName = ""
+var mRFBUtil = RFBUtil.new()
+var mFramebuffer = RFBFramebuffer.new()
+var mFramebufferImage = null
 var mFramebufferWidth = 0
 var mFramebufferHeight = 0
+var mNaturalPixelFormat = {} # server's natural pixel format
+var mPixelFormat = {
+	"bits_per_pixel": 32,
+	"depth": 32,
+	"big_endian_flag": 0,
+	"true_color_flag": 1,
+	"red_max": 255,
+	"green_max": 255,
+	"blue_max": 255,
+	"red_shift": 16,
+	"green_shift": 8,
+	"blue_shift": 0
+}
 var mPointer = {
 	"fpos_x": 0,
 	"fpos_y": 0,
@@ -67,15 +96,18 @@ var mPointer = {
 }
 
 func _init():
+	add_user_signal("connection_state_changed")
 	add_user_signal("connection_established")
 	add_user_signal("connection_error")
 	add_user_signal("server_cut_text_msg_received")
 	add_user_signal("bell_msg_received")
+	add_user_signal("framebuffer_changed")
 
 func _ready():
-	get_node("read_data_timer").connect("timeout", self, "_read_data")
-	get_node("send_data_timer").connect("timeout", self, "_send_data")
-	get_node("update_pointer_timer").connect("timeout", self, "_update_pointer")
+	mIOPorts.initialize(self)
+	mReadDataTimer.connect("timeout", self, "_read_data")
+	mSendDataTimer.connect("timeout", self, "_send_data")
+	mUpdatePointerTimer.connect("timeout", self, "_update_pointer")
 
 func _decode_uint16(b1, b2):
 	var value = b2
@@ -105,15 +137,26 @@ func _encode_uint32(value):
 	bytes.append((value & 0x000000FF))
 	return bytes
 
+func _error(msg):
+	mError = msg
+	rcos.log_error(self, msg)
+
+func _set_connection_state(state):
+	mConnectionState = state
+	emit_signal("connection_state_changed", state)
+
 func _read_data():
 	var status = mStream.get_status()
 	if status == StreamPeerTCP.STATUS_CONNECTING:
 		rcos.log_debug(self, "connecting")
 	elif status == StreamPeerTCP.STATUS_CONNECTED:
-		if mConnectionState == CS_NOT_CONNECTED:
-			mConnectionState = CS_RECEIVE_PROTOCOL_VERSION
+		if mConnectionState == CS_CONNECTING:
+			_set_connection_state(CS_RECEIVE_PROTOCOL_VERSION)
 		_receive_data()
-		_process_data()
+		var n = 50
+		while n > 0:
+			if _process_receive_buffer() == 0:
+				break
 	else:
 		rcos.log_debug(self, ["error:", status])
 		emit_signal("connection_error", status)
@@ -131,7 +174,7 @@ func _send_data():
 	mSendBuffer.resize(mSendBuffer.size()-nbytes)
 	mSendBuffer.invert()
 	if mSendBuffer.size() == 0:
-		get_node("send_data_timer").stop()
+		mSendDataTimer.stop()
 
 func _receive_data():
 	if mStream.get_available_bytes() == 0:
@@ -145,24 +188,29 @@ func _receive_data():
 		return
 	mReceiveBuffer.append_array(data)
 
-func _process_data():
-	var num_processed_bytes = 0
+func _process_receive_buffer():
+	var nbytes = 0
 	if mConnectionState == CS_RECEIVE_PROTOCOL_VERSION:
-		num_processed_bytes = _process_protocol_version(mReceiveBuffer)
+		nbytes = _process_protocol_version(mReceiveBuffer)
 	elif mConnectionState == CS_RECEIVE_SECURITY_MSG:
-		num_processed_bytes = _process_security_msg(mReceiveBuffer)
+		nbytes = _process_security_msg(mReceiveBuffer)
+	elif mConnectionState == CS_RECEIVE_VNC_AUTH_CHALLENGE:
+		nbytes = _process_vnc_auth_challenge(mReceiveBuffer)
 	elif mConnectionState == CS_RECEIVE_SECURITY_RESULT_MSG:
-		num_processed_bytes = _process_security_result_msg(mReceiveBuffer)
+		nbytes = _process_security_result_msg(mReceiveBuffer)
 	elif mConnectionState == CS_RECEIVE_SERVER_INIT_MSG:
-		num_processed_bytes = _process_server_init_msg(mReceiveBuffer)
+		nbytes = _process_server_init_msg(mReceiveBuffer)
 	elif mConnectionState == CS_RECEIVE_SERVER_MESSAGES:
-		num_processed_bytes = _process_server_msg(mReceiveBuffer)
-	if num_processed_bytes == -1:
-		mConnectionState = CS_ERROR
-	elif num_processed_bytes > 0:
+		nbytes = _process_server_msg(mReceiveBuffer)
+	elif mConnectionState == CS_RECEIVE_FRAMEBUFFER_RECT:
+		nbytes = _process_framebuffer_rect(mReceiveBuffer)
+	if nbytes == -1:
+		_set_connection_state(CS_ERROR)
+	elif nbytes > 0:
 		mReceiveBuffer.invert()
-		mReceiveBuffer.resize(mReceiveBuffer.size()-num_processed_bytes)
+		mReceiveBuffer.resize(mReceiveBuffer.size()-nbytes)
 		mReceiveBuffer.invert()
+	return nbytes
 
 func _process_protocol_version(data):
 	rcos.log_debug(self, "_process_protocol_version()")
@@ -197,7 +245,7 @@ func _process_protocol_version(data):
 		mProtocolVersion = PROTOCOL_VERSION_3_3
 		protocol_version_msg = "RFB 003.003\n".to_ascii()
 	send_data(protocol_version_msg)
-	mConnectionState = CS_RECEIVE_SECURITY_MSG
+	_set_connection_state(CS_RECEIVE_SECURITY_MSG)
 	return 12
 
 func _process_security_msg(data):
@@ -222,18 +270,20 @@ func _process_security_msg(data):
 			reason_data.resize(reason_data.size()-8)
 			reason_data.invert()
 			var reason = reason_data.get_string_from_ascii()
-			rcos.log_error(self, ["error:", reason])
+			_error(reason)
 			return -1
 		elif security_type == 1: # No Authentication
 			var client_init_msg = RawArray()
 			client_init_msg.append(1) # request shared session	
 			send_data(client_init_msg)
-			mConnectionState = CS_RECEIVE_SERVER_INIT_MSG
+			_set_connection_state(CS_RECEIVE_SERVER_INIT_MSG)
 			return 4
 		elif security_type == 2: # VNC Authentication 
-			rcos.log_error(self, ["error: vnc auth not implemented (TODO: implement vnc_client using libvnc)"])
+			_error("VNC auth not implemented for protocol version 3.3")
 			return -1
 	else:
+		if data.size() < 1:
+			return 0
 		var num_security_types = data[0]
 		rcos.log_debug(self, ["num_security_types:", num_security_types])
 		if num_security_types == 0:
@@ -249,7 +299,7 @@ func _process_security_msg(data):
 			reason_data.resize(reason_data.size()-5)
 			reason_data.invert()
 			var reason = reason_data.get_string_from_ascii()
-			rcos.log_error(self, ["error:", reason])
+			_error(reason)
 			return -1
 		var msg_length = 1 + num_security_types
 		if data.size() < msg_length:
@@ -259,17 +309,47 @@ func _process_security_msg(data):
 			var security_type = data[i]
 			rcos.log_debug(self, ["available security type:", security_type])
 			available_security_types.push_back(security_type)
-		if !available_security_types.has(1):
-			rcos.log_debug(self, ["error: server requires authentication"])
+		var security_type
+		if available_security_types.has(1):
+			security_type = 1
+		elif available_security_types.has(2):
+			security_type = 2
+		else:
+			_error("No supported security type available")
 			return -1
 		var security_type_msg = RawArray()
-		security_type_msg.append(1)
+		security_type_msg.append(security_type)
 		send_data(security_type_msg)
-		if mProtocolVersion == PROTOCOL_VERSION_3_8:
-			mConnectionState = CS_RECEIVE_SECURITY_RESULT_MSG
-		elif mProtocolVersion == PROTOCOL_VERSION_3_7:
-			mConnectionState = CS_RECEIVE_SERVER_INIT_MSG
+		if security_type == 2:
+			if mPassword == null:
+				_set_connection_state(CS_WAITING_FOR_PASSWORD)
+			else:
+				_set_connection_state(CS_RECEIVE_VNC_AUTH_CHALLENGE)
+		else:
+			if mProtocolVersion == PROTOCOL_VERSION_3_8:
+				_set_connection_state(CS_RECEIVE_SECURITY_RESULT_MSG)
+			elif mProtocolVersion == PROTOCOL_VERSION_3_7:
+				_set_connection_state(CS_RECEIVE_SERVER_INIT_MSG)
 		return msg_length
+
+func _process_vnc_auth_challenge(data):
+	rcos.log_debug(self, "_process_vnc_auth_challenge()")
+	if data.size() < 16:
+		return 0
+	var password = mPassword.to_ascii()
+	var key = RawArray()
+	for i in range(0, 8):
+		if i < password.size():
+			key.append(password[i])
+		else:
+			key.append(0)
+	var challenge = RawArray()
+	challenge.append_array(data)
+	challenge.resize(16)
+	var response = mRFBUtil.des_encrypt(challenge, key)
+	send_data(response)
+	_set_connection_state(CS_RECEIVE_SECURITY_RESULT_MSG)
+	return 16
 
 func _process_security_result_msg(data):
 	rcos.log_debug(self, "_process_security_result_msg()")
@@ -283,12 +363,12 @@ func _process_security_result_msg(data):
 		var client_init_msg = RawArray()
 		client_init_msg.append(1) # request shared session
 		send_data(client_init_msg)
-		mConnectionState = CS_RECEIVE_SERVER_INIT_MSG
+		_set_connection_state(CS_RECEIVE_SERVER_INIT_MSG)
 		return 4
 	# FAILURE
 	if data.size() < 8:
 		return 0
-	var reason_length = _decode_uint32(data[1], data[2], data[3], data[4])
+	var reason_length = _decode_uint32(data[4], data[5], data[6], data[7])
 	var msg_length = 8 + reason_length
 	if data.size() < msg_length:
 		return 0
@@ -305,12 +385,37 @@ func _process_server_init_msg(data):
 	rcos.log_debug(self, "_process_server_init_msg()")
 	if data.size() < 24:
 		return 0
-	mFramebufferWidth = _decode_uint16(data[0], data[1])
-	mFramebufferHeight = _decode_uint16(data[2], data[3])
 	var name_length= _decode_uint32(data[20], data[21], data[22], data[23])
 	var msg_length = 24 + name_length
 	if data.size() < msg_length:
 		return 0
+	mFramebufferWidth = _decode_uint16(data[0], data[1])
+	mFramebufferHeight = _decode_uint16(data[2], data[3])
+	mNaturalPixelFormat["bits_per_pixel"] = data[4]
+	mNaturalPixelFormat["depth"] = data[5]
+	mNaturalPixelFormat["big_endian_flag"] = data[6]
+	mNaturalPixelFormat["true_color_flag"] = data[7]
+	mNaturalPixelFormat["red_max"] = _decode_uint16(data[8], data[9])
+	mNaturalPixelFormat["green_max"] = _decode_uint16(data[10], data[11])
+	mNaturalPixelFormat["blue_max"] = _decode_uint16(data[12], data[13])
+	mNaturalPixelFormat["red_shift"] = data[14]
+	mNaturalPixelFormat["green_shift"] = data[15]
+	mNaturalPixelFormat["blue_shift"] = data[16]
+	#mPixelFormat = mNaturalPixelFormat
+	mFramebuffer = RFBFramebuffer.new()
+	mFramebuffer.set_size(Vector2(mFramebufferWidth, mFramebufferHeight))
+	mFramebuffer.set_pixel_format_bits_per_pixel(mPixelFormat.bits_per_pixel)
+	mFramebuffer.set_pixel_format_depth(mPixelFormat.depth)
+	mFramebuffer.set_pixel_format_big_endian_flag(mPixelFormat.big_endian_flag)
+	mFramebuffer.set_pixel_format_true_color_flag(mPixelFormat.true_color_flag)
+	mFramebuffer.set_pixel_format_red_max(mPixelFormat.red_max)
+	mFramebuffer.set_pixel_format_green_max(mPixelFormat.green_max)
+	mFramebuffer.set_pixel_format_blue_max(mPixelFormat.blue_max)
+	mFramebuffer.set_pixel_format_red_shift(mPixelFormat.red_shift)
+	mFramebuffer.set_pixel_format_green_shift(mPixelFormat.green_shift)
+	mFramebuffer.set_pixel_format_blue_shift(mPixelFormat.blue_shift)
+	mFramebufferImage = Image(mFramebufferWidth, mFramebufferHeight, false, Image.FORMAT_RGB)
+	mFramebufferImage.fill(Color(0, 1, 0))
 	var name_data = RawArray()
 	name_data.append_array(data)
 	name_data.invert()
@@ -320,31 +425,38 @@ func _process_server_init_msg(data):
 	rcos.log_debug(self, ["desktop name:", mDesktopName])
 	rcos.log_debug(self, ["width:", mFramebufferWidth])
 	rcos.log_debug(self, ["height:", mFramebufferHeight])
-	mConnectionState = CS_RECEIVE_SERVER_MESSAGES
+	rcos.log_debug(self, ["natural pixel format:", mNaturalPixelFormat])
+	rcos.log_debug(self, ["new pixel format:", mPixelFormat])
+	_set_connection_state(CS_RECEIVE_SERVER_MESSAGES)
 	emit_signal("connection_established")
-	set_fixed_process(true)
-	get_node("update_pointer_timer").start()
+	mUpdatePointerTimer.start()
+	_change_pixel_format(mPixelFormat)
+	_send_framebuffer_update_request(0, 0, mFramebufferWidth, mFramebufferHeight, 0)
 	return msg_length
 
 func _process_server_msg(data):
 	if data.size() == 0:
 		return 0
-	var s = ""
-	for i in range(0, mReceiveBuffer.size()):
-		#s += ("%2o " % data[i])
-		s += str(mReceiveBuffer[i]) + " "
-	rcos.log_debug(self, [data.size(), ":", s])
 	if data[0] == MSG_TYPE_FRAMEBUFFER_UPDATE:
-		return data.size()
+		if data.size() < 4:
+			return 0
+		mConnectionStateData["num_rects"] = _decode_uint16(data[2], data[3])
+		_set_connection_state(CS_RECEIVE_FRAMEBUFFER_RECT)
+		return 4
 	elif data[0] == MSG_TYPE_SET_COLOUR_MAP_ENTRIES:
-		return data.size()
+		_error("Colour map currently not implemented")
+		return -1
 	elif data[0] == MSG_TYPE_BELL:
 		rcos.log_debug(self, "got bell msg")
 		emit_signal("bell_msg_received")
 		return 1
 	elif data[0] == MSG_TYPE_SERVER_CUT_TEXT:
+		if data.size() < 8:
+			return 0
 		var text_length = _decode_uint32(data[4], data[5], data[6], data[7])
 		var msg_length = 8 + text_length
+		if data.size() < msg_length:
+			return 0
 		var text_data = RawArray()
 		text_data.append_array(data)
 		text_data.invert()
@@ -353,9 +465,68 @@ func _process_server_msg(data):
 		var text = text_data.get_string_from_ascii()
 		rcos.log_debug(self, "got server_cut_text msg: " + text)
 		emit_signal("server_cut_text_msg_received", text)
-		return data.size()
+		return msg_length
 	return data.size()
 
+func _process_framebuffer_rect(data):
+	if data.size() < 12:
+		return 0
+	var encoding = data[11]
+	if encoding != 0:
+		return -1
+	var rect_width = _decode_uint16(data[4], data[5])
+	var rect_height = _decode_uint16(data[6], data[7])
+	var rect_data_size = rect_width * rect_height * mPixelFormat.bits_per_pixel/8
+	var msg_size = 12 + rect_data_size
+	if data.size() < msg_size:
+		return 0
+	var rect_pos_x = _decode_uint16(data[0], data[1])
+	var rect_pos_y = _decode_uint16(data[2], data[3])
+	var bytes_per_pixel = mPixelFormat.bits_per_pixel / 8
+	var rect = Rect2(rect_pos_x, rect_pos_y, rect_width, rect_height)
+	mFramebuffer.put_rect_raw(rect, data, 12)
+	mConnectionStateData["num_rects"] -= 1
+	if mConnectionStateData["num_rects"] == 0:
+		emit_signal("framebuffer_changed", mFramebuffer.get_image())
+		_set_connection_state(CS_RECEIVE_SERVER_MESSAGES)
+		_send_framebuffer_update_request(0, 0, mFramebufferWidth, mFramebufferHeight, 1)
+	return msg_size
+
+func _change_pixel_format(new_pixel_format):
+	mPixelFormat = new_pixel_format
+	rcos.log_debug(self, ["sending set pixel format message", new_pixel_format])
+	var msg = RawArray()
+	msg.append(MSG_TYPE_change_pixel_format)
+	msg.append(PADDING_BYTE)
+	msg.append(PADDING_BYTE)
+	msg.append(PADDING_BYTE)
+	msg.append(mPixelFormat.bits_per_pixel)
+	msg.append(mPixelFormat.depth)
+	msg.append(mPixelFormat.big_endian_flag)
+	msg.append(mPixelFormat.true_color_flag)
+	msg.append_array(_encode_uint16(mPixelFormat.red_max))
+	msg.append_array(_encode_uint16(mPixelFormat.green_max))
+	msg.append_array(_encode_uint16(mPixelFormat.blue_max))
+	msg.append(mPixelFormat.red_shift)
+	msg.append(mPixelFormat.green_shift)
+	msg.append(mPixelFormat.blue_shift)
+	msg.append(PADDING_BYTE)
+	msg.append(PADDING_BYTE)
+	msg.append(PADDING_BYTE)
+	send_data(msg)
+
+func _send_framebuffer_update_request(x, y, width, height, incremental):
+	#prints("sending framebuffer update request", 0, 0, mFramebufferWidth, mFramebufferHeight)
+	rcos.log_debug(self, ["sending framebuffer update request", 0, 0, mFramebufferWidth, mFramebufferHeight])
+	var msg = RawArray()
+	msg.append(MSG_TYPE_FRAMEBUFFER_UPDATE_REQUEST)
+	msg.append(incremental)
+	msg.append_array(_encode_uint16(x))
+	msg.append_array(_encode_uint16(y))
+	msg.append_array(_encode_uint16(width))
+	msg.append_array(_encode_uint16(height))
+	send_data(msg)
+	
 func _update_pointer():
 	mPointer.fpos_x += mPointer.speed_x * mPointer.speed_multiplier
 	mPointer.fpos_y += mPointer.speed_y * mPointer.speed_multiplier
@@ -377,19 +548,37 @@ func _update_pointer():
 	mPointer.ipos_y = int(mPointer.fpos_y)
 	mPointer.dirty = false
 
+func set_password(password):
+	mPassword = password
+	if mConnectionState == CS_WAITING_FOR_PASSWORD:
+		_set_connection_state(CS_RECEIVE_VNC_AUTH_CHALLENGE)
+
 func connect_to_server(address, port):
-	mConnectionState = CS_NOT_CONNECTED
+	mRemoteAddress = address
+	mRemotePort = port
+	_set_connection_state(CS_CONNECTING)
 	mStream = StreamPeerTCP.new()
-	if mStream.connect(address, port) != OK:
+	if mStream.connect(mRemoteAddress, mRemotePort) != OK:
+		_error("Failed to initialize connection")
+		_set_connection_state(CS_ERROR)
 		return false
-	get_node("read_data_timer").start()
+	mReadDataTimer.start()
 	return true
+
+func get_error():
+	return mError
+
+func get_remote_address():
+	return mRemoteAddress
+
+func get_remote_port():
+	return mRemotePort
 
 func get_desktop_name():
 	return mDesktopName
 
 func send_data(data):
-	get_node("send_data_timer").start()
+	mSendDataTimer.start()
 	mSendBuffer.append_array(data)
 	_send_data()
 
@@ -492,3 +681,14 @@ func set_button_pressed(button_num, val):
 	else:
 		mPointer.button_mask &= ~(1 << (button_num-1))
 	mPointer.dirty = true
+
+func process_key_event(event):
+	var keysym = null
+	rcos.log_debug(self, event)
+	if event.unicode > 0 && event.unicode < 256:
+		keysym = event.unicode
+	elif mScancode2Keysym.map.has(event.scancode):
+		keysym = mScancode2Keysym.map[event.scancode]
+	if keysym == null:
+		return
+	set_key_pressed(keysym, event.pressed)

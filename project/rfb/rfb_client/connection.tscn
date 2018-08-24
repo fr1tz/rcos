@@ -1,15 +1,18 @@
-[gd_scene load_steps=2 format=1]
+[gd_scene load_steps=3 format=1]
 
 [ext_resource path="res://rfb/rfb_client/connection.gd" type="Script" id=1]
+[ext_resource path="res://rfb/rfb_client/connection_io_ports.tscn" type="PackedScene" id=2]
 
 [node name="connection" type="Node"]
 
 script/script = ExtResource( 1 )
 
+[node name="io_ports" parent="." instance=ExtResource( 2 )]
+
 [node name="read_data_timer" type="Timer" parent="."]
 
 process_mode = 1
-wait_time = 0.1
+wait_time = 0.03
 one_shot = false
 autostart = false
 
