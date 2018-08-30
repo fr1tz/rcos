@@ -19,9 +19,13 @@
 #ifndef RFB_PIXEL_FORMAT_H
 #define RFB_PIXEL_FORMAT_H
 
-/*
-class RFBPixelFormat
+#include "reference.h"
+
+class RFBPixelFormat : public Reference
 {
+    OBJ_TYPE(RFBPixelFormat, Reference)
+    OBJ_CATEGORY("References")
+
     int bits_per_pixel;
     int depth;
     int big_endian_flag;
@@ -39,18 +43,8 @@ protected:
 public:
     RFBPixelFormat();
 
-    int get_bits_per_pixel() { return bits_per_pixel; }
-    int get_depth() { return depth; }
-    int get_big_endian_flag() { return big_endian_flag; }
-    int get_true_color_flag() { return true_color_flag; }
-    int get_red_max() { return red_max; }
-    int get_green_max() { return green_max; }
-    int get_blue_max() { return blue_max; }
-    int get_red_shift() { return red_shift; }
-    int get_green_shift() { return green_shift; }
-    int get_blue_shift() { return blue_shift; }
+    void set(const Ref<RFBPixelFormat>& p_pixel_format);
 
-    void set(const RFBPixelFormat& pixel_format);
     void set_bits_per_pixel(int p_val) { bits_per_pixel = p_val; }
     void set_depth(int p_val) { depth = p_val; }
     void set_big_endian_flag(int p_val) { big_endian_flag = p_val; }
@@ -62,7 +56,16 @@ public:
     void set_green_shift(int p_val) { green_shift = p_val; }
     void set_blue_shift(int p_val) { blue_shift = p_val; }
 
+    int get_bits_per_pixel() const { return bits_per_pixel; }
+    int get_depth() const { return depth; }
+    int get_big_endian_flag() const { return big_endian_flag; }
+    int get_true_color_flag() const { return true_color_flag; }
+    int get_red_max() const { return red_max; }
+    int get_green_max() const { return green_max; }
+    int get_blue_max() const { return blue_max; }
+    int get_red_shift() const { return red_shift; }
+    int get_green_shift() const { return green_shift; }
+    int get_blue_shift() const { return blue_shift; }
 };
-*/
 
 #endif // RFB_PIXEL_FORMAT_H

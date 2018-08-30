@@ -23,7 +23,7 @@
 void register_rfb_types()
 {
     ObjectTypeDB::register_type<RFBUtil>();
-    //ObjectTypeDB::register_type<RFBPixelFormat>();
+    ObjectTypeDB::register_type<RFBPixelFormat>();
     ObjectTypeDB::register_type<RFBFramebuffer>();
 }
 

@@ -21,47 +21,41 @@
 
 #include "reference.h"
 
-#include "rfb_pixel_format.h"
-
-struct RFBPixelFormat
-{
-    int bits_per_pixel;
-    int depth;
-    int big_endian_flag;
-    int true_color_flag;
-    int red_max;
-    int green_max;
-    int blue_max;
-    int red_shift;
-    int green_shift;
-    int blue_shift;
-};
+class RFBPixelFormat;
 
 class RFBFramebuffer : public Reference
 {
-    OBJ_TYPE(RFBFramebuffer, Reference);
-    OBJ_CATEGORY("References");
+    OBJ_TYPE(RFBFramebuffer, Reference)
+    OBJ_CATEGORY("References")
 
+    struct PixelFormat
+    {
+        int bits_per_pixel;
+        int bytes_per_pixel;
+        int depth;
+        int big_endian_flag;
+        int true_color_flag;
+        int red_max;
+        int green_max;
+        int blue_max;
+        int red_shift;
+        int green_shift;
+        int blue_shift;
+    };
+
+    PixelFormat mPixelFormat;
     Vector2 mSize;
-    RFBPixelFormat mPixelFormat;
     DVector<uint8_t> mData;
 
 protected:
 	static void _bind_methods();
 
 public:
+    void set_pixel_format(const Ref<RFBPixelFormat>& p_pixel_format);
     void set_size(const Vector2& p_size);
-    void set_pixel_format_bits_per_pixel(int p_val) { mPixelFormat.bits_per_pixel = p_val; }
-    void set_pixel_format_depth(int p_val) { mPixelFormat.depth = p_val; }
-    void set_pixel_format_big_endian_flag(int p_val) { mPixelFormat.big_endian_flag = p_val; }
-    void set_pixel_format_true_color_flag(int p_val) { mPixelFormat.true_color_flag = p_val; }
-    void set_pixel_format_red_max(int p_val) { mPixelFormat.red_max = p_val; }
-    void set_pixel_format_green_max(int p_val) { mPixelFormat.green_max = p_val; }
-    void set_pixel_format_blue_max(int p_val) { mPixelFormat.blue_max = p_val; }
-    void set_pixel_format_red_shift(int p_val) { mPixelFormat.red_shift = p_val; }
-    void set_pixel_format_green_shift(int p_val) { mPixelFormat.green_shift = p_val; }
-    void set_pixel_format_blue_shift(int p_val) { mPixelFormat.blue_shift = p_val; }
     void put_rect_raw(const Rect2& p_rect, const ByteArray& p_data, int p_data_offset);
+    void put_rect_cursor(const Rect2& p_rect, const ByteArray& p_data, int p_data_offset);
+    void copy_rect(const Rect2& p_src_rect, const Vector2& p_dst_pos);
     Image get_image() const;
 };
 
