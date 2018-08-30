@@ -21,6 +21,8 @@ const STATE_SCROLL = 2
 
 var mConnection = null
 var mFramebufferTexture = null
+var mCursorTexture = null
+var mCursorHotspot = Vector2(0, 0)
 var mViewportCenter = Vector2(0, 0)
 var mZoom = 1.0
 var mState = STATE_IDLE
@@ -32,15 +34,16 @@ func _ready():
 	get_node("activate_scroll_state_timer").connect("timeout", self, "_set_state", [STATE_SCROLL])
 
 func _draw():
-	if mFramebufferTexture == null:
-		return
-	var fb_size = mFramebufferTexture.get_size()
-	var fb_rect = Rect2(Vector2(0, 0), fb_size)
-	var viewport_rect = Rect2(mViewportCenter - get_size()/2, get_size())
-	var src_rect = fb_rect.clip(viewport_rect)
-	var rect = Rect2(src_rect.pos - viewport_rect.pos, src_rect.size)
-	draw_rect(get_rect(), Color(0.2, 0.2, 0.2))
-	draw_texture_rect_region(mFramebufferTexture, rect, src_rect)
+	if mFramebufferTexture != null:
+		var fb_size = mFramebufferTexture.get_size()
+		var fb_rect = Rect2(Vector2(0, 0), fb_size)
+		var viewport_rect = Rect2(mViewportCenter - get_size()/2, get_size())
+		var src_rect = fb_rect.clip(viewport_rect)
+		var rect = Rect2(src_rect.pos - viewport_rect.pos, src_rect.size)
+		draw_rect(get_rect(), Color(0.2, 0.2, 0.2))
+		draw_texture_rect_region(mFramebufferTexture, rect, src_rect)
+	if mCursorTexture != null:
+		draw_texture(mCursorTexture, get_size()/2 - mCursorHotspot)
 
 func _canvas_input(event):
 	if !is_visible() || event.type == InputEvent.KEY:
@@ -69,12 +72,13 @@ func _canvas_input(event):
 	&& drag \
 	&& index == mActiveIndex:
 		mViewportCenter -= event.relative_pos
-		mViewportCenter.x = clamp(mViewportCenter.x, 0, mFramebufferTexture.get_width())
-		mViewportCenter.y = clamp(mViewportCenter.y, 0, mFramebufferTexture.get_height())
+		#mViewportCenter.x = clamp(mViewportCenter.x, 0, mFramebufferTexture.get_width())
+		#mViewportCenter.y = clamp(mViewportCenter.y, 0, mFramebufferTexture.get_height())
 		mConnection.set_pointer_pos_x(int(mViewportCenter.x))
 		mConnection.set_pointer_pos_y(int(mViewportCenter.y))
-		get_node("crosshair").set_hidden(false)
 		update()
+		#mConnection.send_pointer()
+		#get_node("crosshair").set_hidden(false)
 	elif mState != STATE_IDLE \
 	&& touch \
 	&& !event.pressed \
@@ -88,8 +92,9 @@ func _canvas_input(event):
 				mConnection.set_pointer_pos_x(int(fb_pos.x))
 				mConnection.set_pointer_pos_y(int(fb_pos.y))
 				update()
+				#mConnection.send_pointer()
 		mActiveIndex = -1
-		get_node("crosshair").set_hidden(true)
+		#get_node("crosshair").set_hidden(true)
 		_set_state(STATE_IDLE)
 	# Update last touch pos.
 	if index == mActiveIndex:
@@ -102,14 +107,22 @@ func _set_state(state):
 	else:
 		get_node("activate_scroll_state_timer").stop()
 
-func set_framebuffer_image(image):
+func _framebuffer_changed(image):
 	if mFramebufferTexture == null:
 		mFramebufferTexture = ImageTexture.new()
 		mViewportCenter = Vector2(image.get_width(), image.get_height())/2
 	mFramebufferTexture.create_from_image(image, 0)
 	update()
 
+func _cursor_changed(image, hotspot):
+	mCursorHotspot = hotspot
+	if mCursorTexture == null:
+		mCursorTexture = ImageTexture.new()
+	mCursorTexture.create_from_image(image, 0)
+	update()
+
 func initialize(connection):
 	mConnection = connection
-	mConnection.connect("framebuffer_changed", self, "set_framebuffer_image")
+	mConnection.connect("framebuffer_changed", self, "_framebuffer_changed")
+	mConnection.connect("cursor_changed", self, "_cursor_changed")
 	rcos.enable_canvas_input(self)

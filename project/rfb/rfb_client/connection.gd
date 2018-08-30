@@ -33,6 +33,17 @@ const MSG_TYPE_SET_COLOUR_MAP_ENTRIES = 1
 const MSG_TYPE_BELL = 2
 const MSG_TYPE_SERVER_CUT_TEXT = 3
 
+# Encodings
+const ENCODING_RAW = 0
+const ENCODING_COPY_RECT = 1
+const ENCODING_RRE = 2
+const ENCODING_HEXTILE = 5
+const ENCODING_TRLE = 15
+const ENCODING_ZRLE = 16
+# Pseudo-encodings
+const ENCODING_CURSOR = -239
+const ENCODING_DESKTOP_SIZE = -223
+
 # Connection state
 const CS_ERROR = -1
 const CS_READY_TO_CONNECT = 0
@@ -66,22 +77,20 @@ var mConnectionStateData = {}
 var mProtocolVersion = -1
 var mDesktopName = ""
 var mRFBUtil = RFBUtil.new()
-var mFramebuffer = RFBFramebuffer.new()
-var mFramebufferImage = null
-var mFramebufferWidth = 0
-var mFramebufferHeight = 0
-var mNaturalPixelFormat = {} # server's natural pixel format
-var mPixelFormat = {
-	"bits_per_pixel": 32,
-	"depth": 32,
-	"big_endian_flag": 0,
-	"true_color_flag": 1,
-	"red_max": 255,
-	"green_max": 255,
-	"blue_max": 255,
-	"red_shift": 16,
-	"green_shift": 8,
-	"blue_shift": 0
+var mNaturalPixelFormat = RFBPixelFormat.new()  # server's natural pixel format
+var mPixelFormat = RFBPixelFormat.new() # pixel format in use
+var mFramebuffer = {
+	"fb": RFBFramebuffer.new(),
+	"size": Vector2(0, 0),
+	"image": null,
+	"dirty": false
+}
+var mCursor = {
+	"fb": RFBFramebuffer.new(),
+	"size": Vector2(0, 0),
+	"hotspot": Vector2(0, 0),
+	"image": null,
+	"dirty": false
 }
 var mPointer = {
 	"fpos_x": 0,
@@ -102,6 +111,17 @@ func _init():
 	add_user_signal("server_cut_text_msg_received")
 	add_user_signal("bell_msg_received")
 	add_user_signal("framebuffer_changed")
+	add_user_signal("cursor_changed")
+	mPixelFormat.set_bits_per_pixel(32)
+	mPixelFormat.set_depth(32)
+	mPixelFormat.set_big_endian_flag(0)
+	mPixelFormat.set_true_color_flag(1)
+	mPixelFormat.set_red_max(255)
+	mPixelFormat.set_green_max(255)
+	mPixelFormat.set_blue_max(255)
+	mPixelFormat.set_red_shift(16)
+	mPixelFormat.set_green_shift(8)
+	mPixelFormat.set_blue_shift(0)
 
 func _ready():
 	mIOPorts.initialize(self)
@@ -109,26 +129,29 @@ func _ready():
 	mSendDataTimer.connect("timeout", self, "_send_data")
 	mUpdatePointerTimer.connect("timeout", self, "_update_pointer")
 
-func _decode_uint16(b1, b2):
+func _decode_u16(b1, b2):
 	var value = b2
 	value |= (b1 << 8)
 	return value
 
-func _decode_uint32(b1, b2, b3, b4):
+func _decode_u32(b1, b2, b3, b4):
 	var value = b4
 	value |= (b3 << 8)
 	value |= (b2 << 16)
 	value |= (b1 << 24)
 	return value
 
-func _encode_uint16(value):
+func _decode_s32(b1, b2, b3, b4):
+	return _decode_u32(b1, b2, b3, b4)
+
+func _encode_u16(value):
 	value = int(value)
 	var bytes = RawArray()
 	bytes.append((value & 0xFF00) >> 8)
 	bytes.append((value & 0x00FF))
 	return bytes
 
-func _encode_uint32(value):
+func _encode_u32(value):
 	value = int(value)
 	var bytes = RawArray()
 	bytes.append((value & 0xFF000000) >> 24)
@@ -136,6 +159,9 @@ func _encode_uint32(value):
 	bytes.append((value & 0x0000FF00) >> 8)
 	bytes.append((value & 0x000000FF))
 	return bytes
+
+func _encode_s32(value):
+	return _encode_u32(value)
 
 func _error(msg):
 	mError = msg
@@ -260,7 +286,7 @@ func _process_security_msg(data):
 		var security_type = data[3]
 		rcos.log_debug(self, ["security_type:", security_type])
 		if security_type == 0: # Error
-			var reason_length = _decode_uint32(data[4], data[5], data[6], data[7])
+			var reason_length = _decode_u32(data[4], data[5], data[6], data[7])
 			var msg_length = 8 + reason_length
 			if data.size() < msg_length:
 				return 0
@@ -289,7 +315,7 @@ func _process_security_msg(data):
 		if num_security_types == 0:
 			if data.size() < 5:
 				return 0
-			var reason_length = _decode_uint32(data[1], data[2], data[3], data[4])
+			var reason_length = _decode_u32(data[1], data[2], data[3], data[4])
 			var msg_length = 5 + reason_length
 			if data.size() < msg_length:
 				return 0
@@ -368,7 +394,7 @@ func _process_security_result_msg(data):
 	# FAILURE
 	if data.size() < 8:
 		return 0
-	var reason_length = _decode_uint32(data[4], data[5], data[6], data[7])
+	var reason_length = _decode_u32(data[4], data[5], data[6], data[7])
 	var msg_length = 8 + reason_length
 	if data.size() < msg_length:
 		return 0
@@ -385,53 +411,42 @@ func _process_server_init_msg(data):
 	rcos.log_debug(self, "_process_server_init_msg()")
 	if data.size() < 24:
 		return 0
-	var name_length= _decode_uint32(data[20], data[21], data[22], data[23])
+	var name_length= _decode_u32(data[20], data[21], data[22], data[23])
 	var msg_length = 24 + name_length
 	if data.size() < msg_length:
 		return 0
-	mFramebufferWidth = _decode_uint16(data[0], data[1])
-	mFramebufferHeight = _decode_uint16(data[2], data[3])
-	mNaturalPixelFormat["bits_per_pixel"] = data[4]
-	mNaturalPixelFormat["depth"] = data[5]
-	mNaturalPixelFormat["big_endian_flag"] = data[6]
-	mNaturalPixelFormat["true_color_flag"] = data[7]
-	mNaturalPixelFormat["red_max"] = _decode_uint16(data[8], data[9])
-	mNaturalPixelFormat["green_max"] = _decode_uint16(data[10], data[11])
-	mNaturalPixelFormat["blue_max"] = _decode_uint16(data[12], data[13])
-	mNaturalPixelFormat["red_shift"] = data[14]
-	mNaturalPixelFormat["green_shift"] = data[15]
-	mNaturalPixelFormat["blue_shift"] = data[16]
-	#mPixelFormat = mNaturalPixelFormat
-	mFramebuffer = RFBFramebuffer.new()
-	mFramebuffer.set_size(Vector2(mFramebufferWidth, mFramebufferHeight))
-	mFramebuffer.set_pixel_format_bits_per_pixel(mPixelFormat.bits_per_pixel)
-	mFramebuffer.set_pixel_format_depth(mPixelFormat.depth)
-	mFramebuffer.set_pixel_format_big_endian_flag(mPixelFormat.big_endian_flag)
-	mFramebuffer.set_pixel_format_true_color_flag(mPixelFormat.true_color_flag)
-	mFramebuffer.set_pixel_format_red_max(mPixelFormat.red_max)
-	mFramebuffer.set_pixel_format_green_max(mPixelFormat.green_max)
-	mFramebuffer.set_pixel_format_blue_max(mPixelFormat.blue_max)
-	mFramebuffer.set_pixel_format_red_shift(mPixelFormat.red_shift)
-	mFramebuffer.set_pixel_format_green_shift(mPixelFormat.green_shift)
-	mFramebuffer.set_pixel_format_blue_shift(mPixelFormat.blue_shift)
-	mFramebufferImage = Image(mFramebufferWidth, mFramebufferHeight, false, Image.FORMAT_RGB)
-	mFramebufferImage.fill(Color(0, 1, 0))
+	mFramebuffer.size.x = _decode_u16(data[0], data[1])
+	mFramebuffer.size.y = _decode_u16(data[2], data[3])
+	mNaturalPixelFormat.set_bits_per_pixel(data[4])
+	mNaturalPixelFormat.set_depth(data[5])
+	mNaturalPixelFormat.set_big_endian_flag(data[6])
+	mNaturalPixelFormat.set_true_color_flag(data[7])
+	mNaturalPixelFormat.set_red_max(_decode_u16(data[8], data[9]))
+	mNaturalPixelFormat.set_green_max(_decode_u16(data[10], data[11]))
+	mNaturalPixelFormat.set_blue_max(_decode_u16(data[12], data[13]))
+	mNaturalPixelFormat.set_red_shift(data[14])
+	mNaturalPixelFormat.set_green_shift(data[15])
+	mNaturalPixelFormat.set_blue_shift(data[16])
 	var name_data = RawArray()
 	name_data.append_array(data)
 	name_data.invert()
 	name_data.resize(name_data.size()-24)
 	name_data.invert()
 	mDesktopName = name_data.get_string_from_ascii()
+	mFramebuffer.fb.set_pixel_format(mPixelFormat)
+	mFramebuffer.fb.set_size(Vector2(mFramebuffer.size.x, mFramebuffer.size.y))
+	mCursor.fb.set_pixel_format(mPixelFormat)
 	rcos.log_debug(self, ["desktop name:", mDesktopName])
-	rcos.log_debug(self, ["width:", mFramebufferWidth])
-	rcos.log_debug(self, ["height:", mFramebufferHeight])
+	rcos.log_debug(self, ["width:", mFramebuffer.size.x])
+	rcos.log_debug(self, ["height:", mFramebuffer.size.y])
 	rcos.log_debug(self, ["natural pixel format:", mNaturalPixelFormat])
 	rcos.log_debug(self, ["new pixel format:", mPixelFormat])
 	_set_connection_state(CS_RECEIVE_SERVER_MESSAGES)
 	emit_signal("connection_established")
 	mUpdatePointerTimer.start()
+	_set_encodings()
 	_change_pixel_format(mPixelFormat)
-	_send_framebuffer_update_request(0, 0, mFramebufferWidth, mFramebufferHeight, 0)
+	_send_framebuffer_update_request(Vector2(0, 0), mFramebuffer.size, 0)
 	return msg_length
 
 func _process_server_msg(data):
@@ -440,7 +455,7 @@ func _process_server_msg(data):
 	if data[0] == MSG_TYPE_FRAMEBUFFER_UPDATE:
 		if data.size() < 4:
 			return 0
-		mConnectionStateData["num_rects"] = _decode_uint16(data[2], data[3])
+		mConnectionStateData["num_rects"] = _decode_u16(data[2], data[3])
 		_set_connection_state(CS_RECEIVE_FRAMEBUFFER_RECT)
 		return 4
 	elif data[0] == MSG_TYPE_SET_COLOUR_MAP_ENTRIES:
@@ -453,7 +468,7 @@ func _process_server_msg(data):
 	elif data[0] == MSG_TYPE_SERVER_CUT_TEXT:
 		if data.size() < 8:
 			return 0
-		var text_length = _decode_uint32(data[4], data[5], data[6], data[7])
+		var text_length = _decode_u32(data[4], data[5], data[6], data[7])
 		var msg_length = 8 + text_length
 		if data.size() < msg_length:
 			return 0
@@ -469,28 +484,76 @@ func _process_server_msg(data):
 	return data.size()
 
 func _process_framebuffer_rect(data):
+	var bytes_consumed = 0
 	if data.size() < 12:
-		return 0
-	var encoding = data[11]
-	if encoding != 0:
-		return -1
-	var rect_width = _decode_uint16(data[4], data[5])
-	var rect_height = _decode_uint16(data[6], data[7])
-	var rect_data_size = rect_width * rect_height * mPixelFormat.bits_per_pixel/8
-	var msg_size = 12 + rect_data_size
-	if data.size() < msg_size:
-		return 0
-	var rect_pos_x = _decode_uint16(data[0], data[1])
-	var rect_pos_y = _decode_uint16(data[2], data[3])
-	var bytes_per_pixel = mPixelFormat.bits_per_pixel / 8
+		return bytes_consumed
+	var rect_pos_x = _decode_u16(data[0], data[1])
+	var rect_pos_y = _decode_u16(data[2], data[3])
+	var rect_width = _decode_u16(data[4], data[5])
+	var rect_height = _decode_u16(data[6], data[7])
+	var encoding = _decode_s32(data[8], data[9], data[10], data[11])
 	var rect = Rect2(rect_pos_x, rect_pos_y, rect_width, rect_height)
-	mFramebuffer.put_rect_raw(rect, data, 12)
+	if encoding == ENCODING_RAW:
+		var bytes_per_pixel = mPixelFormat.get_bits_per_pixel() / 8
+		var rect_data_size = rect_width * rect_height * bytes_per_pixel
+		var msg_size = 12 + rect_data_size
+		if data.size() < msg_size:
+			return bytes_consumed
+		mFramebuffer.fb.put_rect_raw(rect, data, 12)
+		mFramebuffer.dirty = true
+		bytes_consumed = msg_size
+	elif encoding == ENCODING_COPY_RECT:
+		var msg_size = 12 + 4
+		if data.size() < msg_size:
+			return bytes_consumed
+		var src_x_pos = _decode_u16(data[12], data[13])
+		var src_y_pos = _decode_u16(data[14], data[15])
+		var src_rect = Rect2(src_x_pos, src_y_pos, rect_width, rect_height)
+		var dst_pos = Vector2(rect_pos_x, rect_pos_y)
+		mFramebuffer.fb.copy_rect(src_rect, dst_pos)
+		mFramebuffer.dirty = true
+		bytes_consumed = msg_size
+	elif encoding == ENCODING_CURSOR:
+		var bytes_per_pixel = mPixelFormat.get_bits_per_pixel() / 8
+		var rect_data_size = rect_width * rect_height * bytes_per_pixel
+		var bitmask_size = ceil(float(rect_width)/8)*rect_height
+		var msg_size = 12 + rect_data_size + bitmask_size
+		if data.size() < msg_size:
+			return bytes_consumed
+		mCursor.size = rect.size
+		mCursor.hotspot = rect.pos
+		rect.pos = Vector2(0, 0)
+		mCursor.fb.set_size(rect.size)
+		mCursor.fb.put_rect_cursor(rect, data, 12)
+		mCursor.dirty = true
+		bytes_consumed = msg_size
+	else:
+		return -1
 	mConnectionStateData["num_rects"] -= 1
 	if mConnectionStateData["num_rects"] == 0:
-		emit_signal("framebuffer_changed", mFramebuffer.get_image())
+		if mFramebuffer.dirty:
+			mFramebuffer.image = mFramebuffer.fb.get_image()
+			mFramebuffer.dirty = false
+			emit_signal("framebuffer_changed", mFramebuffer.image)
+		if mCursor.dirty:
+			mCursor.image = mCursor.fb.get_image()
+			mCursor.dirty = false
+			emit_signal("cursor_changed", mCursor.image, mCursor.hotspot)
+		_update_output_port_image()
 		_set_connection_state(CS_RECEIVE_SERVER_MESSAGES)
-		_send_framebuffer_update_request(0, 0, mFramebufferWidth, mFramebufferHeight, 1)
-	return msg_size
+		_send_framebuffer_update_request(Vector2(0, 0), mFramebuffer.size, 1)
+	return bytes_consumed
+
+func _set_encodings():
+	rcos.log_debug(self, ["sending set encodings message"])
+	var msg = RawArray()
+	msg.append(MSG_TYPE_SET_ENCODINGS)
+	msg.append(PADDING_BYTE)
+	msg.append_array(_encode_u16(3))
+	msg.append_array(_encode_s32(ENCODING_RAW))
+	msg.append_array(_encode_s32(ENCODING_COPY_RECT))
+	msg.append_array(_encode_s32(ENCODING_CURSOR))
+	send_data(msg)
 
 func _change_pixel_format(new_pixel_format):
 	mPixelFormat = new_pixel_format
@@ -500,53 +563,53 @@ func _change_pixel_format(new_pixel_format):
 	msg.append(PADDING_BYTE)
 	msg.append(PADDING_BYTE)
 	msg.append(PADDING_BYTE)
-	msg.append(mPixelFormat.bits_per_pixel)
-	msg.append(mPixelFormat.depth)
-	msg.append(mPixelFormat.big_endian_flag)
-	msg.append(mPixelFormat.true_color_flag)
-	msg.append_array(_encode_uint16(mPixelFormat.red_max))
-	msg.append_array(_encode_uint16(mPixelFormat.green_max))
-	msg.append_array(_encode_uint16(mPixelFormat.blue_max))
-	msg.append(mPixelFormat.red_shift)
-	msg.append(mPixelFormat.green_shift)
-	msg.append(mPixelFormat.blue_shift)
+	msg.append(mPixelFormat.get_bits_per_pixel())
+	msg.append(mPixelFormat.get_depth())
+	msg.append(mPixelFormat.get_big_endian_flag())
+	msg.append(mPixelFormat.get_true_color_flag())
+	msg.append_array(_encode_u16(mPixelFormat.get_red_max()))
+	msg.append_array(_encode_u16(mPixelFormat.get_green_max()))
+	msg.append_array(_encode_u16(mPixelFormat.get_blue_max()))
+	msg.append(mPixelFormat.get_red_shift())
+	msg.append(mPixelFormat.get_green_shift())
+	msg.append(mPixelFormat.get_blue_shift())
 	msg.append(PADDING_BYTE)
 	msg.append(PADDING_BYTE)
 	msg.append(PADDING_BYTE)
 	send_data(msg)
 
-func _send_framebuffer_update_request(x, y, width, height, incremental):
-	#prints("sending framebuffer update request", 0, 0, mFramebufferWidth, mFramebufferHeight)
-	rcos.log_debug(self, ["sending framebuffer update request", 0, 0, mFramebufferWidth, mFramebufferHeight])
+func _send_framebuffer_update_request(pos, size, incremental):
+	#prints("sending framebuffer update request", 0, 0, mFramebuffer.size.x, mFramebuffer.size.y)
+	rcos.log_debug(self, ["sending framebuffer update request", 0, 0, mFramebuffer.size.x, mFramebuffer.size.y])
 	var msg = RawArray()
 	msg.append(MSG_TYPE_FRAMEBUFFER_UPDATE_REQUEST)
 	msg.append(incremental)
-	msg.append_array(_encode_uint16(x))
-	msg.append_array(_encode_uint16(y))
-	msg.append_array(_encode_uint16(width))
-	msg.append_array(_encode_uint16(height))
+	msg.append_array(_encode_u16(pos.x))
+	msg.append_array(_encode_u16(pos.y))
+	msg.append_array(_encode_u16(size.x))
+	msg.append_array(_encode_u16(size.y))
 	send_data(msg)
-	
+
+func _update_output_port_image():
+	return
+#	var image = mFramebuffer.image
+#	if mCursor.image != null:
+#		var pointer_pos = Vector2(mPointer.ipos_x, mPointer.ipos_y)
+#		image.blend_rect(mCursor.image, \
+#		                 mCursor.image.get_used_rect(), \
+#		                 pointer_pos - mCursor.hotspot)
+	#emit_signal("framebuffer_changed", image)
+
 func _update_pointer():
 	mPointer.fpos_x += mPointer.speed_x * mPointer.speed_multiplier
 	mPointer.fpos_y += mPointer.speed_y * mPointer.speed_multiplier
-	mPointer.fpos_x = clamp(mPointer.fpos_x, 0, mFramebufferWidth)
-	mPointer.fpos_y = clamp(mPointer.fpos_y, 0, mFramebufferHeight)
+	mPointer.fpos_x = clamp(mPointer.fpos_x, 0, mFramebuffer.size.x)
+	mPointer.fpos_y = clamp(mPointer.fpos_y, 0, mFramebuffer.size.y)
 	if int(mPointer.fpos_x) != mPointer.ipos_x \
 	|| int(mPointer.fpos_y) != mPointer.ipos_y:
 		mPointer.dirty = true
-	if !mPointer.dirty:
-		return
-	rcos.log_debug(self, ["sending poiner event", mPointer.fpos_x, mPointer.fpos_y, mPointer.button_mask])
-	var pointer_event_msg = RawArray()
-	pointer_event_msg.append(MSG_TYPE_POINTER_EVENT)
-	pointer_event_msg.append(mPointer.button_mask)
-	pointer_event_msg.append_array(_encode_uint16(mPointer.fpos_x))
-	pointer_event_msg.append_array(_encode_uint16(mPointer.fpos_y))
-	send_data(pointer_event_msg)
-	mPointer.ipos_x = int(mPointer.fpos_x)
-	mPointer.ipos_y = int(mPointer.fpos_y)
-	mPointer.dirty = false
+	if mPointer.dirty:
+		send_pointer()
 
 func set_password(password):
 	mPassword = password
@@ -588,9 +651,21 @@ func send_clipboard(text):
 	client_cut_text_msg.append(PADDING_BYTE)
 	client_cut_text_msg.append(PADDING_BYTE)
 	client_cut_text_msg.append(PADDING_BYTE)
-	client_cut_text_msg.append_array(_encode_uint32(text.length()))
+	client_cut_text_msg.append_array(_encode_u32(text.length()))
 	client_cut_text_msg.append_array(text.to_ascii())
 	send_data(client_cut_text_msg)
+
+func send_pointer():
+	rcos.log_debug(self, ["sending pointer event", mPointer.fpos_x, mPointer.fpos_y, mPointer.button_mask])
+	var pointer_event_msg = RawArray()
+	pointer_event_msg.append(MSG_TYPE_POINTER_EVENT)
+	pointer_event_msg.append(mPointer.button_mask)
+	pointer_event_msg.append_array(_encode_u16(mPointer.fpos_x))
+	pointer_event_msg.append_array(_encode_u16(mPointer.fpos_y))
+	send_data(pointer_event_msg)
+	mPointer.ipos_x = int(mPointer.fpos_x)
+	mPointer.ipos_y = int(mPointer.fpos_y)
+	mPointer.dirty = false
 
 func set_key_pressed(keysym, pressed = true):
 	var key_event_msg = RawArray()
@@ -598,7 +673,7 @@ func set_key_pressed(keysym, pressed = true):
 	key_event_msg.append(pressed)
 	key_event_msg.append(PADDING_BYTE)
 	key_event_msg.append(PADDING_BYTE)
-	key_event_msg.append_array(_encode_uint32(keysym))
+	key_event_msg.append_array(_encode_u32(keysym))
 	send_data(key_event_msg)
 
 func send_char(c):
@@ -610,7 +685,7 @@ func send_char(c):
 	key_event_msg.append(1)
 	key_event_msg.append(PADDING_BYTE)
 	key_event_msg.append(PADDING_BYTE)
-	key_event_msg.append_array(_encode_uint32(keysym))
+	key_event_msg.append_array(_encode_u32(keysym))
 	send_data(key_event_msg)
 	key_event_msg.set(1, 0)
 	send_data(key_event_msg)
@@ -623,33 +698,33 @@ func set_pointer_pos_x(val):
 	if typeof(val) == TYPE_INT:
 		val = val
 	elif typeof(val) == TYPE_REAL:
-		val = val*mFramebufferWidth
+		val = val*mFramebuffer.size.x
 	elif typeof(val) == TYPE_VECTOR2 || typeof(val) == TYPE_VECTOR3:
 		val = val.x
 	elif typeof(val) == TYPE_STRING:
 		if val.find(".") >= 0:
-			val = float(val)*mFramebufferWidth
+			val = float(val)*mFramebuffer.size.x
 		else:
 			val = int(val)
 	else:
 		val = 0
-	mPointer.fpos_x = clamp(val, 0, mFramebufferWidth)
+	mPointer.fpos_x = clamp(val, 0, mFramebuffer.size.x)
 
 func set_pointer_pos_y(val):
 	if typeof(val) == TYPE_INT:
 		val = val
 	elif typeof(val) == TYPE_REAL:
-		val = val*mFramebufferHeight
+		val = val*mFramebuffer.size.y
 	elif typeof(val) == TYPE_VECTOR2 || typeof(val) == TYPE_VECTOR3:
 		val = val.x
 	elif typeof(val) == TYPE_STRING:
 		if val.find(".") >= 0:
-			val = float(val)*mFramebufferHeight
+			val = float(val)*mFramebuffer.size.y
 		else:
 			val = int(val)
 	else:
 		val = 0
-	mPointer.fpos_y = clamp(val, 0, mFramebufferHeight)
+	mPointer.fpos_y = clamp(val, 0, mFramebuffer.size.y)
 
 func set_pointer_speed_x(val):
 	if val == null:
