@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=1]
+
+[ext_resource path="res://ffa_widgets/image_viewer_widget/image_viewer_widget.gd" type="Script" id=1]
+[ext_resource path="res://ffa_widgets/image_viewer_widget/io_ports.tscn" type="PackedScene" id=2]
+[ext_resource path="res://ffa_widgets/image_viewer_widget/main_gui.tscn" type="PackedScene" id=3]
+[ext_resource path="res://ffa_widgets/image_viewer_widget/config_gui.tscn" type="PackedScene" id=4]
+
+[node name="image_viewer_widget" type="ReferenceFrame"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+script/script = ExtResource( 1 )
+
+[node name="io_ports" parent="." instance=ExtResource( 2 )]
+
+[node name="main_gui" parent="." instance=ExtResource( 3 )]
+
+[node name="config_canvas" type="Control" parent="."]
+
+visibility/visible = false
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 200.0
+margin/bottom = 400.0
+
+[node name="config_gui" parent="config_canvas" instance=ExtResource( 4 )]
+
+
