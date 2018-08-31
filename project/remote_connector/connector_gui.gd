@@ -45,6 +45,7 @@ func _scan_started():
 	for c in mInterfaceWidgetContainers.get_children():
 		mInterfaceWidgetContainers.remove_child(c)
 		c.free()
+	mSelectedInterfaceWidget = null
 	get_node("scan_progress").set_hidden(false)
 
 func _scan_finished():
