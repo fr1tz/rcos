@@ -20,7 +20,7 @@ const PROTOCOL_VERSION_3_7 = 1
 const PROTOCOL_VERSION_3_8 = 2
 
 # Client -> server msg types
-const MSG_TYPE_change_pixel_format = 0
+const MSG_TYPE_CHANGE_PIXEL_FORMAT = 0
 const MSG_TYPE_SET_ENCODINGS = 2
 const MSG_TYPE_FRAMEBUFFER_UPDATE_REQUEST = 3
 const MSG_TYPE_KEY_EVENT = 4
@@ -75,14 +75,13 @@ var mSendBuffer = RawArray()
 var mConnectionState = CS_READY_TO_CONNECT
 var mConnectionStateData = {}
 var mProtocolVersion = -1
-var mDesktopName = ""
 var mRFBUtil = RFBUtil.new()
 var mNaturalPixelFormat = RFBPixelFormat.new()  # server's natural pixel format
 var mPixelFormat = RFBPixelFormat.new() # pixel format in use
-var mFramebuffer = {
+var mDesktop = {
 	"fb": RFBFramebuffer.new(),
 	"size": Vector2(0, 0),
-	"image": null,
+	"name": "",
 	"dirty": false
 }
 var mCursor = {
@@ -110,8 +109,8 @@ func _init():
 	add_user_signal("connection_error")
 	add_user_signal("server_cut_text_msg_received")
 	add_user_signal("bell_msg_received")
-	add_user_signal("framebuffer_changed")
-	add_user_signal("cursor_changed")
+	add_user_signal("desktop_fb_changed")
+	add_user_signal("cursor_fb_changed")
 	mPixelFormat.set_bits_per_pixel(32)
 	mPixelFormat.set_depth(32)
 	mPixelFormat.set_big_endian_flag(0)
@@ -179,12 +178,13 @@ func _read_data():
 		if mConnectionState == CS_CONNECTING:
 			_set_connection_state(CS_RECEIVE_PROTOCOL_VERSION)
 		_receive_data()
-		var n = 50
-		while n > 0:
-			if _process_receive_buffer() == 0:
-				break
+		if mReceiveBuffer.size() > 0:
+			var n = 10
+			while n > 0:
+				if _process_receive_buffer() == 0:
+					break
 	else:
-		rcos.log_debug(self, ["error:", status])
+		_error(str(status))
 		emit_signal("connection_error", status)
 
 func _send_data():
@@ -282,7 +282,7 @@ func _process_security_msg(data):
 	rcos.log_debug(self, s)
 	if mProtocolVersion == PROTOCOL_VERSION_3_3:
 		if data.size() < 4:
-			return -1
+			return 0
 		var security_type = data[3]
 		rcos.log_debug(self, ["security_type:", security_type])
 		if security_type == 0: # Error
@@ -305,8 +305,11 @@ func _process_security_msg(data):
 			_set_connection_state(CS_RECEIVE_SERVER_INIT_MSG)
 			return 4
 		elif security_type == 2: # VNC Authentication 
-			_error("VNC auth not implemented for protocol version 3.3")
-			return -1
+			if mPassword == null:
+				_set_connection_state(CS_WAITING_FOR_PASSWORD)
+			else:
+				_set_connection_state(CS_RECEIVE_VNC_AUTH_CHALLENGE)
+			return 4
 	else:
 		if data.size() < 1:
 			return 0
@@ -392,20 +395,24 @@ func _process_security_result_msg(data):
 		_set_connection_state(CS_RECEIVE_SERVER_INIT_MSG)
 		return 4
 	# FAILURE
-	if data.size() < 8:
-		return 0
-	var reason_length = _decode_u32(data[4], data[5], data[6], data[7])
-	var msg_length = 8 + reason_length
-	if data.size() < msg_length:
-		return 0
-	var reason_data = RawArray()
-	reason_data.append_array(data)
-	reason_data.invert()
-	reason_data.resize(reason_data.size()-8)
-	reason_data.invert()
-	var reason = reason_data.get_string_from_ascii()
-	rcos.log_debug(self, ["error:", reason])
-	return -1
+	if mProtocolVersion == PROTOCOL_VERSION_3_3:
+		_error("Authentication failed")
+		return -1
+	else:
+		if data.size() < 8:
+			return 0
+		var reason_length = _decode_u32(data[4], data[5], data[6], data[7])
+		var msg_length = 8 + reason_length
+		if data.size() < msg_length:
+			return 0
+		var reason_data = RawArray()
+		reason_data.append_array(data)
+		reason_data.invert()
+		reason_data.resize(reason_data.size()-8)
+		reason_data.invert()
+		var reason = reason_data.get_string_from_ascii()
+		_error(reason)
+		return -1
 
 func _process_server_init_msg(data):
 	rcos.log_debug(self, "_process_server_init_msg()")
@@ -415,8 +422,8 @@ func _process_server_init_msg(data):
 	var msg_length = 24 + name_length
 	if data.size() < msg_length:
 		return 0
-	mFramebuffer.size.x = _decode_u16(data[0], data[1])
-	mFramebuffer.size.y = _decode_u16(data[2], data[3])
+	mDesktop.size.x = _decode_u16(data[0], data[1])
+	mDesktop.size.y = _decode_u16(data[2], data[3])
 	mNaturalPixelFormat.set_bits_per_pixel(data[4])
 	mNaturalPixelFormat.set_depth(data[5])
 	mNaturalPixelFormat.set_big_endian_flag(data[6])
@@ -432,13 +439,13 @@ func _process_server_init_msg(data):
 	name_data.invert()
 	name_data.resize(name_data.size()-24)
 	name_data.invert()
-	mDesktopName = name_data.get_string_from_ascii()
-	mFramebuffer.fb.set_pixel_format(mPixelFormat)
-	mFramebuffer.fb.set_size(Vector2(mFramebuffer.size.x, mFramebuffer.size.y))
+	mDesktop.name = name_data.get_string_from_ascii()
+	mDesktop.fb.set_pixel_format(mPixelFormat)
+	mDesktop.fb.set_size(Vector2(mDesktop.size.x, mDesktop.size.y))
 	mCursor.fb.set_pixel_format(mPixelFormat)
-	rcos.log_debug(self, ["desktop name:", mDesktopName])
-	rcos.log_debug(self, ["width:", mFramebuffer.size.x])
-	rcos.log_debug(self, ["height:", mFramebuffer.size.y])
+	rcos.log_debug(self, ["desktop name:", mDesktop.name])
+	rcos.log_debug(self, ["width:", mDesktop.size.x])
+	rcos.log_debug(self, ["height:", mDesktop.size.y])
 	rcos.log_debug(self, ["natural pixel format:", mNaturalPixelFormat])
 	rcos.log_debug(self, ["new pixel format:", mPixelFormat])
 	_set_connection_state(CS_RECEIVE_SERVER_MESSAGES)
@@ -446,7 +453,7 @@ func _process_server_init_msg(data):
 	mUpdatePointerTimer.start()
 	_set_encodings()
 	_change_pixel_format(mPixelFormat)
-	_send_framebuffer_update_request(Vector2(0, 0), mFramebuffer.size, 0)
+	_send_framebuffer_update_request(Vector2(0, 0), mDesktop.size, 0)
 	return msg_length
 
 func _process_server_msg(data):
@@ -499,8 +506,8 @@ func _process_framebuffer_rect(data):
 		var msg_size = 12 + rect_data_size
 		if data.size() < msg_size:
 			return bytes_consumed
-		mFramebuffer.fb.put_rect_raw(rect, data, 12)
-		mFramebuffer.dirty = true
+		mDesktop.fb.put_rect_raw(rect, data, 12)
+		mDesktop.dirty = true
 		bytes_consumed = msg_size
 	elif encoding == ENCODING_COPY_RECT:
 		var msg_size = 12 + 4
@@ -510,8 +517,8 @@ func _process_framebuffer_rect(data):
 		var src_y_pos = _decode_u16(data[14], data[15])
 		var src_rect = Rect2(src_x_pos, src_y_pos, rect_width, rect_height)
 		var dst_pos = Vector2(rect_pos_x, rect_pos_y)
-		mFramebuffer.fb.copy_rect(src_rect, dst_pos)
-		mFramebuffer.dirty = true
+		mDesktop.fb.copy_rect(src_rect, dst_pos)
+		mDesktop.dirty = true
 		bytes_consumed = msg_size
 	elif encoding == ENCODING_CURSOR:
 		var bytes_per_pixel = mPixelFormat.get_bits_per_pixel() / 8
@@ -531,17 +538,14 @@ func _process_framebuffer_rect(data):
 		return -1
 	mConnectionStateData["num_rects"] -= 1
 	if mConnectionStateData["num_rects"] == 0:
-		if mFramebuffer.dirty:
-			mFramebuffer.image = mFramebuffer.fb.get_image()
-			mFramebuffer.dirty = false
-			emit_signal("framebuffer_changed", mFramebuffer.image)
+		if mDesktop.dirty:
+			emit_signal("desktop_fb_changed", mDesktop.fb)
+			mDesktop.dirty = false
 		if mCursor.dirty:
-			mCursor.image = mCursor.fb.get_image()
+			emit_signal("cursor_fb_changed", mCursor.fb)
 			mCursor.dirty = false
-			emit_signal("cursor_changed", mCursor.image, mCursor.hotspot)
-		_update_output_port_image()
 		_set_connection_state(CS_RECEIVE_SERVER_MESSAGES)
-		_send_framebuffer_update_request(Vector2(0, 0), mFramebuffer.size, 1)
+		_send_framebuffer_update_request(Vector2(0, 0), mDesktop.size, 1)
 	return bytes_consumed
 
 func _set_encodings():
@@ -559,7 +563,7 @@ func _change_pixel_format(new_pixel_format):
 	mPixelFormat = new_pixel_format
 	rcos.log_debug(self, ["sending set pixel format message", new_pixel_format])
 	var msg = RawArray()
-	msg.append(MSG_TYPE_change_pixel_format)
+	msg.append(MSG_TYPE_CHANGE_PIXEL_FORMAT)
 	msg.append(PADDING_BYTE)
 	msg.append(PADDING_BYTE)
 	msg.append(PADDING_BYTE)
@@ -579,8 +583,8 @@ func _change_pixel_format(new_pixel_format):
 	send_data(msg)
 
 func _send_framebuffer_update_request(pos, size, incremental):
-	#prints("sending framebuffer update request", 0, 0, mFramebuffer.size.x, mFramebuffer.size.y)
-	rcos.log_debug(self, ["sending framebuffer update request", 0, 0, mFramebuffer.size.x, mFramebuffer.size.y])
+	#prints("sending framebuffer update request", 0, 0, mDesktop.size.x, mDesktop.size.y)
+	rcos.log_debug(self, ["sending framebuffer update request", 0, 0, mDesktop.size.x, mDesktop.size.y])
 	var msg = RawArray()
 	msg.append(MSG_TYPE_FRAMEBUFFER_UPDATE_REQUEST)
 	msg.append(incremental)
@@ -590,21 +594,11 @@ func _send_framebuffer_update_request(pos, size, incremental):
 	msg.append_array(_encode_u16(size.y))
 	send_data(msg)
 
-func _update_output_port_image():
-	return
-#	var image = mFramebuffer.image
-#	if mCursor.image != null:
-#		var pointer_pos = Vector2(mPointer.ipos_x, mPointer.ipos_y)
-#		image.blend_rect(mCursor.image, \
-#		                 mCursor.image.get_used_rect(), \
-#		                 pointer_pos - mCursor.hotspot)
-	#emit_signal("framebuffer_changed", image)
-
 func _update_pointer():
 	mPointer.fpos_x += mPointer.speed_x * mPointer.speed_multiplier
 	mPointer.fpos_y += mPointer.speed_y * mPointer.speed_multiplier
-	mPointer.fpos_x = clamp(mPointer.fpos_x, 0, mFramebuffer.size.x)
-	mPointer.fpos_y = clamp(mPointer.fpos_y, 0, mFramebuffer.size.y)
+	mPointer.fpos_x = clamp(mPointer.fpos_x, 0, mDesktop.size.x)
+	mPointer.fpos_y = clamp(mPointer.fpos_y, 0, mDesktop.size.y)
 	if int(mPointer.fpos_x) != mPointer.ipos_x \
 	|| int(mPointer.fpos_y) != mPointer.ipos_y:
 		mPointer.dirty = true
@@ -619,7 +613,12 @@ func set_password(password):
 func connect_to_server(address, port):
 	mRemoteAddress = address
 	mRemotePort = port
+	mPassword = null
+	mReceiveBuffer.resize(0)
+	mSendBuffer.resize(0)
 	_set_connection_state(CS_CONNECTING)
+	if mStream != null:
+		mStream.disconnect()
 	mStream = StreamPeerTCP.new()
 	if mStream.connect(mRemoteAddress, mRemotePort) != OK:
 		_error("Failed to initialize connection")
@@ -638,7 +637,25 @@ func get_remote_port():
 	return mRemotePort
 
 func get_desktop_name():
-	return mDesktopName
+	return mDesktop.name
+
+func get_desktop_fb():
+	return mDesktop.fb
+
+func get_desktop_size():
+	return mDesktop.size
+
+func get_cursor_fb():
+	return mCursor.fb
+
+func get_cursor_size():
+	return mCursor.size
+
+func get_cursor_hotspot():
+	return mCursor.hotspot
+
+func get_pointer_pos():
+	return Vector2(mPointer.ipos_x, mPointer.ipos_y)
 
 func send_data(data):
 	mSendDataTimer.start()
@@ -698,33 +715,33 @@ func set_pointer_pos_x(val):
 	if typeof(val) == TYPE_INT:
 		val = val
 	elif typeof(val) == TYPE_REAL:
-		val = val*mFramebuffer.size.x
+		val = val*mDesktop.size.x
 	elif typeof(val) == TYPE_VECTOR2 || typeof(val) == TYPE_VECTOR3:
 		val = val.x
 	elif typeof(val) == TYPE_STRING:
 		if val.find(".") >= 0:
-			val = float(val)*mFramebuffer.size.x
+			val = float(val)*mDesktop.size.x
 		else:
 			val = int(val)
 	else:
 		val = 0
-	mPointer.fpos_x = clamp(val, 0, mFramebuffer.size.x)
+	mPointer.fpos_x = clamp(val, 0, mDesktop.size.x)
 
 func set_pointer_pos_y(val):
 	if typeof(val) == TYPE_INT:
 		val = val
 	elif typeof(val) == TYPE_REAL:
-		val = val*mFramebuffer.size.y
+		val = val*mDesktop.size.y
 	elif typeof(val) == TYPE_VECTOR2 || typeof(val) == TYPE_VECTOR3:
 		val = val.x
 	elif typeof(val) == TYPE_STRING:
 		if val.find(".") >= 0:
-			val = float(val)*mFramebuffer.size.y
+			val = float(val)*mDesktop.size.y
 		else:
 			val = int(val)
 	else:
 		val = 0
-	mPointer.fpos_y = clamp(val, 0, mFramebuffer.size.y)
+	mPointer.fpos_y = clamp(val, 0, mDesktop.size.y)
 
 func set_pointer_speed_x(val):
 	if val == null:
@@ -761,7 +778,10 @@ func process_key_event(event):
 	var keysym = null
 	rcos.log_debug(self, event)
 	if event.unicode > 0 && event.unicode < 256:
-		keysym = event.unicode
+		if event.unicode == 10:
+			keysym = mScancode2Keysym.x11keysyms.XK_Return
+		else:
+			keysym = event.unicode
 	elif mScancode2Keysym.map.has(event.scancode):
 		keysym = mScancode2Keysym.map[event.scancode]
 	if keysym == null:

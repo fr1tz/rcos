@@ -27,6 +27,27 @@ func _canvas_input(event):
 	if event.type == InputEvent.KEY:
 		mConnection.process_key_event(event)
 
+func _zoom_button_selected(button_idx):
+	if button_idx == 0:
+		mFBViewer.mZoom = 0.1
+	elif button_idx == 1:
+		mFBViewer.mZoom = 0.25
+	elif button_idx == 2:
+		mFBViewer.mZoom = 0.5
+	elif button_idx == 3:
+		mFBViewer.mZoom = 1
+	elif button_idx == 4:
+		mFBViewer.mZoom = 2
+	mFBViewer.update()
+
+func zoom_in():
+	mFBViewer.mZoom += 0.1
+	mFBViewer.update()
+
+func zoom_out():
+	mFBViewer.mZoom -= 0.1
+	mFBViewer.update()
+
 func initialize(module, gui, connection):
 	mModule = module
 	mGui = gui
@@ -37,4 +58,7 @@ func initialize(module, gui, connection):
 		button.connect("button_down", mConnection, "set_button_pressed", [i, true])
 		button.connect("button_up", mConnection, "set_button_pressed", [i, false])
 	get_node("controls/toggle_keyboard").connect("pressed", OS, "show_virtual_keyboard")
+	get_node("controls/zoom_out").connect("pressed", self, "zoom_out")
+	get_node("controls/zoom_in").connect("pressed", self, "zoom_in")
+	get_node("controls/zoom_buttons").connect("button_selected", self, "_zoom_button_selected")
 	rcos.enable_canvas_input(self)

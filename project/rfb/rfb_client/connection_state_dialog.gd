@@ -31,7 +31,9 @@ func _retry_connection():
 func _connection_state_changed(state):
 	var state_label = get_node("status_dialog/label")
 	var retry_button = get_node("status_dialog/retry_button")
+	var password_dialog = get_node("password_dialog")
 	retry_button.set_hidden(true)
+	password_dialog.set_hidden(true)
 	if state == mConnection.CS_ERROR:
 		state_label.set_text("ERROR: "+mConnection.get_error())
 		_set_spinner_spin(false)

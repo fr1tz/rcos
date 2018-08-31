@@ -27,7 +27,11 @@ enum PortClass {
 	PTR_SPEED,
 	PTR_SPEED_X,
 	PTR_SPEED_Y,
-	PTR_BUTTON
+	PTR_BUTTON,
+	FB_IMAGE,
+	FB_WIDTH,
+	FB_HEIGHT,
+	FB_SIZE
 }
 
 var mConnection = null
@@ -35,6 +39,15 @@ var mOutputPortsMeta = {}
 var mInputPortsMeta = {}
 var mOutputPorts = []
 var mInputPorts = []
+
+var mDesktop = {
+	"image": null,
+	"dirty": false
+}
+var mCursor = {
+	"image": null,
+	"dirty": false
+}
 
 func _exit_tree():
 	_remove_io_ports()
@@ -70,6 +83,22 @@ func _add_output_ports(prefix):
 	mOutputPortsMeta["clipboard/text"] = {
 		"port_class": CLIPBOARD_TEXT,
 		"data_type": "string"
+	}
+	mOutputPortsMeta["framebuffer/image"] = {
+		"port_class": FB_IMAGE,
+		"data_type": "image"
+	}
+	mOutputPortsMeta["framebuffer/width"] = {
+		"port_class": FB_WIDTH,
+		"data_type": "int"
+	}
+	mOutputPortsMeta["framebuffer/height"] = {
+		"port_class": FB_HEIGHT,
+		"data_type": "int"
+	}
+	mOutputPortsMeta["framebuffer/size"] = {
+		"port_class": FB_SIZE,
+		"data_type": "vector2"
 	}
 	for port_path in mOutputPortsMeta.keys():
 		var port = data_router.add_output_port(prefix+"/"+port_path, "")
@@ -128,6 +157,7 @@ func _add_input_ports(prefix):
 		}
 	for port_path in mInputPortsMeta.keys():
 		var port = data_router.add_input_port(prefix+"/"+port_path)
+		mInputPortsMeta[port_path]["port"] = port
 		for meta_name in mInputPortsMeta[port_path].keys():
 			var meta_value = mInputPortsMeta[port_path][meta_name]
 			port.set_meta(meta_name, meta_value)
@@ -197,8 +227,48 @@ func _bell_msg_received():
 func _server_cut_text_msg_received(text):
 	mOutputPortsMeta["clipboard/text"].port.put_data(text)
 
+func _update_fb_image_output_port():
+	if !mDesktop.dirty && !mCursor.dirty:
+		return
+	if mDesktop.dirty:
+		mDesktop.image = mConnection.get_desktop_fb().get_image()
+		mDesktop.dirty = false
+	if mCursor.dirty:
+		mCursor.image = mConnection.get_cursor_fb().get_image()
+		mCursor.dirty = false
+	var image = mDesktop.image
+	if mCursor.image != null:
+		var pointer_pos = mConnection.get_pointer_pos()
+		var cursor_hotspot = mConnection.get_cursor_hotspot()
+		image.blend_rect(mCursor.image, \
+		                 mCursor.image.get_used_rect(), \
+		                 pointer_pos - cursor_hotspot)
+	var port = mOutputPortsMeta["framebuffer/image"].port
+	port.put_data(image)
+
+func _desktop_fb_changed(fb):
+	mDesktop.dirty = true
+	var fb_image_output_port = mOutputPortsMeta["framebuffer/image"].port
+	if fb_image_output_port.get_connections().size() > 0:
+		_update_fb_image_output_port()
+
+func _cursor_fb_changed(fb):
+	mCursor.dirty = true
+	var fb_image_output_port = mOutputPortsMeta["framebuffer/image"].port
+	if fb_image_output_port.get_connections().size() > 0:
+		_update_fb_image_output_port()
+
+func _fb_image_output_port_data_access(port):
+	_update_fb_image_output_port()
+
 func _connection_established():
 	_add_io_ports()
+	var fb_size = mConnection.get_desktop_size()
+	mOutputPortsMeta["framebuffer/width"].port.put_data(fb_size.x)
+	mOutputPortsMeta["framebuffer/height"].port.put_data(fb_size.y)
+	mOutputPortsMeta["framebuffer/size"].port.put_data(fb_size)
+	var port = mOutputPortsMeta["framebuffer/image"].port
+	port.connect("data_access", self, "_fb_image_output_port_data_access", [port])
 
 func _connection_error(status):
 	_remove_io_ports()
@@ -209,3 +279,8 @@ func initialize(connection):
 	mConnection.connect("connection_error", self, "_connection_error")
 	mConnection.connect("bell_msg_received", self, "_bell_msg_received")
 	mConnection.connect("server_cut_text_msg_received", self, "_server_cut_text_msg_received")
+	mConnection.connect("desktop_fb_changed", self, "_desktop_fb_changed")
+	mConnection.connect("cursor_fb_changed", self, "_cursor_fb_changed")
+
+func get_output_port(port_name):
+	return mOutputPortsMeta[port_name].port
