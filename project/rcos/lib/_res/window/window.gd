@@ -108,9 +108,13 @@ func show_canvas(canvas, region = null):
 		if !was_displayed && is_displayed:
 			canvas.set_render_target_update_mode(Viewport.RENDER_TARGET_UPDATE_WHEN_VISIBLE)
 			canvas.emit_signal("display")
+			if canvas.get_child_count() == 1:
+				canvas.get_child(0).set_hidden(false)
 		elif was_displayed && !is_displayed:
 			canvas.set_render_target_update_mode(Viewport.RENDER_TARGET_UPDATE_DISABLED)
 			canvas.emit_signal("conceal")
+			if canvas.get_child_count() == 1:
+				canvas.get_child(0).set_hidden(true)
 
 func has_canvas():
 	return mCanvas != null
