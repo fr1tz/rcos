@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://vjoy/vjoy_client/open_connection_dialog.gd" type="Script" id=2]
+[ext_resource path="res://vjoyctrl/open_connection_dialog.gd" type="Script" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 

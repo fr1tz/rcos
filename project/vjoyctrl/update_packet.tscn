@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://vjoy/vjoy_client/update_packet.gd" type="Script" id=1]
+[ext_resource path="res://vjoyctrl/update_packet.gd" type="Script" id=1]
 
 [node name="update_packet" type="Node"]
 

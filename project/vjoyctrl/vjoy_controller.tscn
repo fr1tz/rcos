@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://vjoy/vjoy_client/controls_muxer_widget/vjoy_controller.gd" type="Script" id=1]
+[ext_resource path="res://vjoyctrl/vjoy_controller.gd" type="Script" id=1]
 
 [node name="vjoy_controller" type="Node"]
 

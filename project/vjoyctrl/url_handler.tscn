@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://vjoy/vjoy_client/url_handler.gd" type="Script" id=1]
+[ext_resource path="res://vjoyctrl/url_handler.gd" type="Script" id=1]
 
 [node name="vjoy_client_url_handler" type="Node"]
 
