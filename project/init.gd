@@ -25,5 +25,4 @@ func _ready():
 	rcos.spawn_module("io_ports_connector")
 	rcos.spawn_module("widget_panels")
 	rcos.spawn_module("virtual_gamepads")
-	rcos.spawn_module("vrchost_ap_detector")
 	queue_free()
