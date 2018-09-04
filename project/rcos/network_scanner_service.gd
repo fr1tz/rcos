@@ -22,6 +22,8 @@ func _init():
 	add_user_signal("scan_finished")
 
 func _ready():
+	for scanner in find_network_scanners():
+		add_scanner(scanner)
 	get_node("abort_scan_timer").connect("timeout", self, "stop_scan")
 
 func _service_discovered(info):
@@ -29,6 +31,20 @@ func _service_discovered(info):
 		var hostname_service = rcos.get_node("services/hostname_service")
 		info.host = hostname_service.get_hostname(info.host)
 	emit_signal("service_discovered", info)
+
+func find_network_scanners():
+	var scanners = []
+	var ns_files = rlib.find_files("res://", "*.ns")
+	for filename in ns_files:
+		var config_file = ConfigFile.new()
+		var err = config_file.load(filename)
+		if err != OK:
+			log_error(self, "Error reading ns file " + filename + ": " + str(err))
+			continue
+		var basename = filename.get_file().basename()
+		var path = config_file.get_value("widget", "path", filename.basename()+".tscn")
+		scanners.push_back(path)
+	return scanners
 
 func add_scanner(scene_path):
 	if !mScanners.has(scene_path):
