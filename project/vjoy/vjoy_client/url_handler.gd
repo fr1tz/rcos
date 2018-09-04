@@ -20,7 +20,7 @@ func _ready():
 	var scheme = "vjoy"
 	var desc = "Open using vJoy client"
 	var icon = load("res://vjoy/vjoy_client/graphics/icon.png")
-	rcos.add_url_handler(open_func, scheme, desc, icon)
+	rcos.register_url_handler(open_func, scheme, desc, icon)
 
 func open(url):
 	rcos.log_debug(self, ["open():", url])

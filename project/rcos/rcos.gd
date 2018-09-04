@@ -255,7 +255,7 @@ func add_service(service_node):
 	services_node.add_child(service_node)
 	return true
 
-func add_url_handler(open_func, scheme, desc, icon):
+func register_url_handler(open_func, scheme, desc, icon):
 	for url_handler in mURLHandlers:
 		if url_handler.open_func == open_func:
 			return false
@@ -269,7 +269,7 @@ func add_url_handler(open_func, scheme, desc, icon):
 	emit_signal("url_handler_added", url_handler)
 	return true
 
-func remove_url_handler(open_func):
+func unregister_url_handler(open_func):
 	for url_handler in mURLHandlers:
 		if url_handler.open_func == open_func:
 			emit_signal("url_handler_removed", url_handler)
