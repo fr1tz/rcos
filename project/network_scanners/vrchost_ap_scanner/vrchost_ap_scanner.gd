@@ -74,7 +74,7 @@ func _process_udp_datagram():
 			"host": service_name,
 			"name": service_desc,
 			"desc": desc,
-			"icon": icon
+			"icon": service_icon
 		}
 		emit_signal("service_discovered", service_info)
 	else:
