@@ -64,7 +64,7 @@ onready var mReadDataTimer = get_node("read_data_timer")
 onready var mSendDataTimer = get_node("send_data_timer")
 onready var mUpdatePointerTimer = get_node("update_pointer_timer")
 
-var mScancode2Keysym = load("res://rfb/rfb_client/scancode2keysym.gd").new()
+var mScancode2Keysym = load("res://quack_vnc/scancode2keysym.gd").new()
 var mError = ""
 var mStream = null
 var mRemoteAddress = ""

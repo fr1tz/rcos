@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=1]
 
-[ext_resource path="res://rfb/rfb_client/rfb_client.gd" type="Script" id=1]
-[ext_resource path="res://rfb/rfb_client/graphics/icon.png" type="Texture" id=2]
-[ext_resource path="res://rfb/rfb_client/connection.tscn" type="PackedScene" id=3]
+[ext_resource path="res://quack_vnc/rfb_client.gd" type="Script" id=1]
+[ext_resource path="res://quack_vnc/graphics/icon.png" type="Texture" id=2]
+[ext_resource path="res://quack_vnc/connection.tscn" type="PackedScene" id=3]
 [ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=4]
-[ext_resource path="res://rfb/rfb_client/rfb_client_gui.tscn" type="PackedScene" id=5]
+[ext_resource path="res://quack_vnc/rfb_client_gui.tscn" type="PackedScene" id=5]
 
 [node name="rfb_client" type="Node"]
 

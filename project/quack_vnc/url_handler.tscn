@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://rfb/rfb_client/url_handler.gd" type="Script" id=1]
+[ext_resource path="res://quack_vnc/url_handler.gd" type="Script" id=1]
 
 [node name="rfb_client_url_handler" type="Node"]
 

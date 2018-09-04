@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://rfb/rfb_client/main_dialog.gd" type="Script" id=2]
-[ext_resource path="res://rfb/rfb_client/fb_viewer.tscn" type="PackedScene" id=3]
+[ext_resource path="res://quack_vnc/fullscreen_dialog.gd" type="Script" id=2]
+[ext_resource path="res://quack_vnc/fb_viewer.tscn" type="PackedScene" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -17,10 +17,8 @@ border_size = 0
 border_blend = true
 draw_bg = true
 
-[node name="main_dialog" type="Panel"]
+[node name="fullscreen_dialog" type="Panel"]
 
-anchor/right = 1
-anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -28,17 +26,33 @@ size_flags/vertical = 2
 theme/theme = ExtResource( 1 )
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
+margin/right = 400.0
+margin/bottom = 200.0
 custom_styles/panel = SubResource( 1 )
 script/script = ExtResource( 2 )
 
 [node name="fb_viewer" parent="." instance=ExtResource( 3 )]
 
-margin/bottom = 120.0
+margin/right = 120.0
+margin/bottom = 0.0
 
 [node name="controls" type="ReferenceFrame" parent="."]
 
+anchor/left = 1
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 120.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="button1" type="Button" parent="controls"]
+
+anchor/left = 1
 anchor/top = 1
 anchor/right = 1
 anchor/bottom = 1
@@ -46,22 +60,9 @@ focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 120.0
+margin/left = 80.0
+margin/top = 60.0
 margin/right = 0.0
-margin/bottom = 0.0
-
-[node name="button1" type="Button" parent="controls"]
-
-anchor/right = 2
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 40.0
-margin/right = 0.333333
 margin/bottom = 0.0
 toggle_mode = false
 enabled_focus_mode = 2
@@ -71,60 +72,62 @@ flat = false
 
 [node name="button2" type="Button" parent="controls"]
 
-anchor/left = 2
-anchor/right = 2
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.333333
-margin/top = 40.0
-margin/right = 0.662501
-margin/bottom = 40.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "Middle Button"
-flat = false
-
-[node name="toggle_keyboard" type="Button" parent="controls"]
-
-anchor/left = 2
+anchor/left = 1
 anchor/top = 1
-anchor/right = 2
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.333333
-margin/top = 40.0
-margin/right = 0.662501
-margin/bottom = 0.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "Show Keyboard"
-flat = false
-
-[node name="button3" type="Button" parent="controls"]
-
-anchor/left = 2
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 0.666667
-margin/top = 40.0
-margin/right = 0.000152588
-margin/bottom = 0.0
+margin/left = 80.0
+margin/top = 160.0
+margin/right = 0.0
+margin/bottom = 120.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Middle Button"
+flat = false
+
+[node name="button3" type="Button" parent="controls"]
+
+anchor/left = 1
+anchor/top = 1
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 80.0
+margin/top = 120.0
+margin/right = 0.0
+margin/bottom = 60.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
 text = "Right Button"
+flat = false
+
+[node name="toggle_keyboard" type="Button" parent="controls"]
+
+anchor/left = 1
+anchor/top = 1
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 80.0
+margin/top = 200.0
+margin/right = 0.0
+margin/bottom = 160.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Show Keyboard"
 flat = false
 
 [node name="zoom_out" type="Button" parent="controls"]
@@ -186,37 +189,37 @@ tick_count = 4
 ticks_on_borders = true
 focus_mode = 2
 
-[node name="zoom_buttons" type="HButtonArray" parent="controls"]
+[node name="zoom_buttons" type="VButtonArray" parent="controls"]
 
-anchor/right = 1
+anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 40.0
+margin/right = 40.0
+margin/bottom = 0.0
 custom_constants/button_separator = 0
 flat = false
 button/count = 5
 button/min_button_size = 40.0
 button/align = -353703190
-button/0/text = "0.1x"
+button/0/text = "2x"
 button/0/tooltip = ""
 button/0/icon = null
-button/1/text = "0.25x"
+button/1/text = "1x"
 button/1/tooltip = ""
 button/1/icon = null
 button/2/text = "0.5x"
 button/2/tooltip = ""
 button/2/icon = null
-button/3/text = "1x"
+button/3/text = "0.25"
 button/3/tooltip = ""
 button/3/icon = null
-button/4/text = "2x"
+button/4/text = "0.1x"
 button/4/tooltip = ""
 button/4/icon = null
-button/selected = 3
+button/selected = 1
 
 

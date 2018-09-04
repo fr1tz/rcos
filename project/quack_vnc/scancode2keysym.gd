@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-var x11keysyms = load("res://rfb/rfb_client/x11keysyms.gd")
+var x11keysyms = load("res://quack_vnc/x11keysyms.gd")
 
 var map = {
 	KEY_ESCAPE: x11keysyms.XK_Escape,

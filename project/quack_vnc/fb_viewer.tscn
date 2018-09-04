@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=1]
 
-[ext_resource path="res://rfb/rfb_client/fb_viewer.gd" type="Script" id=1]
-[ext_resource path="res://rfb/rfb_client/graphics/crosshair.png" type="Texture" id=2]
+[ext_resource path="res://quack_vnc/fb_viewer.gd" type="Script" id=1]
+[ext_resource path="res://quack_vnc/graphics/crosshair.png" type="Texture" id=2]
 
 [node name="fb_viewer" type="ReferenceFrame"]
 

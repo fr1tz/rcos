@@ -19,7 +19,7 @@ func _ready():
 	var open_func = funcref(self, "open")
 	var scheme = "rfb"
 	var desc = "Open using RFB client"
-	var icon = load("res://rfb/rfb_client/graphics/icon.png")
+	var icon = load("res://quack_vnc/graphics/icon.png")
 	rcos.register_url_handler(open_func, scheme, desc, icon)
 
 func open(url):
