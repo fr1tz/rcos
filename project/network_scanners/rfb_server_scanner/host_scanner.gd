@@ -22,7 +22,7 @@ func _init():
 	add_user_signal("service_discovered")
 
 func _add_port_tester(port):
-	var port_tester = rlib.instance_scene("res://rfb/rfb_server_scanner/tcp_port_tester.tscn")
+	var port_tester = rlib.instance_scene("res://network_scanners/rfb_server_scanner/tcp_port_tester.tscn")
 	mPortTesters[port] = port_tester
 	add_child(port_tester)
 	port_tester.connect("success", self, "_port_open", [port])

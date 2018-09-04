@@ -37,7 +37,7 @@ func _scan_network(network):
 		_scan_host(network+str(i))
 
 func _scan_host(addr):
-	var host_scanner = rlib.instance_scene("res://rfb/rfb_server_scanner/host_scanner.tscn")
+	var host_scanner = rlib.instance_scene("res://network_scanners/rfb_server_scanner/host_scanner.tscn")
 	get_node("hosts").add_child(host_scanner)
 	host_scanner.set_name(addr)
 	host_scanner.connect("service_discovered", self, "_service_discovered")

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://rfb/rfb_server_scanner/host_scanner.gd" type="Script" id=1]
+[ext_resource path="res://network_scanners/rfb_server_scanner/host_scanner.gd" type="Script" id=1]
 
 [node name="host_scanner" type="Node"]
 
