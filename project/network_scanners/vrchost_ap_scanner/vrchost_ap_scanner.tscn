@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://network_scanners/vrchost_ap_scanner/vrchost_ap_scanner.gd" type="Script" id=1]
+
+[node name="vrchost_ap_scanner" type="Node"]
+
+script/script = ExtResource( 1 )
+
+[node name="read_packets_timer" type="Timer" parent="."]
+
+process_mode = 1
+wait_time = 1.0
+one_shot = false
+autostart = false
+
+
