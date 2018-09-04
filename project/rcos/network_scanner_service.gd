@@ -34,15 +34,16 @@ func _service_discovered(info):
 
 func find_network_scanners():
 	var scanners = []
-	var ns_files = rlib.find_files("res://", "*.ns")
-	for filename in ns_files:
+	var info_files = rlib.find_files("res://", "*.info")
+	for filename in info_files:
 		var config_file = ConfigFile.new()
 		var err = config_file.load(filename)
 		if err != OK:
-			log_error(self, "Error reading ns file " + filename + ": " + str(err))
+			log_error(self, "Error reading info file " + filename + ": " + str(err))
 			continue
-		var basename = filename.get_file().basename()
-		var path = config_file.get_value("widget", "path", filename.basename()+".tscn")
+		if !config_file.has_section("network_scanner"):
+			continue
+		var path = config_file.get_value("network_scanner", "path", filename.basename()+".tscn")
 		scanners.push_back(path)
 	return scanners
 
