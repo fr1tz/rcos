@@ -94,23 +94,25 @@ func _add_log_entry(source_node, level, content):
 
 func _find_modules():
 	var modules = {}
-	var mfiles = rlib.find_files("res://", "*.m")
-	for mfile in mfiles:
+	var info_files = rlib.find_files("res://", "*.info")
+	for filename in info_files:
 		var config_file = ConfigFile.new()
-		var err = config_file.load(mfile)
+		var err = config_file.load(filename)
 		if err != OK:
-			log_error(self, "Error reading module file " + mfile + ": " + str(err))
+			log_error(self, "Error reading info file " + filename + ": " + str(err))
+			continue
+		if !config_file.has_section("module"):
 			continue
 		var path = config_file.get_value("module", "path", "")
 		if path == "":
-			log_error(self, mfile + " module file is missing 'path' value, ignored")
+			log_error(self, filename + " module file is missing 'path' value, ignored")
 			continue
 		if path.begins_with("/"):
 			path = "res://" + path.right(1)
 		else:
-			path = mfile.get_base_dir() + "/" + path
+			path = filename.get_base_dir() + "/" + path
 		var module = {
-			"name": mfile.get_file().basename(),
+			"name": filename.get_file().basename(),
 			"desc": config_file.get_value("module", "desc", "No description"),
 			"path": path
 		}
@@ -217,8 +219,11 @@ func listen(object, port_type):
 
 func spawn_module(module_name, instance_name = null):
 	if !mModuleInfo.has(module_name):
-		log_error(self, "spawn_module(): Unknown module: " + module_name)
-		return false
+		if mModuleInfo.has(module_name+"_module"):
+			module_name = module_name+"_module"
+		else:
+			log_error(self, "spawn_module(): Unknown module: " + module_name)
+			return false
 	var module = mModuleInfo[module_name]
 	if instance_name == null:
 		instance_name = module.name
