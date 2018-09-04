@@ -26,6 +26,4 @@ func _ready():
 	rcos.spawn_module("widget_panels")
 	rcos.spawn_module("virtual_gamepads")
 	rcos.spawn_module("vrchost_ap_detector")
-	rcos.spawn_module("vjoy_url_handler")
-	rcos.spawn_module("rfb_url_handler")
 	queue_free()

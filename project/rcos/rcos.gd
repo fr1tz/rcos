@@ -32,7 +32,7 @@ var mTmpDirPath = ""
 var mModuleInfo = {}
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
-var mURLHandlers = {}
+var mURLHandlers = []
 var mTaskNodes = {} # Task ID -> Task Node
 
 func _init():
@@ -69,6 +69,8 @@ func _ready():
 	var root_canvas_script = load("res://rcos/root_canvas.gd")
 	get_node("/root").set_script(root_canvas_script)
 	_add_io_ports()
+	if !add_service(rlib.instance_scene("res://rcos/url_handler_service.tscn")):
+		log_error(self, "Unable to add URL handler service")
 	if !add_service(rlib.instance_scene("res://rcos/hostname_service.tscn")):
 		log_error(self, "Unable to add hostname service")
 	if !add_service(rlib.instance_scene("res://rcos/network_scanner_service.tscn")):
@@ -253,18 +255,26 @@ func add_service(service_node):
 	services_node.add_child(service_node)
 	return true
 
-func add_url_handler(scheme, open_func):
-	if mURLHandlers.has(scheme):
-		return false
-	mURLHandlers[scheme] = open_func
-	emit_signal("url_handler_added", scheme)
+func add_url_handler(open_func, scheme, desc, icon):
+	for url_handler in mURLHandlers:
+		if url_handler.open_func == open_func:
+			return false
+	var url_handler = {
+		"open_func": open_func,
+		"scheme": scheme,
+		"desc": desc,
+		"icon": icon
+	}
+	mURLHandlers.push_back(url_handler)
+	emit_signal("url_handler_added", url_handler)
 	return true
 
-func remove_url_handler(scheme):
-	if !mURLHandlers.has(scheme):
-		return true
-	mURLHandlers.erase(scheme)
-	emit_signal("url_handler_removed", scheme)
+func remove_url_handler(open_func):
+	for url_handler in mURLHandlers:
+		if url_handler.open_func == open_func:
+			emit_signal("url_handler_removed", url_handler)
+			mURLHandlers.erase(url_handler)
+			return true
 	return true
 
 func open(url):
@@ -272,6 +282,8 @@ func open(url):
 	var n = url.find(":")
 	if n >= 1:
 		scheme = url.left(n)
-	if !mURLHandlers.has(scheme):
-		return false
-	mURLHandlers[scheme].call_func(url)
+	for url_handler in mURLHandlers:
+		if url_handler.scheme == scheme:
+			url_handler.open_func.call_func(url)
+			return true
+	return false
