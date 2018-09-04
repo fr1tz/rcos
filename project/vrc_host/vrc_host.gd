@@ -105,7 +105,7 @@ func _process_network_io():
 		var addr = stream.get_connected_host()
 		var port = stream.get_connected_port()
 		_log_notice("New tcp connection from "+addr+":"+str(port)) 
-		var conn = load("res://vrc/vrc_host/connection.tscn").instance()
+		var conn = load("res://vrc_host/connection.tscn").instance()
 		conn.initialize(self, mVrcHostApi, stream)
 		conn.add_to_group(mNetInterface.connections_group)
 		mNetInterface.connections.add_child(conn)
@@ -194,7 +194,7 @@ func load_vrc(vrc_data):
 	if get_node("vrc_canvas").get_child_count() != 0:
 		return "VRC already loaded"
 	var vrc_data_dir = get_tmp_dir() + "vrc_data"
-	var unpacker_path = "res://vrc/vrc_host/vrc_data_unpacker.gd"
+	var unpacker_path = "res://vrc_host/vrc_data_unpacker.gd"
 	mVrcDataUnpacker = load(unpacker_path).new(vrc_data, vrc_data_dir)
 	set_fixed_process(true)
 

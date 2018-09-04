@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://vrc/vrc_host/status_screen/connection.png" type="Texture" id=1]
+[ext_resource path="res://vrc_host/status_screen/connection.png" type="Texture" id=1]
 
 [node name="coonnection" type="Position2D"]
 

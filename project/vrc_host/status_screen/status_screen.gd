@@ -34,7 +34,7 @@ func set_connection_count(count):
 	for c in connections.get_children():
 		connections.remove_child(c)
 		c.queue_free()
-	var packed_connection = load("res://vrc/vrc_host/status_screen/connection.tscn")
+	var packed_connection = load("res://vrc_host/status_screen/connection.tscn")
 	for i in range(0, count):
 		var connection = packed_connection.instance()
 		var rot = i*(2*PI/count)
