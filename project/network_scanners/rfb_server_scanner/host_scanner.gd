@@ -33,7 +33,7 @@ func _port_open(port):
 	var url = "rfb://"+mHostAddress+":"+str(port-5900)
 	var host = mHostAddress
 	var name = "RFB Server (:"+str(port-5900)+")"
-	var icon = load("res://rfb/rfb_client/graphics/icon.png")
+	var icon = load("res://network_scanners/rfb_server_scanner/icon.png")
 	var desc = rlib.join_array([
 		"RFB Server",
 		"URL: "+url
