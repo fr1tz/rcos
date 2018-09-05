@@ -26,11 +26,13 @@ func _create_widget_factories():
 		if err != OK:
 			log_error(self, "Error reading info file " + info_file + ": " + str(err))
 			continue
+		if !config_file.has_section("widget"):
+			continue
 		var basename = info_file.get_file().basename()
 		var product_name = config_file.get_value("widget", "name", basename)
 		var product_id = "ffa_widgets."+config_file.get_value("widget", "id", basename)
 		var path = config_file.get_value("widget", "path", info_file.basename()+".tscn")
-		var factory = rlib.instance_scene("res://rcos/widgets/widget_factory.tscn")
+		var factory = rlib.instance_scene("res://ffa_widgets/widget_factory.tscn")
 		add_child(factory)
 		factory.set_name(basename+"_factory")
 		factory.initialize(product_name, product_id, path)
