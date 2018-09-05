@@ -75,7 +75,8 @@ func _ready():
 		log_error(self, "Unable to add hostname service")
 	if !add_service(rlib.instance_scene("res://rcos/network_scanner_service.tscn")):
 		log_error(self, "Unable to add network scanner service")
-	spawn_module("rcos_widgets")
+	if !add_service(rlib.instance_scene("res://rcos/widgets_service.tscn")):
+		log_error(self, "Unable to add widgets service")
 
 func _add_io_ports():
 	var port_path_prefix = "rcos/"
