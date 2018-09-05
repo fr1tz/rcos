@@ -107,9 +107,8 @@ func _find_modules():
 			continue
 		var path = config_file.get_value("module", "path", "")
 		if path == "":
-			log_error(self, filename + " module file is missing 'path' value, ignored")
-			continue
-		if path.begins_with("/"):
+			path = filename.basename()+".tscn"
+		elif path.begins_with("/"):
 			path = "res://" + path.right(1)
 		else:
 			path = filename.get_base_dir() + "/" + path
