@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=1]
+[gd_scene load_steps=4 format=1]
 
 [ext_resource path="res://remote_connector/interface_widget_container.gd" type="Script" id=1]
+[ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -79,24 +80,23 @@ size_flags/vertical = 0
 margin/left = 0.0
 margin/top = 0.0
 margin/right = 174.0
-margin/bottom = 14.0
+margin/bottom = 17.0
+custom_fonts/font = ExtResource( 2 )
 text = "Hostname"
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="interface_widgets" type="GridContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+[node name="interface_widgets" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 18.0
+margin/top = 21.0
 margin/right = 174.0
-margin/bottom = 18.0
-custom_constants/vseparation = 2
-custom_constants/hseparation = 2
-columns = 4
+margin/bottom = 21.0
+alignment = 0
 
 

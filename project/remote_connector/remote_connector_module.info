@@ -1,5 +1,2 @@
 [module]
-
-desc="RCOS Remote Connector"
-
-path="connector.tscn"
+name="Remote Connector"

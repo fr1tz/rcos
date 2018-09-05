@@ -37,7 +37,7 @@ func set_url(url):
 	mURL = url
 
 func set_icon(tex):
-	get_node("icon").set_texture(tex)
+	set_button_icon(tex)
 
 func set_desc(desc):
 	mDesc = desc
