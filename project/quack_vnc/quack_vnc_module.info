@@ -1,7 +1,3 @@
 [module]
-
-
+name="Quack VNC"
 desc="RFB Client"
-
-
-path="rfb_client.tscn"

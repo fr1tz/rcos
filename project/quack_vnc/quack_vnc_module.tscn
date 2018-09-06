@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=1]
+
+[ext_resource path="res://quack_vnc/quack_vnc_module.gd" type="Script" id=1]
+[ext_resource path="res://quack_vnc/connection.tscn" type="PackedScene" id=2]
+[ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=3]
+[ext_resource path="res://quack_vnc/rfb_client_gui.tscn" type="PackedScene" id=4]
+
+[node name="quack_vnc_module" type="Node"]
+
+script/script = ExtResource( 1 )
+
+[node name="connection" parent="." instance=ExtResource( 2 )]
+
+[node name="canvas" parent="." instance=ExtResource( 3 )]
+
+rect = Rect2( 0, 0, 200, 400 )
+min_size = Vector2( 200, 400 )
+
+[node name="rfb_client_gui" parent="canvas" instance=ExtResource( 4 )]
+
+

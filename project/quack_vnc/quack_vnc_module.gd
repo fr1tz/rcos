@@ -26,12 +26,12 @@ var mServerHostname = null
 var mConnection = null
 
 func _ready():
-	var logger = rcos.spawn_module("logger")
-	logger.set_filter(str(rcos.get_path_to(self)))
+#	var logger = rcos.spawn_module("logger")
+#	logger.set_filter(str(rcos.get_path_to(self)))
 	var task_properties = {
-		"name": "RFB Client",
-		"icon": get_node("icon").get_texture(),
+		"name": "Quack VNC",
 		"canvas": get_node("canvas"),
+		"icon": load("res://quack_vnc/graphics/icon.png")
 	}
 	mTaskId = rcos.add_task(task_properties)
 	mConnection = get_node("connection")
@@ -46,7 +46,30 @@ func _exit_tree():
 		rcos.remove_task(mTaskId)
 
 func _connection_state_changed(new_state):
-	pass
+	if new_state == mConnection.CS_ERROR:
+		var task_properties = {
+			"icon": load("res://quack_vnc/graphics/icon.png"),
+			"icon_spin_speed": 0
+		}
+		rcos.change_task(mTaskId, task_properties)
+	elif new_state == mConnection.CS_READY_TO_CONNECT:
+		var task_properties = {
+			"icon": load("res://quack_vnc/graphics/icon.png"),
+			"icon_spin_speed": 0
+		}
+		rcos.change_task(mTaskId, task_properties)
+	elif new_state == mConnection.CS_CONNECTING:
+		var task_properties = {
+			"icon": load("res://quack_vnc/graphics/spinner.png"),
+			"icon_spin_speed": 5
+		}
+		rcos.change_task(mTaskId, task_properties)
+	elif new_state == mConnection.CS_RECEIVE_SERVER_MESSAGES:
+		var task_properties = {
+			"icon": load("res://quack_vnc/graphics/icon.png"),
+			"icon_spin_speed": 0
+		}
+		rcos.change_task(mTaskId, task_properties)
 
 func _connection_established():
 	pass

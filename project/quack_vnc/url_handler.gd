@@ -45,4 +45,4 @@ func open(url):
 			port = 5900 + int(server.right(sep_pos+1))
 		elif server != "":
 			address = server
-	rcos.spawn_module("rfb_client").connect_to_server(address, port)
+	rcos.spawn_module("quack_vnc").connect_to_server(address, port)
