@@ -1,0 +1,161 @@
+[gd_scene load_steps=7 format=1]
+
+[ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://ffa_widgets/io_port_widget/config_gui.gd" type="Script" id=2]
+[ext_resource path="res://data_router/icons/32/empty_frame.png" type="Texture" id=3]
+[ext_resource path="res://ffa_widgets/io_port_widget/graphics/output_port_icon.png" type="Texture" id=4]
+[ext_resource path="res://ffa_widgets/io_port_widget/graphics/input_port_icon.png" type="Texture" id=5]
+
+[sub_resource type="StyleBoxFlat" id=1]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 0.480469, 0.480469, 0.480469, 1 )
+light_color = Color( 0.882813, 0.882813, 0.882813, 1 )
+dark_color = Color( 0.234375, 0.234375, 0.234375, 1 )
+border_size = 2
+border_blend = true
+draw_bg = true
+
+[node name="config_gui" type="Panel"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = ExtResource( 1 )
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 200.0
+margin/bottom = 400.0
+custom_styles/panel = SubResource( 1 )
+script/script = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="."]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 5.0
+margin/top = 120.0
+margin/right = 196.0
+margin/bottom = 132.0
+text = "Current Port:"
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Label1" type="Label" parent="."]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 5.0
+margin/top = 220.0
+margin/right = 196.0
+margin/bottom = 232.0
+text = "Select New Port:"
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="port_icon" type="TextureFrame" parent="."]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 80.0
+margin/top = 133.0
+margin/right = 120.0
+margin/bottom = 173.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+
+[node name="port_type_output" type="TextureFrame" parent="."]
+
+visibility/visible = false
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 111.0
+margin/top = 137.0
+margin/right = 143.0
+margin/bottom = 169.0
+texture = ExtResource( 4 )
+stretch_mode = 4
+
+[node name="port_type_input" type="TextureFrame" parent="."]
+
+visibility/visible = false
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 57.0
+margin/top = 137.0
+margin/right = 89.0
+margin/bottom = 169.0
+texture = ExtResource( 5 )
+stretch_mode = 4
+
+[node name="port_path_label" type="Label" parent="."]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 5.0
+margin/top = 175.0
+margin/right = 195.0
+margin/bottom = 217.0
+text = "(None)"
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="output_port_selector_button" type="Button" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 5.0
+margin/top = 240.0
+margin/right = 99.0
+margin/bottom = 280.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Output Port"
+icon = ExtResource( 4 )
+flat = false
+align = 0
+
+[node name="input_port_selector_button" type="Button" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 101.0
+margin/top = 240.0
+margin/right = 195.0
+margin/bottom = 280.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Input Port"
+icon = ExtResource( 5 )
+flat = false
+align = 0
+
+
