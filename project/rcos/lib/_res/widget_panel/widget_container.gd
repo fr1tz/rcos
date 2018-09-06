@@ -26,6 +26,7 @@ var mWidgetName = -1
 var mWidgetOrientation = ORIENTATION_N
 var mWidgetProductId = ""
 var mWidgetConfigString = ""
+var mConfigTaskId = -1
 
 onready var mWidgetFrame = get_node("widget_frame")
 
@@ -58,6 +59,18 @@ func _resized():
 	mWidgetFrame.set_rotation_deg(rot_deg)
 	mWidgetFrame.set_pos(pos)
 	mWidgetFrame.set_size(size)
+
+func _config_task_go_back():
+	if mWidget.has_method("get_config_gui"):
+		var config_gui = mWidget.get_config_gui()
+		if config_gui != null:
+			if config_gui.has_method("go_back"):
+				var went_back = config_gui.go_back()
+				if went_back:
+					return true
+	rcos.remove_task(mConfigTaskId)
+	mConfigTaskId = -1
+	return true
 
 func init(widget_host_api, widget_name, widget_product_id = "", widget_orientation = ORIENTATION_N, widget_config_string = ""):
 	mWidgetHostApi = widget_host_api
@@ -138,3 +151,19 @@ func set_widget_margin(margin):
 #	if canvas == null: 
 #		return
 #	canvas.resize(get_size() - Vector2(margin*2, margin*2))
+
+func configure(config_task_parent_task_id):
+	if !mWidget.has_node("config_canvas"):
+		return
+	var config_canvas = mWidget.get_node("config_canvas")
+	if mConfigTaskId == -1:
+		var task_properties = {
+			"name": mWidget.get_name()+" Settings",
+			"icon": load("res://rcos/lib/_res/widget_panel/graphics/widget_settings.png"),
+			"canvas": config_canvas,
+			"ops": {
+				"go_back": funcref(self, "_config_task_go_back")
+			},
+			"focus_wanted": true
+		}
+		mConfigTaskId = rcos.add_task(task_properties, config_task_parent_task_id)
