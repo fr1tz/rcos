@@ -60,6 +60,7 @@ func add_task(task):
 	var item = load("res://rcos/wm/taskbar_item.tscn").instance()
 	item.add_to_group(mTaskbarItemsGroup)
 	item.set_task_id(task.get_id())
+	item.set_parent_task_id(task.get_parent_task_id())
 	if task.properties.has("name"):
 		item.set_title(task.properties.name)
 	if task.properties.has("icon"):
@@ -68,13 +69,18 @@ func add_task(task):
 		item.set_icon_spin_speed(task.properties.icon_spin_speed)
 	item.hide_title()
 	item.connect("selected", self, "_item_selected", [task.get_id()])
-	items.add_child(item)
 	var parent_task_id = task.get_parent_task_id()
-	if parent_task_id > 0:
-		for c in items.get_children():
-			if c.get_task_id() == parent_task_id:
-				items.move_child(item, c.get_index()+1)
+	if parent_task_id == 0:
+		items.add_child(item)
+	else:
+		for i in range(items.get_child_count()-1, 0, -1):
+			var c = items.get_child(i)
+			if c.get_parent_task_id() == parent_task_id \
+			|| c.get_task_id() == parent_task_id:
+				items.add_child(item)
+				items.move_child(item, i+1)
 				break
+	
 
 func change_task(task):
 	var items = get_node("items_scroller/items")

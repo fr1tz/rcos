@@ -16,6 +16,7 @@
 extends ReferenceFrame
 
 var mTaskId = -1
+var mParentTaskId = -1
 
 func _init():
 	add_user_signal("selected")
@@ -26,8 +27,14 @@ func _ready():
 func get_task_id():
 	return mTaskId
 
+func get_parent_task_id():
+	return mParentTaskId
+
 func set_task_id(task_id):
 	mTaskId = task_id
+
+func set_parent_task_id(parent_task_id):
+	mParentTaskId = parent_task_id
 
 func set_title(string):
 	get_node("title").set_text(string)
