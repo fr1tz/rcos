@@ -64,6 +64,8 @@ func add_task(task):
 		item.set_title(task.properties.name)
 	if task.properties.has("icon"):
 		item.set_icon(task.properties.icon)
+	if task.properties.has("icon_spin_speed"):
+		item.set_icon_spin_speed(task.properties.icon_spin_speed)
 	item.hide_title()
 	item.connect("selected", self, "_item_selected", [task.get_id()])
 	items.add_child(item)
@@ -80,6 +82,10 @@ func change_task(task):
 		if item.get_task_id() == task.get_id():
 			item.set_title(task.properties.name)
 			item.set_icon(task.properties.icon)
+			if task.properties.has("icon_spin_speed"):
+				item.set_icon_spin_speed(task.properties.icon_spin_speed)
+			else:
+				item.set_icon_spin_speed(0)
 			return
 
 func remove_task(task):

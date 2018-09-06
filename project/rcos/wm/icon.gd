@@ -15,13 +15,12 @@
 
 extends Sprite
 
-func set_texture(texture):
-	.set_texture(texture)
+var mSpinSpeed = 0
+
+func set_spin_speed(speed):
 	set_rot(0)
-	if texture.has_meta("rotate") && texture.get_meta("rotate") == true:
-		set_fixed_process(true)
-	else:
-		set_fixed_process(false)
+	mSpinSpeed = speed
+	set_fixed_process(mSpinSpeed > 0)
 
 func _fixed_process(delta):
-	set_rot(get_rot() - delta*5)
+	set_rot(get_rot() - delta*mSpinSpeed)

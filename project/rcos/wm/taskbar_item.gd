@@ -37,6 +37,9 @@ func set_icon(texture):
 		return
 	get_node("icon").set_texture(texture)
 
+func set_icon_spin_speed(speed):
+	get_node("icon").set_spin_speed(speed)
+
 func show_title():
 	get_node("title").show()
 
