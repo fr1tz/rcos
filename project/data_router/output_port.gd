@@ -25,6 +25,9 @@ func _init():
 func _ready():
 	pass
 
+func get_port_type():
+	return data_router.PORT_TYPE_OUTPUT
+
 func add_connection(input_node):
 	if mConnections.has(input_node):
 		return true

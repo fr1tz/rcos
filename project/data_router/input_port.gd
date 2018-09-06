@@ -20,6 +20,9 @@ var mData = null
 func _init():
 	add_user_signal("data_changed")
 
+func get_port_type():
+	return data_router.PORT_TYPE_INPUT
+
 func get_port_path():
 	return data_router.get_node("input_ports").get_path_to(self)
 
