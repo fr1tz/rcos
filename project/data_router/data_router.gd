@@ -44,6 +44,9 @@ const PORT_TYPE_OUTPUT = 1
 onready var mInputPorts = get_node("input_ports")
 onready var mOutputPorts = get_node("output_ports")
 
+var mInputPortCreationNoticeRequests = {}
+var mOutputPortCreationNoticeRequests = {}
+
 var mNodeIcons = {}
 var mNodeIconsKeys = []
 
@@ -56,6 +59,7 @@ func _init():
 	add_user_signal("connection_removed")
 
 func _add_port(port_path, port_type, initial_data = null):
+	port_path = port_path.replace(":", "_")
 	var parent_node = null
 	if port_type == PORT_TYPE_INPUT:
 		parent_node = mInputPorts
@@ -65,7 +69,7 @@ func _add_port(port_path, port_type, initial_data = null):
 		return null
 	var node_names = port_path.split("/", false)
 	for i in range(0, node_names.size()):
-		var node_name = node_names[i].replace(":", "_")
+		var node_name = node_names[i]
 		if i == node_names.size() - 1:
 			var new_node = null
 			if port_type == PORT_TYPE_INPUT:
@@ -77,10 +81,17 @@ func _add_port(port_path, port_type, initial_data = null):
 			new_node.set_name(node_name)
 			new_node.put_data(initial_data)
 			parent_node.add_child(new_node)
+			var requests
 			if port_type == PORT_TYPE_INPUT:
+				requests = mInputPortCreationNoticeRequests
 				emit_signal("input_port_added", new_node)
 			elif port_type == PORT_TYPE_OUTPUT:
+				requests = mOutputPortCreationNoticeRequests
 				emit_signal("output_port_added", new_node)
+			if requests.has(port_path):
+				for func_ref in requests[port_path]:
+					func_ref.call_func(new_node)
+				requests.erase(port_path)
 			return new_node
 		if !parent_node.has_node(node_name):
 			var new_node = Node.new()
@@ -216,6 +227,19 @@ func remove_connection(output, input):
 	if success:
 		emit_signal("connection_removed", output_port_node, input_port_node)
 	return success
+
+func request_port_creation_notice(port_type, port_path, callback):
+	var requests
+	if port_type == PORT_TYPE_INPUT:
+		requests = mInputPortCreationNoticeRequests;
+	elif port_type == PORT_TYPE_OUTPUT:
+		requests = mOutputPortCreationNoticeRequests;
+	else:
+		return
+	if requests.has(port_path):
+		requests[port_path].push_back(callback)
+	else:
+		requests[port_path] = [callback]
 
 func set_node_icon(path, texture, icon_size):
 	if !mNodeIcons.has(path):
