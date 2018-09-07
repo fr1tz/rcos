@@ -53,19 +53,24 @@ func _exit_tree():
 	_remove_io_ports()
 
 func _add_io_ports():
-	var hostname = mConnection.get_remote_address()
-#	var words = mConnection.get_desktop_name().split(" ", false)
-#	if words[0] != "":
-#		hostname = words[0]
-#		var sep_pos = words[0].find(":")
-#		if sep_pos > 0:
-#			hostname = words[0].left(sep_pos)
+	var host_addr = mConnection.get_remote_address()
+	var host = host_addr
+	if rcos.has_node("services/host_info_service"):
+		var host_info_service = rcos.get_node("services/host_info_service")
+		host = host_info_service.get_host_name(host)
+	if host == host_addr:
+		var words = mConnection.get_desktop_name().split(" ", false)
+		if words[0] != "":
+			host = words[0]
+			var sep_pos = words[0].find(":")
+			if sep_pos > 0:
+				host = words[0].left(sep_pos)
 	var prefix 
 	var server_port = mConnection.get_remote_port()
 	if server_port >= 5900 && server_port <= 5999:
-		prefix = hostname.to_lower()+"/rfb:"+str(server_port-5900)
+		prefix = host.to_lower()+"/rfb:"+str(server_port-5900)
 	else:
-		prefix = hostname.to_lower()+"/rfb::"+str(server_port)
+		prefix = host.to_lower()+"/rfb::"+str(server_port)
 	_add_output_ports(prefix)
 	_add_input_ports(prefix)
 
