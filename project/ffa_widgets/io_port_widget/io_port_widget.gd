@@ -25,13 +25,14 @@ var mWidgetHost = null
 var mPortType = -1
 var mPortPath = ""
 var mIconPath = ""
+var mPort = null
 
 func _ready():
 	mWidgetHost = get_meta("widget_host_api")
 	mWidgetHost.enable_widget_frame_input(self)
 
 func _widget_frame_input(event):
-	if mPortType == -1:
+	if mPort == null:
 		return
 	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
 	var touch = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON)
@@ -74,13 +75,22 @@ func configure(port_type, port_path, icon_path):
 	mPortType = port_type
 	mPortPath = port_path
 	mIconPath = icon_path
-	if port_type == data_router.PORT_TYPE_INPUT:
-		get_node("color_frame").set_frame_color(color_input)
-		get_node("raised_panel").set_hidden(true)
-	else:
-		get_node("color_frame").set_frame_color(color_output)
-		get_node("raised_panel").set_hidden(false)
+	mPort = null
 	get_node("icon").set_texture(load(icon_path))
+	if mPortType == data_router.PORT_TYPE_INPUT:
+		get_node("raised_panel").set_hidden(true)
+		get_node("color_frame").set_frame_color(color_input)
+		mPort = data_router.get_input_port(mPortPath)
+	else:
+		get_node("raised_panel").set_hidden(false)
+		get_node("color_frame").set_frame_color(color_output)
+		mPort = data_router.get_output_port(mPortPath)
+	if mPort == null:
+		get_node("color_frame").set_frame_color(color_disabled)
+		data_router.request_port_creation_notice(mPortType, mPortPath, funcref(self, "_port_creation_notice"))
+
+func _port_creation_notice(port):
+	call_deferred("configure", mPortType, mPortPath, mIconPath)
 
 #-------------------------------------------------------------------------------
 # Common Widget API
