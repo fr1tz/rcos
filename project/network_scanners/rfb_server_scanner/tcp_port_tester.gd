@@ -15,11 +15,13 @@
 
 extends Node
 
+var mAddress = ""
+var mPort = -1
 var mStream = null
 
 func _init():
-	add_user_signal("success")
-	add_user_signal("failure")
+	add_user_signal("port_open")
+	add_user_signal("port_closed")
 
 func _ready():
 	get_node("check_status_timer").connect("timeout", self, "_check_status")
@@ -29,14 +31,16 @@ func _check_status():
 	if status == StreamPeerTCP.STATUS_CONNECTING:
 		return
 	if status == StreamPeerTCP.STATUS_CONNECTED:
-		emit_signal("success")
+		emit_signal("port_open", mPort)
 	else:
-		emit_signal("failure")
-	queue_free()
+		emit_signal("port_closed", mPort)
 
 func test(address, port):
+	mAddress = address
+	mPort = port
 	mStream = StreamPeerTCP.new()
-	if mStream.connect(address, port) != OK:
+	if mStream.connect(mAddress, mPort) != OK:
+		emit_signal("port_closed", mPort)
 		queue_free()
 		return
 	get_node("check_status_timer").start()

@@ -16,18 +16,10 @@
 extends Node
 
 var mHostAddress = ""
-var mPortTesters = {} # Port -> Port Tester
+var mPortTester = null
 
 func _init():
 	add_user_signal("service_discovered")
-
-func _add_port_tester(port):
-	var port_tester = rlib.instance_scene("res://network_scanners/rfb_server_scanner/tcp_port_tester.tscn")
-	mPortTesters[port] = port_tester
-	add_child(port_tester)
-	port_tester.connect("success", self, "_port_open", [port])
-	port_tester.connect("failure", self, "_port_closed", [port])
-	port_tester.test(mHostAddress, port)
 
 func _port_open(port):
 	var url = "rfb://"+mHostAddress+":"+str(port-5900)
@@ -46,14 +38,19 @@ func _port_open(port):
 		"icon": icon
 	}
 	emit_signal("service_discovered", service_info)
-	if port > 5900:
-		_add_port_tester(port + 1)
+	mPortTester.test(mHostAddress, port+1)
+#	if port > 5900:
+#		_add_port_tester(port + 1)
 
 func _port_closed(port):
-	if port > 5900:
-		queue_free()
+	mPortTester.test(mHostAddress, port+1)
+#	if port > 5900:
+#		queue_free()
 
 func scan_host(addr):
 	mHostAddress = addr
-	_add_port_tester(5900)
-	_add_port_tester(5901)
+	mPortTester = rlib.instance_scene("res://network_scanners/rfb_server_scanner/tcp_port_tester.tscn")
+	add_child(mPortTester)
+	mPortTester.connect("port_open", self, "_port_open")
+	mPortTester.connect("port_closed", self, "_port_closed")
+	mPortTester.test(mHostAddress, 5900)
