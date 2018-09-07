@@ -71,8 +71,6 @@ func _ready():
 	_add_io_ports()
 	if !add_service(rlib.instance_scene("res://rcos/url_handler_service.tscn")):
 		log_error(self, "Unable to add URL handler service")
-	if !add_service(rlib.instance_scene("res://rcos/hostname_service.tscn")):
-		log_error(self, "Unable to add hostname service")
 	if !add_service(rlib.instance_scene("res://rcos/network_scanner_service.tscn")):
 		log_error(self, "Unable to add network scanner service")
 	if !add_service(rlib.instance_scene("res://rcos/widgets_service.tscn")):
