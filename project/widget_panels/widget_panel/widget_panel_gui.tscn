@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=1]
+[gd_scene load_steps=13 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://widget_panels/widget_panel/widget_panel_gui.gd" type="Script" id=2]
@@ -10,7 +10,6 @@
 [ext_resource path="res://widget_panels/graphics/icons/add_input_port.png" type="Texture" id=8]
 [ext_resource path="res://widget_grid/graphics/button_focus.tres" type="StyleBox" id=9]
 [ext_resource path="res://widget_panels/widget_factories_panel/widget_factories_panel.tscn" type="PackedScene" id=10]
-[ext_resource path="res://rcos/lib/node_selector.tscn" type="PackedScene" id=11]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -56,6 +55,7 @@ script/script = ExtResource( 2 )
 
 [node name="grid_area" type="Control" parent="."]
 
+editor/display_folded = true
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false
@@ -334,23 +334,5 @@ flat = false
 [node name="widget_factories_panel" parent="." instance=ExtResource( 10 )]
 
 visibility/visible = false
-
-[node name="output_node_selector" parent="." instance=ExtResource( 11 )]
-
-visibility/visible = false
-anchor/right = 1
-anchor/bottom = 1
-margin/right = 0.0
-margin/bottom = 0.0
-root_path = NodePath("/root/data_router/output_ports")
-
-[node name="input_node_selector" parent="." instance=ExtResource( 11 )]
-
-visibility/visible = false
-anchor/right = 1
-anchor/bottom = 1
-margin/right = 0.0
-margin/bottom = 0.0
-root_path = NodePath("/root/data_router/input_ports")
 
 
