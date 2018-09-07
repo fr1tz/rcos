@@ -54,12 +54,12 @@ func _exit_tree():
 
 func _add_io_ports():
 	var hostname = mConnection.get_remote_address()
-	var words = mConnection.get_desktop_name().split(" ", false)
-	if words[0] != "":
-		hostname = words[0]
-		var sep_pos = words[0].find(":")
-		if sep_pos > 0:
-			hostname = words[0].left(sep_pos)
+#	var words = mConnection.get_desktop_name().split(" ", false)
+#	if words[0] != "":
+#		hostname = words[0]
+#		var sep_pos = words[0].find(":")
+#		if sep_pos > 0:
+#			hostname = words[0].left(sep_pos)
 	var prefix 
 	var server_port = mConnection.get_remote_port()
 	if server_port >= 5900 && server_port <= 5999:
