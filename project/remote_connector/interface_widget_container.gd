@@ -13,17 +13,26 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends MarginContainer
+extends PanelContainer
 
 var mHostname = null
 var mInterfaceWidgets = null
 
 func _ready():
-	mHostname = get_node("PanelContainer/MarginContainer/VBoxContainer/hostname")
-	mInterfaceWidgets = get_node("PanelContainer/MarginContainer/VBoxContainer/interface_widgets")
+	mHostname = get_node("VBoxContainer/header/host")
+	mInterfaceWidgets = get_node("VBoxContainer/interface_widgets")
 	mHostname.set_text(get_name())
 
 func add_interface_widget():
 		var interface_widget = rlib.instance_scene("res://remote_connector/interface_widget.tscn")
 		mInterfaceWidgets.add_child(interface_widget)
 		return interface_widget
+
+func set_host_name(name):
+	mHostname.set_text(name)
+
+func set_host_icon(tex):
+	get_node("VBoxContainer/header/icon").set_texture(tex)
+
+func set_host_color(color):
+	get_node("VBoxContainer/header/icon").set_modulate(color)

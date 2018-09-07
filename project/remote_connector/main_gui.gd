@@ -22,14 +22,18 @@ onready var mScanButton = get_node("buttons/scan")
 onready var mCancelScanButton = get_node("scan_progress/cancel_button")
 onready var mOpenConnectionDialog = get_node("open_connection_dialog")
 
+var mHostInfoService = null
 var mNetworkScannerService = null
 var mSelectedInterfaceWidget = null
+var mServices = []
 
 func _ready():
 	get_viewport().connect("display", self, "_on_displayed")
 	get_viewport().connect("conceal", self, "_on_concealed")
 	get_viewport().connect("size_changed", self, "_on_size_changed")
 	mOpenConnectionButton.connect("pressed", mOpenConnectionDialog, "set_hidden", [false])
+	if rcos.has_node("services/host_info_service"):
+		mHostInfoService = rcos.get_node("services/host_info_service")
 	if rcos.has_node("services/network_scanner_service"):
 		mNetworkScannerService = rcos.get_node("services/network_scanner_service")
 		mNetworkScannerService.connect("scan_started", self, "_scan_started")
@@ -42,6 +46,7 @@ func _ready():
 		mScanButton.set_hidden(true)
 
 func _scan_started():
+	mServices = []
 	for c in mInterfaceWidgetContainers.get_children():
 		mInterfaceWidgetContainers.remove_child(c)
 		c.free()
@@ -52,6 +57,10 @@ func _scan_finished():
 	get_node("scan_progress").set_hidden(true)
 
 func _service_discovered(service_info):
+	mServices.push_back(service_info)
+	_add_service(service_info)
+
+func _add_service(service_info):
 	var interface_widget = add_interface_widget(service_info.host)
 	interface_widget.set_url(service_info.url)
 	interface_widget.set_icon(service_info.icon)
@@ -86,16 +95,25 @@ func _interface_widget_selected(interface_widget):
 	mSelectedInterfaceWidget.set_pressed(true)
 	show_desc(mSelectedInterfaceWidget)
 
-func add_interface_widget(host):
+func add_interface_widget(host_addr):
+	var host_name = host_addr
+	if mHostInfoService != null:
+		host_name = mHostInfoService.get_host_name(host_addr)
 	var interface_container = null
 	for c in mInterfaceWidgetContainers.get_children():
-		if c.get_name() == host:
+		if c.get_name() == host_name:
 			interface_container = c
 			break
 	if interface_container == null:
 		interface_container = rlib.instance_scene("res://remote_connector/interface_widget_container.tscn")
-		interface_container.set_name(host)
 		mInterfaceWidgetContainers.add_child(interface_container)
+		interface_container.set_name(host_name)
+		interface_container.set_host_name(host_name)
+		if mHostInfoService != null:
+			var host_icon = mHostInfoService.get_host_icon(host_addr)
+			var host_color = mHostInfoService.get_host_color(host_addr)
+			interface_container.set_host_icon(host_icon)
+			interface_container.set_host_color(host_color)
 	var interface_widget = interface_container.add_interface_widget()
 	interface_widget.connect("selected", self, "_interface_widget_selected", [interface_widget])
 	return interface_widget
