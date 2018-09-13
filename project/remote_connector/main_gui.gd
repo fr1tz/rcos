@@ -20,7 +20,9 @@ onready var mInfoWidget = get_node("info_panel/info_widget")
 onready var mOpenConnectionButton = get_node("buttons/open_connection")
 onready var mScanButton = get_node("buttons/scan")
 onready var mCancelScanButton = get_node("scan_progress/cancel_button")
-onready var mOpenConnectionDialog = get_node("open_connection_dialog")
+onready var mOpenConnectionDialog = get_node("dialogs/open_connection_dialog")
+onready var mIdentifyDeviceDialog = get_node("dialogs/identify_device_dialog")
+onready var mDeviceEditorDialog = get_node("dialogs/device_editor_dialog")
 
 var mHostInfoService = null
 var mNetworkScannerService = null
@@ -34,6 +36,7 @@ func _ready():
 	mOpenConnectionButton.connect("pressed", mOpenConnectionDialog, "set_hidden", [false])
 	if rcos.has_node("services/host_info_service"):
 		mHostInfoService = rcos.get_node("services/host_info_service")
+		mHostInfoService.connect("host_info_changed", self, "_host_info_changed")
 	if rcos.has_node("services/network_scanner_service"):
 		mNetworkScannerService = rcos.get_node("services/network_scanner_service")
 		mNetworkScannerService.connect("scan_started", self, "_scan_started")
@@ -44,6 +47,9 @@ func _ready():
 		mNetworkScannerService.call_deferred("start_scan")
 	else:
 		mScanButton.set_hidden(true)
+	mOpenConnectionDialog.initialize(self)
+	mIdentifyDeviceDialog.initialize(self, mDeviceEditorDialog)
+	mDeviceEditorDialog.initialize(self)
 
 func _scan_started():
 	mServices = []
@@ -66,6 +72,13 @@ func _add_service(service_info):
 	interface_widget.set_icon(service_info.icon)
 	interface_widget.set_text(service_info.name)
 	interface_widget.set_desc(service_info.desc)
+
+func _host_info_changed(host_info):
+	for c in mInterfaceWidgetContainers.get_children():
+		mInterfaceWidgetContainers.remove_child(c)
+		c.free()
+	for service_info in mServices:
+		_add_service(service_info)
 
 func _show_tab(idx):
 	get_node("tabs").set_current_tab(idx)
@@ -95,23 +108,39 @@ func _interface_widget_selected(interface_widget):
 	mSelectedInterfaceWidget.set_pressed(true)
 	show_desc(mSelectedInterfaceWidget)
 
+func _edit_button_pressed(interface_container):
+	if mHostInfoService == null:
+		return
+	var host_label = interface_container.get_host_label()
+	var host_info = mHostInfoService.get_host_info_from_hostname(host_label)
+	if host_info == null:
+		mIdentifyDeviceDialog.set_device_address(host_label)
+		mIdentifyDeviceDialog.refresh_known_devices()
+		show_dialog("identify_device_dialog")
+	else:
+		mDeviceEditorDialog.load_host_info(host_info)
+		show_dialog("device_editor_dialog")
+
 func add_interface_widget(host_addr):
-	var host_name = host_addr
+	var host_info = null
 	if mHostInfoService != null:
-		host_name = mHostInfoService.get_host_name(host_addr)
+		host_info = mHostInfoService.get_host_info_from_address(host_addr)
+	var host_label = host_addr
+	if host_info != null:
+		host_label = host_info.get_host_name()
 	var interface_container = null
 	for c in mInterfaceWidgetContainers.get_children():
-		if c.get_name() == host_name:
+		if c.get_host_label() == host_label:
 			interface_container = c
 			break
 	if interface_container == null:
 		interface_container = rlib.instance_scene("res://remote_connector/interface_widget_container.tscn")
 		mInterfaceWidgetContainers.add_child(interface_container)
-		interface_container.set_name(host_name)
-		interface_container.set_host_name(host_name)
-		if mHostInfoService != null:
-			var host_icon = mHostInfoService.get_host_icon(host_addr)
-			var host_color = mHostInfoService.get_host_color(host_addr)
+		interface_container.connect("edit_button_pressed", self, "_edit_button_pressed", [interface_container])
+		interface_container.set_host_label(host_label)
+		if host_info != null:
+			var host_icon = host_info.get_host_icon()
+			var host_color = host_info.get_host_color()
 			interface_container.set_host_icon(host_icon)
 			interface_container.set_host_color(host_color)
 	var interface_widget = interface_container.add_interface_widget()
@@ -120,3 +149,12 @@ func add_interface_widget(host_addr):
 
 func show_desc(interface_widget):
 	mInfoWidget.get_node("label").set_text(interface_widget.get_desc())
+
+func hide_dialogs():
+	get_node("dialogs").set_hidden(true)
+
+func show_dialog(dialog_name):
+	var dialogs = get_node("dialogs")
+	dialogs.set_hidden(false)
+	for dialog in dialogs.get_children():
+		dialog.set_hidden(dialog.get_name() != dialog_name)

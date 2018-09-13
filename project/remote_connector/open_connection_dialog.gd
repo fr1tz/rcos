@@ -17,6 +17,8 @@ extends Panel
 
 onready var mConnectorList = get_node("scroller_container/connector_list")
 
+var mMainGui = null
+
 func _ready():
 	get_node("cancel_button").connect("pressed", self, "set_hidden", [true])
 	rcos.connect("url_handler_added", self, "_url_handler_added")
@@ -42,3 +44,6 @@ func _url_handler_removed(scheme):
 func _button_selected(button):
 	rcos.open(button.get_name())
 	set_hidden(true)
+
+func initialize(main_gui):
+	mMainGui = main_gui

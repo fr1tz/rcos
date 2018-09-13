@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=1]
+[gd_scene load_steps=16 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://remote_connector/main_gui.gd" type="Script" id=2]
@@ -9,6 +9,8 @@
 [ext_resource path="res://remote_connector/graphics/scan.spinner.png" type="Texture" id=7]
 [ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-12.fnt" type="BitmapFont" id=8]
 [ext_resource path="res://remote_connector/open_connection_dialog.tscn" type="PackedScene" id=9]
+[ext_resource path="res://remote_connector/identify_device_dialog.tscn" type="PackedScene" id=10]
+[ext_resource path="res://remote_connector/device_editor_dialog.tscn" type="PackedScene" id=11]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -75,6 +77,7 @@ script/script = ExtResource( 2 )
 
 [node name="interfaces_panel" type="Panel" parent="."]
 
+editor/display_folded = true
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false
@@ -113,6 +116,7 @@ alignment = 0
 
 [node name="buttons" type="ReferenceFrame" parent="."]
 
+editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -203,6 +207,7 @@ flat = false
 
 [node name="scan_progress" type="Panel" parent="."]
 
+editor/display_folded = true
 visibility/visible = false
 anchor/right = 1
 focus/ignore_mouse = false
@@ -309,8 +314,34 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="open_connection_dialog" parent="." instance=ExtResource( 9 )]
+[node name="dialogs" type="Control" parent="."]
 
 visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="open_connection_dialog" parent="dialogs" instance=ExtResource( 9 )]
+
+[node name="identify_device_dialog" parent="dialogs" instance=ExtResource( 10 )]
+
+anchor/right = 1
+anchor/bottom = 1
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="device_editor_dialog" parent="dialogs" instance=ExtResource( 11 )]
+
+anchor/right = 1
+anchor/bottom = 1
+margin/right = 0.0
+margin/bottom = 0.0
 
 

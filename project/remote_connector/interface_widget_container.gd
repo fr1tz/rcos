@@ -15,21 +15,30 @@
 
 extends PanelContainer
 
-var mHostname = null
+var mHostLabel = null
+var mEditButton = null 
 var mInterfaceWidgets = null
 
+func _init():
+	add_user_signal("edit_button_pressed")
+
 func _ready():
-	mHostname = get_node("VBoxContainer/header/host")
+	mHostLabel = get_node("VBoxContainer/header/host_label")
+	mEditButton = get_node("VBoxContainer/header/edit_button")
 	mInterfaceWidgets = get_node("VBoxContainer/interface_widgets")
-	mHostname.set_text(get_name())
+	mHostLabel.set_text(get_name())
+	mEditButton.connect("pressed", self, "emit_signal", ["edit_button_pressed"])
 
 func add_interface_widget():
-		var interface_widget = rlib.instance_scene("res://remote_connector/interface_widget.tscn")
-		mInterfaceWidgets.add_child(interface_widget)
-		return interface_widget
+	var interface_widget = rlib.instance_scene("res://remote_connector/interface_widget.tscn")
+	mInterfaceWidgets.add_child(interface_widget)
+	return interface_widget
 
-func set_host_name(name):
-	mHostname.set_text(name)
+func get_host_label():
+	return mHostLabel.get_text()
+
+func set_host_label(name):
+	mHostLabel.set_text(name)
 
 func set_host_icon(tex):
 	get_node("VBoxContainer/header/icon").set_texture(tex)

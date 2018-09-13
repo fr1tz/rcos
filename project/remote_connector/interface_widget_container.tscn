@@ -59,7 +59,7 @@ margin/bottom = 40.0
 texture = ExtResource( 3 )
 stretch_mode = 4
 
-[node name="host" type="Label" parent="VBoxContainer/header"]
+[node name="host_label" type="Label" parent="VBoxContainer/header"]
 
 anchor/right = 1
 focus/ignore_mouse = true
@@ -68,7 +68,7 @@ size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 40.0
 margin/top = 0.0
-margin/right = 0.0
+margin/right = 39.0
 margin/bottom = 40.0
 custom_fonts/font = ExtResource( 4 )
 text = "Host"
@@ -79,7 +79,6 @@ max_lines_visible = -1
 
 [node name="edit_button" type="Button" parent="VBoxContainer/header"]
 
-visibility/visible = false
 anchor/left = 1
 anchor/right = 1
 rect/min_size = Vector2( 40, 40 )
