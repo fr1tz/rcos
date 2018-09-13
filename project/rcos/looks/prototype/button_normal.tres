@@ -2,10 +2,10 @@
 
 [resource]
 
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
+content_margin/left = 4.0
+content_margin/right = 4.0
+content_margin/top = 4.0
+content_margin/bottom = 4.0
 bg_color = Color( 0.6, 0.6, 0.6, 1 )
 light_color = Color( 0.8, 0.8, 0.8, 1 )
 dark_color = Color( 0.195313, 0.195313, 0.195313, 1 )
