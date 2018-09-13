@@ -69,13 +69,13 @@ func _ready():
 	var root_canvas_script = load("res://rcos/root_canvas.gd")
 	get_node("/root").set_script(root_canvas_script)
 	_add_io_ports()
-	if !add_service(rlib.instance_scene("res://rcos/url_handler_service.tscn")):
+	if !add_service(rlib.instance_scene("res://rcos/services/url_handler_service/url_handler_service.tscn")):
 		log_error(self, "Unable to add URL handler service")
 	if !add_service(rlib.instance_scene("res://rcos/services/host_info_service/host_info_service.tscn")):
 		log_error(self, "Unable to add host info service")
-	if !add_service(rlib.instance_scene("res://rcos/network_scanner_service.tscn")):
+	if !add_service(rlib.instance_scene("res://rcos/services/network_scanner_service/network_scanner_service.tscn")):
 		log_error(self, "Unable to add network scanner service")
-	if !add_service(rlib.instance_scene("res://rcos/widgets_service.tscn")):
+	if !add_service(rlib.instance_scene("res://rcos/services/widgets_service/widgets_service.tscn")):
 		log_error(self, "Unable to add widgets service")
 
 func _add_io_ports():

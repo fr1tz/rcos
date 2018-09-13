@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://rcos/network_scanner_service.gd" type="Script" id=1]
+[ext_resource path="res://rcos/services/network_scanner_service/network_scanner_service.gd" type="Script" id=1]
 
 [node name="network_scanner_service" type="Node"]
 
