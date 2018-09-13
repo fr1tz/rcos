@@ -57,7 +57,9 @@ func _add_io_ports():
 	var host = host_addr
 	if rcos.has_node("services/host_info_service"):
 		var host_info_service = rcos.get_node("services/host_info_service")
-		host = host_info_service.get_host_name(host)
+		var host_info = host_info_service.get_host_info_from_address(host_addr)
+		if host_info != null:
+			host = host_info.get_host_name()
 	if host == host_addr:
 		var words = mConnection.get_desktop_name().split(" ", false)
 		if words[0] != "":
