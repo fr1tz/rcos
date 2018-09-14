@@ -15,24 +15,30 @@
 
 extends Node
 
+var mHostInfoService = null
 var mHostName = ""
 var mHostIcon = load("res://data_router/icons/32/question_mark.png")
 var mHostColor = Color(1, 1, 1)
 var mAddresses = []
-
-func _init():
-	add_user_signal("host_info_changed")
+var mDirty = false
 
 func clear_addresses():
-	mAddresses.clear()
+	if !mAddresses.empty():
+		mAddresses.clear()
+		mDirty = true
 
 func add_address(addr):
 	if !mAddresses.has(addr):
+		var host_info = mHostInfoService.get_host_info_from_address(addr)
+		if host_info != null:
+			host_info.remove_address(addr)
 		mAddresses.push_back(addr)
+		mDirty = true
 
 func remove_address(addr):
 	if mAddresses.has(addr):
 		mAddresses.erase(addr)
+		mDirty = true
 
 func has_address(addr):
 	return mAddresses.has(addr)
@@ -44,31 +50,34 @@ func get_host_name():
 	return mHostName
 
 func set_host_name(host_name):
-	mHostName = host_name
+	if mHostName != host_name:
+		mHostName = host_name
+		mDirty = true
 
 func get_host_icon():
 	return mHostIcon
 
 func set_host_icon(host_icon):
-	mHostIcon = host_icon
+	if mHostIcon != host_icon:
+		mHostIcon = host_icon
+		mDirty = true
 
 func get_host_color():
 	return mHostColor
 
 func set_host_color(host_color):
-	mHostColor = host_color
+	if mHostColor != host_color:
+		mHostColor = host_color
+		mDirty = true
 
-func save_to_file():
-	var dir = Directory.new()
-	if !dir.dir_exists("user://etc/hosts"):
-		dir.make_dir_recursive("user://etc/hosts")
-	var cfile = ConfigFile.new()
-	var s = "host_info"
-	cfile.set_value(s, "name", mHostName)
-	cfile.set_value(s, "icon", mHostIcon.get_path())
-	cfile.set_value(s, "color", mHostColor.to_html())
-	cfile.set_value(s, "addresses", rlib.join_array(mAddresses, " "))
-	if cfile.save("user://etc/hosts/"+mHostName+".info") != OK:
-		return false
-	emit_signal("host_info_changed")
-	return true
+func is_dirty():
+	return mDirty
+
+func mark_as_dirty():
+	mDirty = true
+
+func mark_as_clean():
+	mDirty = false
+
+func initialize(host_info_service):
+	mHostInfoService = host_info_service

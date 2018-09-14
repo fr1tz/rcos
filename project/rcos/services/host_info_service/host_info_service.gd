@@ -19,24 +19,21 @@ const HOST_INFO_SCENE_PATH = "res://rcos/services/host_info_service/host_info.ts
 
 onready var mHosts = get_node("hosts")
 
-func _init():
-	add_user_signal("host_info_changed")
-
 func _ready():
-	var info_files = rlib.find_files("user://etc/hosts/", "*.info")
-	for filename in info_files:
-		var config_file = ConfigFile.new()
-		var err = config_file.load(filename)
-		if err != OK:
-			log_error(self, "Error reading info file " + filename + ": " + str(err))
-			continue
-		if !config_file.has_section("host_info"):
-			continue
-		_add_host_info_from_file(config_file)
+	var filenames = rlib.find_files("user://etc/hosts/", "*")
+	for filename in filenames:
+		_load_host_info(filename)
 	var local_host_info = create_host_info("localhost")
 	local_host_info.clear_addresses()
 
-func _add_host_info_from_file(config_file):
+func _load_host_info(filename):
+	var config_file = ConfigFile.new()
+	var err = config_file.load(filename)
+	if err != OK:
+		log_error(self, "Error reading info file " + filename + ": " + str(err))
+		return false
+	if !config_file.has_section("host_info"):
+		return false
 	var s = "host_info"
 	var name = config_file.get_value(s, "name")
 	if name == null:
@@ -57,12 +54,29 @@ func _add_host_info_from_file(config_file):
 		addresses = addresses_list.split(" ", false)
 	var host_info = rlib.instance_scene(HOST_INFO_SCENE_PATH)
 	mHosts.add_child(host_info)
+	host_info.initialize(self)
 	host_info.set_name(name)
 	host_info.set_host_name(name)
 	host_info.set_host_icon(icon)
 	host_info.set_host_color(color)
 	for addr in addresses:
 		host_info.add_address(addr)
+	host_info.mark_as_clean()
+	return true
+
+func _save_host_info(host_info):
+	var dir = Directory.new()
+	if !dir.dir_exists("user://etc/hosts"):
+		dir.make_dir_recursive("user://etc/hosts")
+	var cfile = ConfigFile.new()
+	var s = "host_info"
+	cfile.set_value(s, "name", host_info.get_host_name())
+	cfile.set_value(s, "icon", host_info.get_host_icon().get_path())
+	cfile.set_value(s, "color", host_info.get_host_color().to_html())
+	cfile.set_value(s, "addresses", rlib.join_array(host_info.get_addresses(), " "))
+	if cfile.save("user://etc/hosts/"+host_info.get_host_name()) != OK:
+		return false
+	host_info.mark_as_clean()
 	return true
 
 func get_host_info_from_hostname(host_name):
@@ -86,7 +100,12 @@ func create_host_info(host_name):
 		return mHosts.get_node(host_name)
 	var host_info = rlib.instance_scene(HOST_INFO_SCENE_PATH)
 	mHosts.add_child(host_info)
+	host_info.initialize(self)
 	host_info.set_name(host_name)
 	host_info.set_host_name(host_name)
-	host_info.connect("host_info_changed", self, "emit_signal", ["host_info_changed", host_info])
 	return host_info
+
+func save_changes():
+	for host_info in mHosts.get_children():
+		if host_info.is_dirty():
+			_save_host_info(host_info)
