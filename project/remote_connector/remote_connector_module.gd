@@ -28,3 +28,7 @@ func _ready():
 	}
 	mTaskId = rcos.add_task(task_properties)
 	gui = get_node("canvas/connector_gui")
+
+func request_focus():
+	if mTaskId >= 0:
+		rcos.gui.show_task(mTaskId)

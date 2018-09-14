@@ -30,8 +30,12 @@ func _ready():
 	mCancelButton.connect("pressed", self, "_cancel")
 
 func _device_selected(host_info):
+	if !rcos.has_node("services/host_info_service"):
+		return
+	var host_info_service = rcos.get_node("services/host_info_service")
 	host_info.add_address(mDeviceAddressLabel.get_text())
-	host_info.save_to_file()
+	host_info_service.save_changes()
+	mMainGui._update_services()
 	mMainGui.hide_dialogs()
 
 func _add_device():

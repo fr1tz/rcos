@@ -73,7 +73,7 @@ func _add_service(service_info):
 	interface_widget.set_text(service_info.name)
 	interface_widget.set_desc(service_info.desc)
 
-func _host_info_changed(host_info):
+func _update_services():
 	for c in mInterfaceWidgetContainers.get_children():
 		mInterfaceWidgetContainers.remove_child(c)
 		c.free()

@@ -47,7 +47,8 @@ func _save():
 	for i in range(0, mAddressList.get_item_count()):
 		var addr = mAddressList.get_item_text(i)
 		host_info.add_address(addr)
-	host_info.save_to_file()
+	host_info_service.save_changes()
+	mMainGui._update_services()
 	mMainGui.hide_dialogs()
 
 func initialize(main_gui):
