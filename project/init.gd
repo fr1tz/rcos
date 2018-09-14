@@ -15,14 +15,21 @@
 
 extends Node
 
+var mModuleNodes = {}
+
+func _spawn_module(module_name):
+	var module_node = rcos.spawn_module(module_name)
+	mModuleNodes[module_name] = module_node
+
 func _ready():
-	rcos.spawn_module("host_clipboard_io_ports")
-	rcos.spawn_module("host_sensors_io_ports")
-	rcos.spawn_module("host_joysticks_io_ports")
-	rcos.spawn_module("pointer_io_ports")
-	rcos.spawn_module("ffa_widgets")
-	rcos.spawn_module("remote_connector")
-	rcos.spawn_module("io_ports_connector")
-	rcos.spawn_module("widget_panels")
-	rcos.spawn_module("virtual_gamepads")
+	_spawn_module("host_clipboard_io_ports")
+	_spawn_module("host_sensors_io_ports")
+	_spawn_module("host_joysticks_io_ports")
+	_spawn_module("pointer_io_ports")
+	_spawn_module("ffa_widgets")
+	_spawn_module("remote_connector")
+	_spawn_module("io_ports_connector")
+	_spawn_module("widget_panels")
+	_spawn_module("virtual_gamepads")
+	mModuleNodes["remote_connector"].request_focus()
 	queue_free()
