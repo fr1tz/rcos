@@ -254,11 +254,14 @@ func _process_protocol_version(data):
 		return -1
 	var version_tuple = words[1].split(".", false)
 	if version_tuple.size() != 2:
+		_error("Got invalid protocol version message")
 		return -1
 	var major_version = int(version_tuple[0])
 	var minor_version = int(version_tuple[1])
 	rcos.log_debug(self, ["version:", major_version, minor_version])
 	if major_version != 3 || minor_version > 8:
+		_error("Unsupported protocol version: " \
+			+str(major_version)+"."+str(minor_version))
 		return -1
 	var protocol_version_msg
 	if minor_version == 8:
