@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=1]
+[gd_scene load_steps=7 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://remote_connector/device_editor_dialog.gd" type="Script" id=2]
 [ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=3]
 [ext_resource path="res://data_router/icons/32/question_mark.png" type="Texture" id=4]
+[ext_resource path="res://remote_connector/icon_selector_dialog.tscn" type="PackedScene" id=5]
+[ext_resource path="res://remote_connector/color_selector_dialog.tscn" type="PackedScene" id=6]
 
 [node name="device_editor_dialog" type="ColorFrame"]
 
@@ -190,5 +192,23 @@ enabled_focus_mode = 2
 shortcut = null
 text = "Save"
 flat = false
+
+[node name="dialogs" type="Control" parent="."]
+
+visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="icon_selector_dialog" parent="dialogs" instance=ExtResource( 5 )]
+
+[node name="color_selector_dialog" parent="dialogs" instance=ExtResource( 6 )]
 
 
