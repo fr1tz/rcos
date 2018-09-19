@@ -23,7 +23,7 @@ func _ready():
 	_scan_host("127.0.0.1")
 	var networks = []
 	for addr in IP.get_local_addresses():
-		if addr.begins_with("10.42.0.") \
+		if addr.begins_with("10.") \
 		|| addr.begins_with("192.168."):
 			var bytes = addr.split(".")
 			var network = bytes[0]+"."+bytes[1]+"."+bytes[2]+"."
