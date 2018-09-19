@@ -15,10 +15,14 @@
 
 extends ColorFrame
 
+const ADDRESS_ITEM_SCENE_PATH = "res://remote_connector/address_item.tscn"
+
 onready var mHostNameEdit = get_node("hostname_edit")
 onready var mIconButton = get_node("icon_button")
 onready var mColorButton = get_node("color_button")
-onready var mAddressList = get_node("address_list")
+onready var mAddressesList = get_node("addresses_panel/addresses_scroller/addresses_list")
+onready var mAddAddressEdit = get_node("add_address_edit")
+onready var mAddAddressButton = get_node("add_address_button")
 onready var mCancelButton = get_node("cancel_button")
 onready var mSaveButton = get_node("save_button")
 onready var mIconSelectorDialog = get_node("dialogs/icon_selector_dialog")
@@ -30,6 +34,10 @@ var mHostInfoService = null
 func _ready():
 	mIconButton.connect("pressed", self, "show_dialog", ["icon_selector_dialog"])
 	mColorButton.connect("pressed", self, "show_dialog", ["color_selector_dialog"])
+	mAddAddressEdit.connect("text_changed", self, "_add_address_text_changed")
+	mAddAddressEdit.connect("text_entered", self, "_add_address_button_pressed")
+	mAddAddressButton.connect("pressed", self, "_add_address_button_pressed")
+	mAddAddressButton.set_disabled(true)
 	mCancelButton.connect("pressed", self, "_cancel")
 	mSaveButton.connect("pressed", self, "_save")
 	mIconSelectorDialog.connect("cancel_button_pressed", self, "hide_dialogs")
@@ -37,6 +45,13 @@ func _ready():
 	mIconSelectorDialog.add_icons("res://data_router/icons/32", "device_*.png")
 	mColorSelectorDialog.connect("cancel_button_pressed", self, "hide_dialogs")
 	mColorSelectorDialog.connect("color_selected", self, "_color_selected")
+
+func _add_address_text_changed(text):
+	mAddAddressButton.set_disabled(text == "")
+
+func _add_address_button_pressed(dummy_arg = ""):
+	add_address(mAddAddressEdit.get_text())
+	mAddAddressEdit.set_text("")
 
 func _cancel():
 	mMainGui.hide_dialogs()
@@ -53,8 +68,8 @@ func _save():
 	host_info.set_host_icon(mIconButton.get_button_icon())
 	host_info.set_host_color(mColorButton.get_node("color_frame").get_frame_color())
 	host_info.clear_addresses()
-	for i in range(0, mAddressList.get_item_count()):
-		var addr = mAddressList.get_item_text(i)
+	for c in mAddressesList.get_children():
+		var addr = c.get_text()
 		host_info.add_address(addr)
 	host_info_service.save_changes()
 	mMainGui._update_services()
@@ -75,7 +90,9 @@ func clear():
 	mHostNameEdit.set_text("Device Name")
 	mIconButton.set_button_icon(load("res://data_router/icons/32/question_mark.png"))
 	mColorButton.get_node("color_frame").set_frame_color(Color(1, 1, 1))
-	mAddressList.clear()
+	for c in mAddressesList.get_children():
+		mAddressesList.remove_child(c)
+		c.free()
 
 func set_icon(texture):
 	mIconButton.set_button_icon(texture)
@@ -84,15 +101,17 @@ func set_color(color):
 	mColorButton.get_node("color_frame").set_frame_color(color)
 
 func add_address(addr):
-	mAddressList.add_item(addr)
+	var item = rlib.instance_scene(ADDRESS_ITEM_SCENE_PATH)
+	mAddressesList.add_child(item)
+	item.set_text(addr)
 
 func load_host_info(host_info):
+	clear()
 	mHostNameEdit.set_text(host_info.get_host_name())
 	mIconButton.set_button_icon(host_info.get_host_icon())
 	mColorButton.get_node("color_frame").set_frame_color(host_info.get_host_color())
-	mAddressList.clear()
 	for addr in host_info.get_addresses():
-		mAddressList.add_item(addr)
+		add_address(addr)
 
 func hide_dialogs():
 	get_node("dialogs").set_hidden(true)

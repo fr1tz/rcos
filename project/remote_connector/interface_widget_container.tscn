@@ -1,14 +1,27 @@
-[gd_scene load_steps=6 format=1]
+[gd_scene load_steps=8 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://remote_connector/interface_widget_container.gd" type="Script" id=2]
-[ext_resource path="res://data_router/icons/32/question_mark.png" type="Texture" id=3]
-[ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=4]
-[ext_resource path="res://remote_connector/graphics/icon.edit.png" type="Texture" id=5]
+[ext_resource path="res://remote_connector/graphics/host_icon_frame.png" type="Texture" id=3]
+[ext_resource path="res://data_router/icons/32/question_mark.png" type="Texture" id=4]
+[ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=5]
+[ext_resource path="res://remote_connector/graphics/icon.edit.png" type="Texture" id=6]
+
+[sub_resource type="StyleBoxFlat" id=1]
+
+content_margin/left = 2.0
+content_margin/right = 2.0
+content_margin/top = 2.0
+content_margin/bottom = 2.0
+bg_color = Color( 0.6, 0.6, 0.6, 1 )
+light_color = Color( 0.8, 0.8, 0.8, 1 )
+dark_color = Color( 0.8, 0.8, 0.8, 1 )
+border_size = 0
+border_blend = true
+draw_bg = true
 
 [node name="interface_widget_container" type="PanelContainer"]
 
-visibility/self_opacity = 0.0
 rect/min_size = Vector2( 196, 0 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -17,9 +30,36 @@ size_flags/vertical = 2
 theme/theme = ExtResource( 1 )
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 196.0
-margin/bottom = 128.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_styles/panel = SubResource( 1 )
 script/script = ExtResource( 2 )
+
+[node name="bg_panel" type="Panel" parent="."]
+
+visibility/visible = false
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 7.0
+margin/top = 7.0
+margin/right = 189.0
+margin/bottom = 51.0
+
+[node name="bg_color_frame" type="ColorFrame" parent="."]
+
+visibility/visible = false
+visibility/self_opacity = 0.5
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 2.0
+margin/top = 2.0
+margin/right = 194.0
+margin/bottom = 46.0
+color = Color( 0, 0, 0, 1 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 
@@ -27,14 +67,15 @@ focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 7.0
-margin/top = 7.0
-margin/right = 189.0
-margin/bottom = 121.0
+margin/left = 2.0
+margin/top = 2.0
+margin/right = 194.0
+margin/bottom = 46.0
 alignment = 0
 
 [node name="header" type="ReferenceFrame" parent="VBoxContainer"]
 
+editor/display_folded = true
 rect/min_size = Vector2( 100, 40 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -42,10 +83,10 @@ size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 182.0
+margin/right = 192.0
 margin/bottom = 40.0
 
-[node name="icon" type="TextureFrame" parent="VBoxContainer/header"]
+[node name="icon_frame" type="TextureFrame" parent="VBoxContainer/header"]
 
 rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = true
@@ -59,6 +100,20 @@ margin/bottom = 40.0
 texture = ExtResource( 3 )
 stretch_mode = 4
 
+[node name="icon" type="TextureFrame" parent="VBoxContainer/header"]
+
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
+texture = ExtResource( 4 )
+stretch_mode = 4
+
 [node name="host_label" type="Label" parent="VBoxContainer/header"]
 
 anchor/right = 1
@@ -70,7 +125,7 @@ margin/left = 40.0
 margin/top = 0.0
 margin/right = 39.0
 margin/bottom = 40.0
-custom_fonts/font = ExtResource( 4 )
+custom_fonts/font = ExtResource( 5 )
 text = "Host"
 valign = 1
 percent_visible = 1.0
@@ -93,20 +148,32 @@ margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-icon = ExtResource( 5 )
+icon = ExtResource( 6 )
 flat = false
 align = 0
 
-[node name="interface_widgets" type="VBoxContainer" parent="VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 44.0
+margin/right = 192.0
+margin/bottom = 44.0
+
+[node name="interface_widgets" type="VBoxContainer" parent="VBoxContainer/MarginContainer"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 44.0
-margin/right = 182.0
-margin/bottom = 44.0
+margin/left = 8.0
+margin/top = 0.0
+margin/right = 192.0
+margin/bottom = 0.0
+custom_constants/separation = 0
 alignment = 0
 
 

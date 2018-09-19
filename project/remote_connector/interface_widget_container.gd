@@ -25,7 +25,7 @@ func _init():
 func _ready():
 	mHostLabel = get_node("VBoxContainer/header/host_label")
 	mEditButton = get_node("VBoxContainer/header/edit_button")
-	mInterfaceWidgets = get_node("VBoxContainer/interface_widgets")
+	mInterfaceWidgets = get_node("VBoxContainer/MarginContainer/interface_widgets")
 	mHostLabel.set_text(get_name())
 	mEditButton.connect("pressed", self, "emit_signal", ["edit_button_pressed"])
 
@@ -42,6 +42,15 @@ func set_host_label(name):
 
 func set_host_icon(tex):
 	get_node("VBoxContainer/header/icon").set_texture(tex)
+	if tex.get_path().ends_with("device_generic.png"):
+		get_node("VBoxContainer/header/icon_frame").set_hidden(true)
+	else:
+		get_node("VBoxContainer/header/icon_frame").set_hidden(false)
 
 func set_host_color(color):
-	get_node("VBoxContainer/header/icon").set_modulate(color)
+#	var stylebox = get_stylebox("panel").duplicate()
+#	stylebox.set_bg_color(color)
+#	add_style_override("panel", stylebox)
+	get_node("bg_color_frame").set_frame_color(color)
+	#get_node("VBoxContainer/header/icon").set_modulate(color)
+	get_node("VBoxContainer/header/icon_frame").set_modulate(color)
