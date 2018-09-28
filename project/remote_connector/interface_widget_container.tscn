@@ -1,11 +1,11 @@
-[gd_scene load_steps=8 format=1]
+[gd_scene load_steps=10 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://remote_connector/interface_widget_container.gd" type="Script" id=2]
 [ext_resource path="res://remote_connector/graphics/host_icon_frame.png" type="Texture" id=3]
 [ext_resource path="res://data_router/icons/32/question_mark.png" type="Texture" id=4]
 [ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=5]
-[ext_resource path="res://remote_connector/graphics/icon.edit.png" type="Texture" id=6]
+[ext_resource path="res://rcos/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=6]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -19,6 +19,30 @@ dark_color = Color( 0.8, 0.8, 0.8, 1 )
 border_size = 0
 border_blend = true
 draw_bg = true
+
+[sub_resource type="StyleBoxFlat" id=3]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 0.6, 0.6, 0.6, 1 )
+light_color = Color( 0.8, 0.8, 0.8, 1 )
+dark_color = Color( 0.8, 0.8, 0.8, 1 )
+border_size = 1
+border_blend = true
+draw_bg = true
+
+[sub_resource type="DynamicFont" id=2]
+
+font/size = 16
+extra_spacing/top = -5
+extra_spacing/bottom = -5
+extra_spacing/char = -5
+extra_spacing/space = -5
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 6 )
 
 [node name="interface_widget_container" type="PanelContainer"]
 
@@ -75,7 +99,6 @@ alignment = 0
 
 [node name="header" type="ReferenceFrame" parent="VBoxContainer"]
 
-editor/display_folded = true
 rect/min_size = Vector2( 100, 40 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -85,6 +108,36 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 192.0
 margin/bottom = 40.0
+
+[node name="frame" type="Panel" parent="VBoxContainer/header"]
+
+anchor/right = 1
+anchor/bottom = 1
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_styles/panel = SubResource( 3 )
+
+[node name="frame_color" type="ColorFrame" parent="VBoxContainer/header/frame"]
+
+visibility/self_opacity = 0.5
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+color = Color( 0, 0, 0, 1 )
 
 [node name="icon_frame" type="TextureFrame" parent="VBoxContainer/header"]
 
@@ -121,7 +174,7 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 40.0
+margin/left = 45.0
 margin/top = 0.0
 margin/right = 39.0
 margin/bottom = 40.0
@@ -136,21 +189,20 @@ max_lines_visible = -1
 
 anchor/left = 1
 anchor/right = 1
-rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 40.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 40.0
+margin/left = 35.0
+margin/top = 5.0
+margin/right = 5.0
+margin/bottom = 35.0
+custom_fonts/font = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-icon = ExtResource( 6 )
+text = ""
 flat = false
-align = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
 

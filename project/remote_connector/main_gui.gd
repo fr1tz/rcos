@@ -74,6 +74,7 @@ func _add_service(service_info):
 	interface_widget.set_desc(service_info.desc)
 
 func _update_services():
+	mSelectedInterfaceWidget = null
 	for c in mInterfaceWidgetContainers.get_children():
 		mInterfaceWidgetContainers.remove_child(c)
 		c.free()
