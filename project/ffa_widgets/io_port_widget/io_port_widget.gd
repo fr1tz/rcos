@@ -15,10 +15,6 @@
 
 extends Node
 
-export(Color) var color_disabled = Color(1, 1, 1)
-export(Color) var color_output = Color(1, 1, 1)
-export(Color) var color_input = Color(1, 1, 1)
-
 onready var mConfigGui = get_node("config_canvas/config_gui")
 
 var mWidgetHost = null
@@ -77,16 +73,21 @@ func configure(port_type, port_path, icon_path):
 	mIconPath = icon_path
 	mPort = null
 	get_node("icon").set_texture(load(icon_path))
+	get_node("color_frame").set_frame_color(Color(1,1,1))
+	if rcos.has_node("services/host_info_service"):
+		var hostname = str(port_path).split("/")[0]
+		var host_info_service = rcos.get_node("services/host_info_service")
+		var host_info = host_info_service.get_host_info_from_hostname(hostname)
+		if host_info:
+			get_node("color_frame").set_frame_color(host_info.get_host_color())
 	if mPortType == data_router.PORT_TYPE_INPUT:
 		get_node("raised_panel").set_hidden(true)
-		get_node("color_frame").set_frame_color(color_input)
 		mPort = data_router.get_input_port(mPortPath)
 	else:
 		get_node("raised_panel").set_hidden(false)
-		get_node("color_frame").set_frame_color(color_output)
 		mPort = data_router.get_output_port(mPortPath)
+	get_node("missing_port_overlay").set_hidden(mPort != null)
 	if mPort == null:
-		get_node("color_frame").set_frame_color(color_disabled)
 		data_router.request_port_creation_notice(mPortType, mPortPath, funcref(self, "_port_creation_notice"))
 
 func _port_creation_notice(port):

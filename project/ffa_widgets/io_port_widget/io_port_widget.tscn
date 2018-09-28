@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=1]
+[gd_scene load_steps=7 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://ffa_widgets/io_port_widget/io_port_widget.gd" type="Script" id=2]
 [ext_resource path="res://ffa_widgets/io_port_widget/config_gui.tscn" type="PackedScene" id=3]
+[ext_resource path="res://ffa_widgets/io_port_widget/graphics/missing_port_overlay.png" type="Texture" id=4]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -44,9 +45,6 @@ margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
 script/script = ExtResource( 2 )
-color_disabled = Color( 0.378906, 0.378906, 0.378906, 1 )
-color_output = Color( 1, 0.453125, 0.453125, 1 )
-color_input = Color( 0.5, 0.507812, 1, 1 )
 
 [node name="config_canvas" type="Control" parent="."]
 
@@ -103,7 +101,7 @@ margin/left = 1.0
 margin/top = 1.0
 margin/right = 1.0
 margin/bottom = 1.0
-color = Color( 0.378906, 0.378906, 0.378906, 1 )
+color = Color( 1, 1, 1, 1 )
 
 [node name="icon" type="TextureFrame" parent="."]
 
@@ -120,5 +118,23 @@ margin/top = 16.0
 margin/right = -16.0
 margin/bottom = -16.0
 stretch_mode = 0
+
+[node name="missing_port_overlay" type="TextureFrame" parent="."]
+
+visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 1.0
+margin/top = 1.0
+margin/right = 1.0
+margin/bottom = 1.0
+texture = ExtResource( 4 )
+modulate = Color( 0.492188, 0.492188, 0.492188, 1 )
+expand = true
+stretch_mode = 2
 
 
