@@ -1,13 +1,13 @@
 [gd_scene load_steps=7 format=1]
 
-[ext_resource path="res://vjoyctrl/vjoy_client.gd" type="Script" id=1]
+[ext_resource path="res://vjoyctrl/vjoyctrl_module.gd" type="Script" id=1]
 [ext_resource path="res://vjoyctrl/graphics/icon.png" type="Texture" id=2]
 [ext_resource path="res://vjoyctrl/connection.tscn" type="PackedScene" id=3]
 [ext_resource path="res://vjoyctrl/update_packet.tscn" type="PackedScene" id=4]
 [ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=5]
 [ext_resource path="res://vjoyctrl/vjoy_client_gui.tscn" type="PackedScene" id=6]
 
-[node name="vjoy_client" type="Node"]
+[node name="vjoyctrl_module" type="Node"]
 
 script/script = ExtResource( 1 )
 
@@ -23,6 +23,13 @@ margin/right = -15.0
 margin/bottom = -11.0
 texture = ExtResource( 2 )
 stretch_mode = 0
+
+[node name="send_update_timer" type="Timer" parent="."]
+
+process_mode = 1
+wait_time = 0.1
+one_shot = false
+autostart = false
 
 [node name="controllers" type="Node" parent="."]
 

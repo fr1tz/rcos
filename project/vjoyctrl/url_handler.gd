@@ -18,14 +18,14 @@ extends Node
 func _ready():
 	var open_func = funcref(self, "open")
 	var scheme = "vjoy"
-	var desc = "Open using vJoy client"
+	var desc = "Open using vJoyCtrl"
 	var icon = load("res://vjoyctrl/graphics/icon.png")
 	rcos.register_url_handler(open_func, scheme, desc, icon)
 
 func open(url):
 	rcos.log_debug(self, ["open():", url])
 	if url == "vjoy":
-		rcos.spawn_module("vjoy_client")
+		rcos.spawn_module("vjoyctrl")
 		return
 	if !url.begins_with("vjoy://"):
 		return
@@ -37,4 +37,4 @@ func open(url):
 		if sep_pos > 0:
 			address = server.left(sep_pos)
 		port = int(server.right(sep_pos+1))
-	rcos.spawn_module("vjoy_client").connect_to_server(address, port)
+	rcos.spawn_module("vjoyctrl").connect_to_server(address, port)

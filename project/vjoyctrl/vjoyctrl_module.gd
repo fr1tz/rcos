@@ -15,7 +15,7 @@
 
 extends Node
 
-const SEND_UPDATE_INTERVAL = 0.05
+const SEND_UPDATE_INTERVAL = 0.02
 
 var gui = null
 
@@ -28,7 +28,7 @@ var mClientId = -1
 var mControllers = null
 var mConnection = null
 var mUDP = PacketPeerUDP.new()
-var mSendUpdateCountdown = SEND_UPDATE_INTERVAL
+var mSendUpdateQueued = false
 
 func _ready():
 	gui = get_node("canvas/vjoy_client_gui")
@@ -36,6 +36,7 @@ func _ready():
 	gui.get_open_connection_dialog().connect("connect_button_pressed", self, "connect_to_server")
 	var logger = rcos.spawn_module("logger")
 	logger.set_filter(str(rcos.get_path_to(self)))
+	get_node("send_update_timer").connect("timeout", self, "send_update")
 	mControllers = get_node("controllers")
 	mConnection = get_node("connection")
 	mConnection.connect("message_received", self, "_process_message")
@@ -45,11 +46,6 @@ func _ready():
 		"canvas": get_node("canvas"),
 	}
 	mTaskId = rcos.add_task(task_properties)
-
-func _fixed_process(delta):
-	mSendUpdateCountdown -= delta
-	if mSendUpdateCountdown <= 0:
-		send_update()
 
 func _process_message(msg):
 	rcos.log_debug(self, ["vjoy_client: _process_message():", msg])
@@ -64,7 +60,7 @@ func _process_message(msg):
 			ctrl.set_name("vjoy_controller"+str(id))
 			ctrl.initialize(self, mServerHostname, id)
 			mControllers.add_child(ctrl)
-		set_fixed_process(true)
+		get_node("send_update_timer").start()
 	elif type == "vjoy_config":
 		var id = rlib.hd(args); args = rlib.tl(args)
 		var prop_name = rlib.hd(args); args = rlib.tl(args)
@@ -88,12 +84,11 @@ func _send_update():
 #		s += str(data[i]) + " "
 #	print(s)
 	send_packet(data, mServerAddress, mServerUdpPort)
-	mSendUpdateCountdown = SEND_UPDATE_INTERVAL
+	mSendUpdateQueued = false
 
 func send_update():
-	if mSendUpdateCountdown == 0:
+	if mSendUpdateQueued:
 		return
-	mSendUpdateCountdown = 0
 	call_deferred("_send_update")
 
 func send_packet(data, addr, port):
