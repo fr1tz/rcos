@@ -35,7 +35,8 @@ var mIconByParentNodeName = {
 
 var mIconByPortDataType = {
 	"string": load("res://data_router/icons/32/data_type_string.png"),
-	"bool": load("res://data_router/icons/32/data_type_bool.png")
+	"bool": load("res://data_router/icons/32/data_type_bool.png"),
+	"image": load("res://data_router/icons/32/data_type_image.png")
 }
 
 const PORT_TYPE_INPUT = 0
