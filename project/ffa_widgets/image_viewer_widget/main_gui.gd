@@ -22,11 +22,33 @@ var mTexture = null
 
 func _ready():
 	mWidgetHost = get_meta("widget_host_api")
+	mWidgetHost.enable_widget_frame_input(self)
 
 func _draw():
 	if mTexture == null:
 		return
 	draw_texture_rect(mTexture, get_rect(), false)
+
+func _widget_frame_input(event):
+	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
+	var touch = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON)
+	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)
+	if !touch && !drag:
+		return
+	var index = 0
+	if touchscreen:
+		index = event.index
+	if touch && !event.pressed:
+		var dangling_control = rcos.gui.get_dangling_control(index)
+		if dangling_control != null:
+			_dangling_control_dropped(dangling_control)
+
+func _dangling_control_dropped(control):
+	if !control.has_meta("data"):
+		return
+	var data = control.get_meta("data")
+	if typeof(data) == TYPE_IMAGE:
+		set_image(data)
 
 func set_image(image):
 	if image == null:
