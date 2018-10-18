@@ -116,13 +116,13 @@ func _update_widget_margins():
 func set_io_ports_path_prefix(prefix):
 	mIOPortsPathPrefix = prefix
 
-func add_widget_container():
+func create_widget_container():
 	var container = rlib.instance_scene("res://rcos/lib/_res/widget_panel/widget_container.tscn")
 	mWidgetContainers.add_child(container)
 	container.connect("item_rect_changed", self, "_update_widget_margins")
 	return container
 
-func add_widget(widget_factory_task_id, pos):
+func create_widget(widget_factory_task_id, pos, config_preset = ""):
 	var properties = rcos.get_task_properties(widget_factory_task_id)
 	if !properties.has("product_id") || !properties.has("product_name"):
 		return
@@ -135,8 +135,9 @@ func add_widget(widget_factory_task_id, pos):
 	while mWidgetContainers.has_node(widget_name+"."+str(i)+"_container"):
 		i += 1
 	widget_name += "."+str(i)
-	var widget_container = add_widget_container()
-	widget_container.init(mWidgetHostApi, widget_name, properties.product_id)
+	var widget_container = create_widget_container()
+	widget_container.init(mWidgetHostApi, widget_name, properties.product_id,
+		widget_container.ORIENTATION_N, config_preset)
 	_add_widget_to_container(widget, widget_container)
 	widget_container.set_pos(pos)
 	return widget_container
@@ -244,7 +245,7 @@ func load_from_file(filename):
 	var tasks_list = rcos.get_task_list()
 	if config.version == 0:
 		for c in config.widget_containers:
-			var widget_container = add_widget_container()
+			var widget_container = create_widget_container()
 			widget_container.init(mWidgetHostApi, c.widget_name, c.widget_product_id, \
 				c.widget_orientation, c.widget_config_string)
 			widget_container.set_pos(Vector2(c.x, c.y))
