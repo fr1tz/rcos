@@ -64,28 +64,9 @@ func _load_from_file():
 
 func _on_widget_factory_item_selected(item):
 	var task_id = item.get_widget_factory_task_id()
+	var config_preset = item.get_config_preset()
 	var pos = mWidgetPanel.get_pos().abs()
-	mWidgetPanel.add_widget(task_id, pos)
-	show_grid()
-
-func _output_port_selected(node):
-	var srv = rcos.get_node("services/rcos_widgets_service")
-	var task_id = srv.get_widget_factory_task_id("rcos_widgets.output_port_widget")
-	if task_id == -1:
-		return
-	var container = mWidgetPanel.add_widget(task_id, Vector2(0, 0))
-	var widget = container.get_widget()
-	widget.get_config_gui()._port_selected(node)
-	show_grid()
-
-func _input_port_selected(node):
-	var srv = rcos.get_node("services/rcos_widgets_service")
-	var task_id = srv.get_widget_factory_task_id("rcos_widgets.input_port_widget")
-	if task_id == -1:
-		return
-	var container = mWidgetPanel.add_widget(task_id, Vector2(0, 0))
-	var widget = container.get_widget()
-	widget.get_config_gui()._port_selected(node)
+	mWidgetPanel.create_widget(task_id, pos, config_preset)
 	show_grid()
 
 func _reshape_selected_widget_begin():

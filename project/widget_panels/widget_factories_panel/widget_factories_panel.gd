@@ -28,8 +28,17 @@ func update_available_widgets(widget_factory_tasks):
 		mWidgetFactoryList.remove_child(item)
 		item.free()
 	for task_id in widget_factory_tasks:
-		var item = rlib.instance_scene("res://widget_panels/widget_factories_panel/widget_factory_item.tscn")
-		item.set_widget_factory_task_id(task_id)
-		item.connect("pressed", self, "_on_item_selected", [item, task_id])
-		mWidgetFactoryList.add_child(item)
-
+		var properties = rcos.get_task_properties(task_id)
+		if !properties.has("product_name") || !properties.has("product_id"):
+			continue
+		if properties.has("config_presets"):
+			for preset in properties.config_presets:
+				var item = rlib.instance_scene("res://widget_panels/widget_factories_panel/widget_factory_item.tscn")
+				item.initialize(task_id, properties.product_name, preset)
+				item.connect("pressed", self, "_on_item_selected", [item, task_id])
+				mWidgetFactoryList.add_child(item)
+		else:
+			var item = rlib.instance_scene("res://widget_panels/widget_factories_panel/widget_factory_item.tscn")
+			item.initialize(task_id, properties.product_name, null)
+			item.connect("pressed", self, "_on_item_selected", [item, task_id])
+			mWidgetFactoryList.add_child(item)
