@@ -187,13 +187,13 @@ func add_connection(output, input):
 	#prints("data_router: add connection: ", output, "->", input)
 	var output_port_node = null
 	var input_port_node = null
-	if typeof(output) == TYPE_STRING:
+	if typeof(output) == TYPE_STRING && mOutputPorts.has_node(output):
 		output_port_node = mOutputPorts.get_node(output)
 	elif typeof(output) == TYPE_OBJECT:
 		output_port_node = output
 	else:
 		return false
-	if typeof(input) == TYPE_STRING:
+	if typeof(input) == TYPE_STRING && mInputPorts.has_node(input):
 		input_port_node = mInputPorts.get_node(input)
 	elif typeof(input) == TYPE_OBJECT:
 		input_port_node = input
@@ -210,13 +210,13 @@ func remove_connection(output, input):
 	#prints("data_router: remove connection: ", output, "->", input)
 	var output_port_node = null
 	var input_port_node = null
-	if typeof(output) == TYPE_STRING:
+	if typeof(output) == TYPE_STRING && mOutputPorts.has_node(output):
 		output_port_node = mOutputPorts.get_node(output)
 	elif typeof(output) == TYPE_OBJECT:
 		output_port_node = output
 	else:
 		return false
-	if typeof(input) == TYPE_STRING:
+	if typeof(input) == TYPE_STRING && mInputPorts.has_node(input):
 		input_port_node = mInputPorts.get_node(input)
 	elif typeof(output) == TYPE_OBJECT:
 		input_port_node = input
