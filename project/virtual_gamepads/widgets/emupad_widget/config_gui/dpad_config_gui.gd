@@ -15,14 +15,10 @@
 
 extends Control
 
-var mDPadConfig = null
-
 onready var mRadiusSlider = get_node("radius/slider")
 onready var mRadiusValueLabel = get_node("radius/value_label")
 onready var mThresholdSlider = get_node("threshold/slider")
 onready var mThresholdValueLabel = get_node("threshold/value_label")
-onready var mXAxisButtons = get_node("x/axis_buttons")
-onready var mYAxisButtons = get_node("y/axis_buttons")
 
 func _ready():
 	mRadiusSlider.connect("value_changed", self, "_radius_changed")
@@ -30,15 +26,20 @@ func _ready():
 
 func _radius_changed(new_value):
 	mRadiusValueLabel.set_text(str(new_value))
-	mDPadConfig.radius = new_value
-	get_meta("widget_root_node").get_main_gui().reload_widget_config()
+	get_meta("widget_root_node").config_gui.set_dirty()
 
 func _threshold_changed(new_value):
 	mThresholdValueLabel.set_text(str(new_value))
-	mDPadConfig.threshold = new_value
-	get_meta("widget_root_node").get_main_gui().reload_widget_config()
+	get_meta("widget_root_node").config_gui.set_dirty()
 
 func load_dpad_config(dpad_config):
-	mDPadConfig = dpad_config
 	mRadiusSlider.set_value(dpad_config.radius)
 	mThresholdSlider.set_value(dpad_config.threshold)
+	return true
+
+func create_dpad_config():
+	var dpad_config = {
+		"radius": mRadiusSlider.get_value(),
+		"threshold": mThresholdSlider.get_value()
+	}
+	return dpad_config

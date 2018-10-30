@@ -15,39 +15,15 @@
 
 extends ReferenceFrame
 
-var mInitialConfig = null
-var mWidgetConfig = null
-
-onready var mMainGui = get_node("main_gui")
-onready var mConfigGui = get_node("config_canvas/config_gui")
-
-func _ready():
-	if mInitialConfig == null:
-		return
-	mWidgetConfig = mInitialConfig
-	mMainGui.load_widget_config(mWidgetConfig)
-	mConfigGui.load_widget_config(mWidgetConfig)
-
-func set_initial_config(config):
-	mInitialConfig = config
+onready var main_gui = get_node("main_gui")
+onready var config_gui = get_node("config_canvas/config_gui")
 
 #-------------------------------------------------------------------------------
 # Common Widget API
 #-------------------------------------------------------------------------------
 
-func get_main_gui():
-	return mMainGui
-
-func get_config_gui():
-	return mConfigGui
-
 func load_widget_config_string(config_string):
-	mWidgetConfig = Dictionary()
-	if mWidgetConfig.parse_json(config_string) != OK:
-		return false
-	mMainGui.load_widget_config(mWidgetConfig)
-	mConfigGui.load_widget_config(mWidgetConfig)
-	return true
+	return config_gui.load_widget_config_string(config_string)
 
 func create_widget_config_string():
-	return mWidgetConfig.to_json()
+	return config_gui.create_widget_config_string()

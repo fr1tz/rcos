@@ -20,32 +20,43 @@ const ICON_STICK = "" #f192
 const ICON_DPAD = "" #f055 
 const ICON_BUTTON = "" #f111
 
-onready var mMultipad = get_node("multipad")
+onready var mEmupad = get_node("emupad")
 onready var mIcon = get_node("icon")
 
-func load_touchpad_config(touchpad_config):
-	mMultipad.load_touchpad_config(touchpad_config)
-	if touchpad_config.mode == "stick":
+func _ready():
+	mEmupad.connect("pad_pressed", self, "_pressed")
+	mEmupad.connect("pad_released", self, "_released")
+
+func _pressed():
+	mIcon.set("custom_colors/font_color", mEmupad.get_outline_color())
+
+func _released():
+	mIcon.set("custom_colors/font_color", mEmupad.get_outline_color())
+
+func load_emupad_config(emupad_config):
+	mEmupad.load_emupad_config(emupad_config)
+	if emupad_config.emulate == "stick":
 		mIcon.set_text(ICON_STICK)
-	elif touchpad_config.mode == "dpad":
+	elif emupad_config.emulate == "dpad":
 		mIcon.set_text(ICON_DPAD)
-	elif touchpad_config.mode == "button":
+	elif emupad_config.emulate == "button":
 		mIcon.set_text(ICON_BUTTON)
+	_released()
 
 func set_polygon(verts):
-	mMultipad.set_polygon(verts)
+	mEmupad.set_polygon(verts)
 	var s1 = (verts[1]-verts[0]).length() - 10
 	var s2 = (verts[verts.size()-1]-verts[0]).length() - 15
 	var icon_size = min(s1, s2)
 	if verts.size() == 3:
 		icon_size *= 0.5
 	icon_size = max(6, floor(icon_size))
-	var icon_pos = mMultipad.get_center() - Vector2(icon_size/2, icon_size/2)
+	var icon_pos = mEmupad.get_center() - Vector2(icon_size/2, icon_size/2)
 	mIcon.set_pos(icon_pos)
 	mIcon.set_font_size(icon_size)
 
 func turn_on():
-	mMultipad.turn_on()
+	mEmupad.turn_on()
 
 func turn_off():
-	mMultipad.turn_off()
+	mEmupad.turn_off()

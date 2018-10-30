@@ -1,0 +1,154 @@
+[gd_scene load_steps=10 format=1]
+
+[ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/config_gui.gd" type="Script" id=2]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/graphics/icon.layout1.png" type="Texture" id=3]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/graphics/icon.layout2a.png" type="Texture" id=4]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/graphics/icon.layout2b.png" type="Texture" id=5]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/graphics/icon.layout4.png" type="Texture" id=6]
+[ext_resource path="res://rcos/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=7]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/emupad_config_gui.tscn" type="PackedScene" id=8]
+
+[sub_resource type="DynamicFont" id=1]
+
+font/size = 24
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 7 )
+
+[node name="config_gui" type="Panel"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = ExtResource( 1 )
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 200.0
+margin/bottom = 400.0
+script/script = ExtResource( 2 )
+
+[node name="layout_buttons" type="HButtonArray" parent="."]
+
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 40.0
+custom_constants/button_separator = 0
+flat = false
+button/count = 4
+button/min_button_size = -1.0
+button/align = 4
+button/0/text = ""
+button/0/tooltip = ""
+button/0/icon = ExtResource( 3 )
+button/1/text = ""
+button/1/tooltip = ""
+button/1/icon = ExtResource( 4 )
+button/2/text = ""
+button/2/tooltip = ""
+button/2/icon = ExtResource( 5 )
+button/3/text = ""
+button/3/tooltip = ""
+button/3/icon = ExtResource( 6 )
+button/selected = 0
+
+[node name="emupad_tabs" type="TabContainer" parent="."]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 45.0
+margin/right = 0.0
+margin/bottom = 40.0
+custom_fonts/font = SubResource( 1 )
+tab_align = 1
+tabs_visible = true
+
+[node name=" Pad 1 " parent="emupad_tabs" instance=ExtResource( 8 )]
+
+anchor/right = 1
+anchor/bottom = 1
+margin/left = 4.0
+margin/top = 40.0
+margin/right = 4.0
+margin/bottom = 4.0
+
+[node name=" Pad 2 " parent="emupad_tabs" instance=ExtResource( 8 )]
+
+visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+margin/left = 4.0
+margin/top = 52.0
+margin/right = 4.0
+margin/bottom = 4.0
+
+[node name=" Pad 3 " parent="emupad_tabs" instance=ExtResource( 8 )]
+
+visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+margin/left = 4.0
+margin/top = 52.0
+margin/right = 4.0
+margin/bottom = 4.0
+
+[node name=" Pad 4 " parent="emupad_tabs" instance=ExtResource( 8 )]
+
+visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+margin/left = 4.0
+margin/top = 52.0
+margin/right = 4.0
+margin/bottom = 4.0
+
+[node name="apply_button" type="Button" parent="."]
+
+anchor/top = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 40.0
+margin/right = 100.0
+margin/bottom = 0.0
+disabled = true
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Apply"
+flat = false
+
+[node name="close_button" type="Button" parent="."]
+
+anchor/top = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 100.0
+margin/top = 40.0
+margin/right = 200.0
+margin/bottom = 0.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Close"
+flat = false
+
+

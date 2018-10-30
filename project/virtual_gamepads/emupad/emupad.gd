@@ -15,18 +15,23 @@
 
 extends Polygon2D
 
-export(String, "Stick", "DPad", "Button") var mode
+export(String, "Stick", "DPad", "Button") var emulate
 export(int) var radius = 64
 export(int) var threshold = 0
+export(int) var button_mode = 0
 export(Color) var hi_color = Color(1, 1, 1)
-export(Color) var fg_color = Color(0, 0, 1)
-export(Color) var bg_color = Color(0, 0, 0.5)
+export(Color) var pad_color = Color(0, 0, 1)
+export(Color) var outline_color_dark = Color(0, 0, 1)
+export(Color) var outline_color_light = Color(0.5, 0.5, 1)
+export(Color) var fill_color_dark = Color(0, 0, 0.5)
+export(Color) var fill_color_light = Color(0, 0, 1)
 
 var mWidgetHost = null
 
 var mOutputPorts = {}
-var mTouchpadConfig = null
+var mEmupadConfig = null
 var mOn = false
+var mPressed = false
 var mCentroid = null
 var mIncenter = null
 var mFrameVertices = null
@@ -37,7 +42,8 @@ var mGizmo = {
 }
  
 func _init():
-	pass
+	add_user_signal("pad_pressed")
+	add_user_signal("pad_released")
 
 func _ready():
 	mWidgetHost = get_meta("widget_host_api")
@@ -46,15 +52,33 @@ func _exit_tree():
 	for output_port in mOutputPorts.values():
 		data_router.remove_port(output_port)
 
-func _get_fg_color():
+func get_outline_color():
 	if mOn:
-		return fg_color
+		if mPressed:
+			return pad_color
+		else:
+			return pad_color.linear_interpolate(Color(0, 0, 0), 0.4)
+#			var c = color
+#			c.a = 0.8
+#			return c
+#			return outline_color_dark
 	else:
 		return Color(0.3, 0.3, 0.3)
 
-func _get_bg_color():
+func get_fill_color():
 	if mOn:
-		return bg_color
+		if mPressed:
+			return pad_color.linear_interpolate(Color(0, 0, 0), 0.4)
+#			var c = color
+#			c.a = 0.8
+#			return c
+#			return fill_color_light
+		else:
+			return pad_color.linear_interpolate(Color(0, 0, 0), 0.8)
+#			var c = color
+#			c.a = 0.6
+#			return c
+#			return fill_color_dark
 	else:
 		return Color(0.3, 0.3, 0.3)
 
@@ -107,8 +131,12 @@ func _widget_frame_input(event):
 	if index == mIndex:
 		if touch && !event.pressed:
 			mIndex = -1
-			mOutputPorts["pressed"].put_data(false)
-			mWidgetHost.disable_overlay_draw(self)
+			if emulate != "Button" || button_mode == 0:
+				mPressed = false
+				mOutputPorts["pressed"].put_data(false)
+				update()
+				mWidgetHost.disable_overlay_draw(self)
+				emit_signal("pad_released")
 		else:
 			mGizmo.target = event.pos
 			var vec = mGizmo.center - mGizmo.target
@@ -118,55 +146,61 @@ func _widget_frame_input(event):
 		mIndex = index
 		mGizmo.center = event.pos
 		mGizmo.target = mGizmo.center
-		mOutputPorts["pressed"].put_data(true)
+		if emulate == "Button" && button_mode == 1:
+			mPressed = !mPressed
+		else:
+			mPressed = true
+		mOutputPorts["pressed"].put_data(mPressed)
+		update()
 		mWidgetHost.enable_overlay_draw(self)
+		if mPressed:
+			emit_signal("pad_pressed")
+		else:
+			emit_signal("pad_released")
 	mWidgetHost.update_overlay_draw()
-	if mode == "Stick":
+	if emulate == "Stick":
 		var vec = get_vec()
-		mOutputPorts["x_percent"].put_data(vec.x)
-		mOutputPorts["y_percent"].put_data(vec.y)
-		var pixel_vec = Vector2(0, 0)
-		if is_active():
-			var vec = mGizmo.target - mGizmo.center
-			if vec.length() > threshold:
-				pixel_vec = vec
-		mOutputPorts["x_pixels"].put_data(pixel_vec.x)
-		mOutputPorts["y_pixels"].put_data(pixel_vec.y)	
-	elif mode == "DPad":
+		mOutputPorts["xy"].put_data(vec)
+		mOutputPorts["x"].put_data(vec.x)
+		mOutputPorts["y"].put_data(vec.y)
+#		var pixel_vec = Vector2(0, 0)
+#		if is_active():
+#			var vec = mGizmo.target - mGizmo.center
+#			if vec.length() > threshold:
+#				pixel_vec = vec
+#		mOutputPorts["x_pixels"].put_data(pixel_vec.x)
+#		mOutputPorts["y_pixels"].put_data(pixel_vec.y)	
+	elif emulate == "DPad":
 		var vec = get_vec()
+		mOutputPorts["xy"].put_data(vec)
 		mOutputPorts["x"].put_data(vec.x)
 		mOutputPorts["y"].put_data(vec.y)
 
-
 func _draw():
-	_draw_frame()
-
-func _draw_frame():
-	var vertices = mFrameVertices
-	if mOn:
-		var color = _get_bg_color()
-		color.a = 0.5
-		draw_colored_polygon(vertices, color)
+	var vertices = Vector2Array()
+	vertices.append_array(mFrameVertices)
+	var fill_color = get_fill_color()
+	draw_colored_polygon(vertices, fill_color)
 	vertices.push_back(vertices[0])
 	for i in range(0, vertices.size()-1):
-		draw_line(vertices[i], vertices[i+1], _get_bg_color(), 2)
+		draw_line(vertices[i], vertices[i+1], get_outline_color(), 2)
 
 func _overlay_draw(overlay):
 	if !is_active():
 		return
-	overlay.draw_line(get_pos()+get_center(), mGizmo.center, _get_fg_color(), 4)
+	overlay.draw_line(get_pos()+get_center(), mGizmo.center, get_outline_color(), 4)
 	overlay.draw_circle(mGizmo.center, radius, hi_color)
-	overlay.draw_circle(mGizmo.center, radius-2, _get_fg_color())
-	if mode == "DPad":
+	overlay.draw_circle(mGizmo.center, radius-2, get_outline_color())
+	if emulate == "DPad":
 		var v = Vector2(0, radius).rotated(PI/8)
 		for i in range(0, 8):
 			v = v.rotated(PI/4 * i)
 			overlay.draw_line(mGizmo.center, mGizmo.center+v, hi_color, 2)
 	if threshold > 0:
 		overlay.draw_circle(mGizmo.center, threshold, hi_color)
-		overlay.draw_circle(mGizmo.center, threshold-1, _get_fg_color())
+		overlay.draw_circle(mGizmo.center, threshold-1, get_outline_color())
 	var vec = Vector2(0, 0)
-	if mode == "Stick" || mode == "DPad":
+	if emulate == "Stick" || emulate == "DPad":
 		vec = mGizmo.target - mGizmo.center
 		if vec.length() > radius:
 			vec = vec.normalized() * radius
@@ -196,12 +230,12 @@ func get_vec():
 	var vec = mGizmo.target - mGizmo.center
 	if vec.length() <= threshold:
 		return Vector2(0, 0)
-	if mode == "Stick":
+	if emulate == "Stick":
 		if vec.length() > radius:
 			vec = vec.normalized() * radius
 		vec = vec / radius
 		return vec
-	elif mode == "DPad":
+	elif emulate == "DPad":
 		var ret 
 		var angle = get_vec_angle() + 22.5
 		if angle > 360:
@@ -224,30 +258,31 @@ func get_vec():
 			ret = Vector2(-1, -1)
 		return ret
 
-func load_touchpad_config(touchpad_config):
+func load_emupad_config(emupad_config):
 	for output_port in mOutputPorts.values():
 		data_router.remove_port(output_port)
-	var widget_id = str(get_meta("widget_id"))
 	var port_path_prefix = get_meta("io_ports_path_prefix")
-	mTouchpadConfig = touchpad_config
-	if mTouchpadConfig.mode == "stick":
-		mode = "Stick"
-		radius = mTouchpadConfig.stick_config.radius
-		threshold = mTouchpadConfig.stick_config.threshold
-		mOutputPorts["x_percent"] = data_router.add_output_port(port_path_prefix+"/x_percent")
-		mOutputPorts["y_percent"] = data_router.add_output_port(port_path_prefix+"/y_percent")
-		mOutputPorts["x_pixels"] = data_router.add_output_port(port_path_prefix+"/x_pixels")
-		mOutputPorts["y_pixels"] = data_router.add_output_port(port_path_prefix+"/y_pixels")
-	elif mTouchpadConfig.mode == "dpad":
-		mode = "DPad"
-		radius = mTouchpadConfig.dpad_config.radius
-		threshold = mTouchpadConfig.dpad_config.threshold
+	mEmupadConfig = emupad_config
+	button_mode = 0
+	if mEmupadConfig.emulate == "stick":
+		emulate = "Stick"
+		radius = mEmupadConfig.stick_config.radius
+		threshold = mEmupadConfig.stick_config.threshold
+		mOutputPorts["xy"] = data_router.add_output_port(port_path_prefix+"/xy")
+		mOutputPorts["x"] = data_router.add_output_port(port_path_prefix+"/x")
+		mOutputPorts["y"] = data_router.add_output_port(port_path_prefix+"/y")
+	elif mEmupadConfig.emulate == "dpad":
+		emulate = "DPad"
+		radius = mEmupadConfig.dpad_config.radius
+		threshold = mEmupadConfig.dpad_config.threshold
+		mOutputPorts["xy"] = data_router.add_output_port(port_path_prefix+"/xy")
 		mOutputPorts["x"] = data_router.add_output_port(port_path_prefix+"/x")
 		mOutputPorts["y"] = data_router.add_output_port(port_path_prefix+"/y")
 	else:
-		mode = "Button"
+		emulate = "Button"
 		radius = 16
 		threshold = 0
+		button_mode = mEmupadConfig.button_config.mode
 	mOutputPorts["pressed"] = data_router.add_output_port(port_path_prefix+"/pressed")
 
 func set_polygon(verts):

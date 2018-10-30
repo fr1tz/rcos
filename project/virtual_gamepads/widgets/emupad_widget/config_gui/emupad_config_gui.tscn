@@ -1,13 +1,21 @@
-[gd_scene load_steps=7 format=1]
+[gd_scene load_steps=9 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://virtual_gamepads/widgets/action_widget/config_gui/touchpad_config_gui.gd" type="Script" id=2]
-[ext_resource path="res://virtual_gamepads/widgets/action_widget/config_gui/stick_config_gui.gd" type="Script" id=3]
-[ext_resource path="res://virtual_gamepads/widgets/action_widget/config_gui/dpad_config_gui.gd" type="Script" id=4]
-[ext_resource path="res://rcos/looks/prototype/slider.tres" type="StyleBox" id=5]
-[ext_resource path="res://virtual_gamepads/widgets/action_widget/config_gui/button_config_gui.gd" type="Script" id=6]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/emupad_config_gui.gd" type="Script" id=2]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/stick_config_gui.gd" type="Script" id=3]
+[ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-22.fnt" type="BitmapFont" id=4]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/dpad_config_gui.gd" type="Script" id=5]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/button_config_gui.gd" type="Script" id=6]
+[ext_resource path="res://rcos/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=7]
 
-[node name="touchpad_config_gui" type="Control"]
+[sub_resource type="DynamicFont" id=1]
+
+font/size = 24
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 7 )
+
+[node name="emupad_config_gui" type="Control"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -16,21 +24,22 @@ size_flags/vertical = 2
 theme/theme = ExtResource( 1 )
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 200.0
-margin/bottom = 360.0
+margin/right = 192.0
+margin/bottom = 271.0
 script/script = ExtResource( 2 )
 
 [node name="mode_buttons" type="HButtonArray" parent="."]
 
+anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 160.0
-margin/right = 200.0
-margin/bottom = 200.0
-custom_constants/button_separator = 0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 40.0
+custom_constants/button_separator = 2
 flat = false
 button/count = 3
 button/min_button_size = -1.0
@@ -46,7 +55,7 @@ button/2/tooltip = ""
 button/2/icon = null
 button/selected = 0
 
-[node name="tabs" type="TabContainer" parent="."]
+[node name="tabs" type="MarginContainer" parent="."]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -55,38 +64,39 @@ focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 200.0
+margin/top = 40.0
 margin/right = 0.0
 margin/bottom = 0.0
-tab_align = 1
-tabs_visible = false
+custom_constants/margin_right = 0
+custom_constants/margin_top = 0
+custom_constants/margin_left = 0
+custom_constants/margin_bottom = 0
 
 [node name="stick_config_gui" type="Control" parent="tabs"]
 
 editor/display_folded = true
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 1.0
-margin/top = 1.0
-margin/right = 1.0
-margin/bottom = 1.0
-script/script = ExtResource( 3 )
-
-[node name="radius" type="Control" parent="tabs/stick_config_gui"]
-
-editor/display_folded = true
+visibility/visible = false
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 179.0
-margin/bottom = 79.0
+margin/right = 192.0
+margin/bottom = 231.0
+script/script = ExtResource( 3 )
+
+[node name="radius" type="Control" parent="tabs/stick_config_gui"]
+
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 77.0
 
 [node name="header_label" type="Label" parent="tabs/stick_config_gui/radius"]
 
@@ -94,9 +104,9 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 9.0
+margin/left = 5.0
 margin/top = 9.0
-margin/right = 51.0
+margin/right = 47.0
 margin/bottom = 23.0
 text = "Radius"
 percent_visible = 1.0
@@ -105,13 +115,14 @@ max_lines_visible = -1
 
 [node name="slider" type="HSlider" parent="tabs/stick_config_gui/radius"]
 
+anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 9.0
 margin/top = 30.0
-margin/right = 159.0
+margin/right = 10.0
 margin/bottom = 70.0
 range/min = 10.0
 range/max = 100.0
@@ -130,11 +141,13 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 169.0
+margin/left = 129.0
 margin/top = 30.0
-margin/right = 199.0
+margin/right = 179.0
 margin/bottom = 70.0
+custom_fonts/font = ExtResource( 4 )
 text = "0"
+align = 2
 valign = 1
 percent_visible = 1.0
 lines_skipped = 0
@@ -142,14 +155,14 @@ max_lines_visible = -1
 
 [node name="threshold" type="Control" parent="tabs/stick_config_gui"]
 
-editor/display_folded = true
+anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 70.0
-margin/right = 179.0
+margin/right = 0.0
 margin/bottom = 149.0
 
 [node name="header_label" type="Label" parent="tabs/stick_config_gui/threshold"]
@@ -158,9 +171,9 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 9.0
+margin/left = 5.0
 margin/top = 9.0
-margin/right = 57.0
+margin/right = 53.0
 margin/bottom = 23.0
 text = "Threshold"
 percent_visible = 1.0
@@ -169,13 +182,14 @@ max_lines_visible = -1
 
 [node name="slider" type="HSlider" parent="tabs/stick_config_gui/threshold"]
 
+anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 9.0
 margin/top = 30.0
-margin/right = 159.0
+margin/right = 10.0
 margin/bottom = 70.0
 range/min = 0.0
 range/max = 90.0
@@ -194,11 +208,13 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 169.0
+margin/left = 135.0
 margin/top = 30.0
-margin/right = 199.0
+margin/right = 179.0
 margin/bottom = 70.0
+custom_fonts/font = ExtResource( 4 )
 text = "0"
+align = 2
 valign = 1
 percent_visible = 1.0
 lines_skipped = 0
@@ -208,27 +224,26 @@ max_lines_visible = -1
 
 editor/display_folded = true
 visibility/visible = false
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 4.0
-margin/top = 8.0
-margin/right = 4.0
-margin/bottom = 4.0
-script/script = ExtResource( 4 )
-
-[node name="radius" type="Control" parent="tabs/dpad_config_gui"]
-
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 179.0
+margin/right = 192.0
+margin/bottom = 231.0
+script/script = ExtResource( 5 )
+
+[node name="radius" type="Control" parent="tabs/dpad_config_gui"]
+
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
 margin/bottom = 79.0
 
 [node name="header_label" type="Label" parent="tabs/dpad_config_gui/radius"]
@@ -237,9 +252,9 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 9.0
+margin/left = 5.0
 margin/top = 9.0
-margin/right = 51.0
+margin/right = 47.0
 margin/bottom = 23.0
 text = "Radius"
 percent_visible = 1.0
@@ -248,15 +263,15 @@ max_lines_visible = -1
 
 [node name="slider" type="HSlider" parent="tabs/dpad_config_gui/radius"]
 
+anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 9.0
 margin/top = 30.0
-margin/right = 159.0
+margin/right = 10.0
 margin/bottom = 70.0
-custom_styles/slider = ExtResource( 5 )
 range/min = 10.0
 range/max = 100.0
 range/step = 1.0
@@ -274,11 +289,13 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 169.0
+margin/left = 121.0
 margin/top = 30.0
-margin/right = 199.0
+margin/right = 179.0
 margin/bottom = 70.0
+custom_fonts/font = ExtResource( 4 )
 text = "0"
+align = 2
 valign = 1
 percent_visible = 1.0
 lines_skipped = 0
@@ -286,13 +303,14 @@ max_lines_visible = -1
 
 [node name="threshold" type="Control" parent="tabs/dpad_config_gui"]
 
+anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 70.0
-margin/right = 179.0
+margin/right = 0.0
 margin/bottom = 149.0
 
 [node name="header_label" type="Label" parent="tabs/dpad_config_gui/threshold"]
@@ -301,9 +319,9 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 9.0
+margin/left = 5.0
 margin/top = 9.0
-margin/right = 51.0
+margin/right = 47.0
 margin/bottom = 23.0
 text = "Threshold"
 percent_visible = 1.0
@@ -312,15 +330,15 @@ max_lines_visible = -1
 
 [node name="slider" type="HSlider" parent="tabs/dpad_config_gui/threshold"]
 
+anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 9.0
 margin/top = 30.0
-margin/right = 159.0
+margin/right = 10.0
 margin/bottom = 70.0
-custom_styles/slider = ExtResource( 5 )
 range/min = 0.0
 range/max = 90.0
 range/step = 1.0
@@ -338,11 +356,13 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 169.0
+margin/left = 118.0
 margin/top = 30.0
-margin/right = 199.0
+margin/right = 179.0
 margin/bottom = 70.0
+custom_fonts/font = ExtResource( 4 )
 text = "0"
+align = 2
 valign = 1
 percent_visible = 1.0
 lines_skipped = 0
@@ -350,29 +370,28 @@ max_lines_visible = -1
 
 [node name="button_config_gui" type="Control" parent="tabs"]
 
-editor/display_folded = true
-visibility/visible = false
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 4.0
-margin/top = 8.0
-margin/right = 4.0
-margin/bottom = 4.0
-script/script = ExtResource( 6 )
-
-[node name="button_num" type="Control" parent="tabs/button_config_gui"]
-
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 179.0
+margin/right = 192.0
+margin/bottom = 231.0
+script/script = ExtResource( 6 )
+
+[node name="button_num" type="Control" parent="tabs/button_config_gui"]
+
+editor/display_folded = true
+visibility/visible = false
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
 margin/bottom = 79.0
 
 [node name="header_label" type="Label" parent="tabs/button_config_gui/button_num"]
@@ -381,26 +400,26 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 9.0
+margin/left = 5.0
 margin/top = 9.0
-margin/right = 51.0
+margin/right = 47.0
 margin/bottom = 23.0
-text = "Button #"
+text = "Button Number"
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
 [node name="slider" type="HSlider" parent="tabs/button_config_gui/button_num"]
 
+anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 9.0
+margin/left = 10.0
 margin/top = 30.0
-margin/right = 159.0
+margin/right = 10.0
 margin/bottom = 70.0
-custom_styles/slider = ExtResource( 5 )
 range/min = 1.0
 range/max = 128.0
 range/step = 1.0
@@ -418,14 +437,100 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 169.0
+margin/left = 109.0
 margin/top = 30.0
-margin/right = 199.0
+margin/right = 175.0
 margin/bottom = 70.0
-text = "0"
+custom_fonts/font = ExtResource( 4 )
+text = "1"
+align = 2
 valign = 1
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
+
+[node name="dec_button" type="Button" parent="tabs/button_config_gui/button_num"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 100.0
+margin/top = 75.0
+margin/right = 140.0
+margin/bottom = 115.0
+custom_fonts/font = SubResource( 1 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
+
+[node name="inc_button" type="Button" parent="tabs/button_config_gui/button_num"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 142.0
+margin/top = 75.0
+margin/right = 182.0
+margin/bottom = 115.0
+custom_fonts/font = SubResource( 1 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
+
+[node name="mode" type="Control" parent="tabs/button_config_gui"]
+
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 126.0
+
+[node name="header_label" type="Label" parent="tabs/button_config_gui/mode"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 5.0
+margin/top = 9.0
+margin/right = 47.0
+margin/bottom = 23.0
+text = "Mode"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="mode_buttons" type="VButtonArray" parent="tabs/button_config_gui/mode"]
+
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 10.0
+margin/top = 30.0
+margin/right = 10.0
+margin/bottom = 155.0
+flat = false
+button/count = 2
+button/min_button_size = 40.0
+button/align = -353703190
+button/0/text = "Default"
+button/0/tooltip = ""
+button/0/icon = null
+button/1/text = "Toggle"
+button/1/tooltip = ""
+button/1/icon = null
+button/selected = 0
 
 

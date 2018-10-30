@@ -15,8 +15,6 @@
 
 extends Control
 
-var mStickConfig = null
-
 onready var mRadiusSlider = get_node("radius/slider")
 onready var mRadiusValueLabel = get_node("radius/value_label")
 onready var mThresholdSlider = get_node("threshold/slider")
@@ -28,15 +26,20 @@ func _ready():
 
 func _radius_changed(new_value):
 	mRadiusValueLabel.set_text(str(new_value))
-	mStickConfig["radius"] = new_value
-	get_meta("widget_root_node").get_main_gui().reload_widget_config()
+	get_meta("widget_root_node").config_gui.set_dirty()
 
 func _threshold_changed(new_value):
 	mThresholdValueLabel.set_text(str(new_value))
-	mStickConfig["threshold"] = new_value
-	get_meta("widget_root_node").get_main_gui().reload_widget_config()
+	get_meta("widget_root_node").config_gui.set_dirty()
 
 func load_stick_config(stick_config):
-	mStickConfig = stick_config
-	mRadiusSlider.set_value(mStickConfig.radius)
-	mThresholdSlider.set_value(mStickConfig.threshold)
+	mRadiusSlider.set_value(stick_config.radius)
+	mThresholdSlider.set_value(stick_config.threshold)
+	return true
+
+func create_stick_config():
+	var stick_config = {
+		"radius": mRadiusSlider.get_value(),
+		"threshold": mThresholdSlider.get_value()
+	}
+	return stick_config
