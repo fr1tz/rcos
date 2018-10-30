@@ -122,7 +122,7 @@ func create_widget_container():
 	container.connect("item_rect_changed", self, "_update_widget_margins")
 	return container
 
-func create_widget(widget_factory_task_id, pos, config_preset = ""):
+func create_widget(widget_factory_task_id, pos, config_string = ""):
 	var properties = rcos.get_task_properties(widget_factory_task_id)
 	if !properties.has("product_id") || !properties.has("product_name"):
 		return
@@ -130,6 +130,8 @@ func create_widget(widget_factory_task_id, pos, config_preset = ""):
 	var widget = properties.create_widget_func.call_func()
 	if widget == null:
 		return
+	if config_string == null:
+		config_string = ""
 	var widget_name = widget.get_name()
 	var i = 1
 	while mWidgetContainers.has_node(widget_name+"."+str(i)+"_container"):
@@ -137,7 +139,7 @@ func create_widget(widget_factory_task_id, pos, config_preset = ""):
 	widget_name += "."+str(i)
 	var widget_container = create_widget_container()
 	widget_container.init(mWidgetHostApi, widget_name, properties.product_id,
-		widget_container.ORIENTATION_N, config_preset)
+		widget_container.ORIENTATION_N, config_string)
 	_add_widget_to_container(widget, widget_container)
 	widget_container.set_pos(pos)
 	return widget_container

@@ -87,7 +87,7 @@ func add_widget(widget, io_ports_path_prefix):
 	mWidget = widget
 	var config_canvas = null
 	var config_canvas_size = Vector2(40, 40)
-	var main_canvas_placeholder = mWidget.get_node("main_canvas")
+	#var main_canvas_placeholder = mWidget.get_node("main_canvas")
 	#main_canvas_size.x = main_canvas_placeholder.get_margin(MARGIN_RIGHT)
 	#main_canvas_size.y = main_canvas_placeholder.get_margin(MARGIN_BOTTOM)
 	#main_canvas_min_size = main_canvas_placeholder.get_custom_minimum_size()
