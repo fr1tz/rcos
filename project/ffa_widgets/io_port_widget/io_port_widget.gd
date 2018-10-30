@@ -72,7 +72,6 @@ func configure(port_type, port_path, icon_path):
 	mPortPath = port_path
 	mIconPath = icon_path
 	mPort = null
-	get_node("icon").set_texture(load(icon_path))
 	get_node("color_frame").set_frame_color(Color(1,1,1))
 	if rcos.has_node("services/host_info_service"):
 		var hostname = str(port_path).split("/")[0]
@@ -88,7 +87,12 @@ func configure(port_type, port_path, icon_path):
 		mPort = data_router.get_output_port(mPortPath)
 	get_node("missing_port_overlay").set_hidden(mPort != null)
 	if mPort == null:
+		get_node("icon").set_texture(load(icon_path))
 		data_router.request_port_creation_notice(mPortType, mPortPath, funcref(self, "_port_creation_notice"))
+	else:
+		var icon = data_router.get_node_icon(mPort, 32)
+		if icon != null:
+			get_node("icon").set_texture(icon)
 
 func _port_creation_notice(port):
 	call_deferred("configure", mPortType, mPortPath, mIconPath)
