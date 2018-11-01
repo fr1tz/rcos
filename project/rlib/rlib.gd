@@ -48,6 +48,9 @@ func tl(string):
 	# *** Return remains of string starting with 2nd word
 	return _tl(string)
 
+func extract_numbers(string):
+	return _extract_numbers(string)
+
 func base64_decode(input_string):
 	return _base64_decode(input_string)
 
@@ -232,6 +235,45 @@ func _tl(string):
 		elif i == len-1:
 			return ""
 	return ""
+
+func _extract_numbers(string):
+	var NUMBER_CHARS = "1234567890."
+	var numbers = []
+	var nbegin = -1
+	var nend = -1
+	var nfloat = false
+	var len = string.length()
+	for i in range(0, len):
+		var c = string[i]
+		var nchars = NUMBER_CHARS
+		if nbegin == -1:
+			nchars += "+-"
+		if nchars.find(c) >= 0:
+			if c == ".":
+				nfloat = true
+			if nbegin == -1:
+				nbegin = i
+			else:
+				nend = i
+		elif nbegin != -1 && nend != -1:
+			var nstring = string.substr(nbegin, nend-nbegin+1)
+			if nfloat:
+				numbers.push_back(float(nstring))
+			else:
+				numbers.push_back(int(nstring))
+			if c == "+" || c == "-":
+				nbegin = i
+			else:
+				nbegin = -1
+			nend = -1
+			nfloat = false
+	if nbegin != -1 && nend != -1:
+		var nstring = string.substr(nbegin, nend-nbegin+1)
+		if nfloat:
+			numbers.push_back(float(nstring))
+		else:
+			numbers.push_back(int(nstring))
+	return numbers
 
 func _find_files(dir_path, match_expr):
 	if !dir_path.ends_with("/"):
