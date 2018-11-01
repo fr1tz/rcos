@@ -62,6 +62,12 @@ func get_input_fpos(index):
 func get_input_down(index):
 	return mInputs[index].down
 
+func copy_inputs(from_canvas):
+	for i in range(0, NUM_INPUTS):
+		mInputs[i].index = from_canvas.mInputs[i].index
+		mInputs[i].fpos = from_canvas.mInputs[i].fpos
+		mInputs[i].down = from_canvas.mInputs[i].down
+
 func update_input(index, fpos, down):
 	var input = mInputs[index]
 	var prev_fpos = input.fpos

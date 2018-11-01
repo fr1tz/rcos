@@ -86,6 +86,7 @@ func show_canvas(canvas, region = null):
 	#prints("window: show_canvas(): ", canvas, region)
 	if canvas == mCanvas && region == mCanvasRegion:
 		return
+	var old_canvas = mCanvas
 	var was_displayed_list = {}
 	for canvas in get_tree().get_nodes_in_group("canvas_group"):
 		was_displayed_list[canvas] = canvas.is_displayed()
@@ -97,6 +98,8 @@ func show_canvas(canvas, region = null):
 		rcos.disable_canvas_input(self)
 	else:
 		mCanvasRegion = region
+		if old_canvas != null:
+			mCanvas.copy_inputs(old_canvas)
 		mCanvas.add_display(self)
 		rcos.enable_canvas_input(self)
 	update()
