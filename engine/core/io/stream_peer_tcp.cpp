@@ -54,6 +54,7 @@ void StreamPeerTCP::_bind_methods() {
 	ObjectTypeDB::bind_method(_MD("get_connected_host"), &StreamPeerTCP::get_connected_host);
 	ObjectTypeDB::bind_method(_MD("get_connected_port"), &StreamPeerTCP::get_connected_port);
 	ObjectTypeDB::bind_method(_MD("disconnect"), &StreamPeerTCP::disconnect);
+    ObjectTypeDB::bind_method(_MD("set_nodelay"), &StreamPeerTCP::set_nodelay);
 
 	BIND_CONSTANT(STATUS_NONE);
 	BIND_CONSTANT(STATUS_CONNECTING);
