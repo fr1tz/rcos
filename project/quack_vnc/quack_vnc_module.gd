@@ -36,8 +36,6 @@ func _ready():
 	mTaskId = rcos.add_task(task_properties)
 	mConnection = get_node("connection")
 	mConnection.connect("connection_state_changed", self, "_connection_state_changed")
-	mConnection.connect("connection_established", self, "_connection_established")
-	mConnection.connect("connection_error", self, "_connection_error")
 	gui = get_node("canvas/rfb_client_gui")
 	gui.initialize(self, mConnection)
 
@@ -64,18 +62,12 @@ func _connection_state_changed(new_state):
 			"icon_spin_speed": 5
 		}
 		rcos.change_task(mTaskId, task_properties)
-	elif new_state == mConnection.CS_RECEIVE_SERVER_MESSAGES:
+	elif new_state == mConnection.CS_SERVER_INIT_MSG_RECEIVED:
 		var task_properties = {
 			"icon": load("res://quack_vnc/graphics/icon.png"),
 			"icon_spin_speed": 0
 		}
 		rcos.change_task(mTaskId, task_properties)
-
-func _connection_established():
-	pass
-
-func _connection_error(status):
-	pass
 
 func connect_to_server(address, port):
 	rcos.log_notice(self, "Opening connection to "+address+":"+str(port))

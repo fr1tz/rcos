@@ -54,15 +54,16 @@ const CS_WAITING_FOR_PASSWORD = 4
 const CS_RECEIVE_VNC_AUTH_CHALLENGE = 5
 const CS_RECEIVE_SECURITY_RESULT_MSG = 6
 const CS_RECEIVE_SERVER_INIT_MSG = 7
-const CS_RECEIVE_SERVER_MESSAGES = 8
-const CS_RECEIVE_FRAMEBUFFER_RECT = 9
+const CS_SERVER_INIT_MSG_RECEIVED = 8
+const CS_RECEIVE_SERVER_MESSAGES = 9
+const CS_RECEIVE_FRAMEBUFFER_RECT = 10
 
 const PADDING_BYTE = 0
 
 onready var mIOPorts = get_node("io_ports")
 onready var mReadDataTimer = get_node("read_data_timer")
 onready var mSendDataTimer = get_node("send_data_timer")
-onready var mUpdatePointerTimer = get_node("update_pointer_timer")
+onready var mMovePointerTimer = get_node("move_pointer_timer")
 
 var mScancode2Keysym = load("res://quack_vnc/scancode2keysym.gd").new()
 var mError = ""
@@ -105,8 +106,6 @@ var mPointer = {
 
 func _init():
 	add_user_signal("connection_state_changed")
-	add_user_signal("connection_established")
-	add_user_signal("connection_error")
 	add_user_signal("server_cut_text_msg_received")
 	add_user_signal("bell_msg_received")
 	add_user_signal("desktop_fb_changed")
@@ -126,7 +125,7 @@ func _ready():
 	mIOPorts.initialize(self)
 	mReadDataTimer.connect("timeout", self, "_read_data")
 	mSendDataTimer.connect("timeout", self, "_send_data")
-	mUpdatePointerTimer.connect("timeout", self, "_update_pointer")
+	mMovePointerTimer.connect("timeout", self, "_move_pointer")
 
 func _decode_u16(b1, b2):
 	var value = b2
@@ -184,13 +183,20 @@ func _read_data():
 				if _process_receive_buffer() == 0:
 					break
 	else:
-		_error(str(status))
-		emit_signal("connection_error", status)
+		mReadDataTimer.stop()
+		mSendDataTimer.stop()
+		if status == StreamPeerTCP.STATUS_NONE:
+			_error("Disconnected")
+		else:
+			_error("Connection Error")
+		_set_connection_state(CS_ERROR)
 
 func _send_data():
 	if mSendBuffer.size() == 0:
 		return
+	mStream.set_nodelay(true)
 	var r = mStream.put_partial_data(mSendBuffer)
+	prints(mPointer.fpos_x, mPointer.fpos_y, mSendBuffer.size())
 	var error = r[0]
 	var nbytes = r[1]
 	if error:
@@ -451,12 +457,12 @@ func _process_server_init_msg(data):
 	rcos.log_debug(self, ["height:", mDesktop.size.y])
 	rcos.log_debug(self, ["natural pixel format:", mNaturalPixelFormat])
 	rcos.log_debug(self, ["new pixel format:", mPixelFormat])
-	_set_connection_state(CS_RECEIVE_SERVER_MESSAGES)
-	emit_signal("connection_established")
-	mUpdatePointerTimer.start()
+	mMovePointerTimer.start()
 	_set_encodings()
 	_change_pixel_format(mPixelFormat)
 	_send_framebuffer_update_request(Vector2(0, 0), mDesktop.size, 0)
+	_set_connection_state(CS_SERVER_INIT_MSG_RECEIVED)
+	_set_connection_state(CS_RECEIVE_SERVER_MESSAGES)
 	return msg_length
 
 func _process_server_msg(data):
@@ -597,16 +603,31 @@ func _send_framebuffer_update_request(pos, size, incremental):
 	msg.append_array(_encode_u16(size.y))
 	send_data(msg)
 
-func _update_pointer():
+func _move_pointer():
 	mPointer.fpos_x += mPointer.speed_x * mPointer.speed_multiplier
 	mPointer.fpos_y += mPointer.speed_y * mPointer.speed_multiplier
 	mPointer.fpos_x = clamp(mPointer.fpos_x, 0, mDesktop.size.x)
 	mPointer.fpos_y = clamp(mPointer.fpos_y, 0, mDesktop.size.y)
+	_update_pointer()
+
+func _update_pointer():
 	if int(mPointer.fpos_x) != mPointer.ipos_x \
 	|| int(mPointer.fpos_y) != mPointer.ipos_y:
 		mPointer.dirty = true
 	if mPointer.dirty:
-		send_pointer()
+		_send_pointer_event()
+
+func _send_pointer_event():
+	rcos.log_debug(self, ["sending pointer event", mPointer.fpos_x, mPointer.fpos_y, mPointer.button_mask])
+	var pointer_event_msg = RawArray()
+	pointer_event_msg.append(MSG_TYPE_POINTER_EVENT)
+	pointer_event_msg.append(mPointer.button_mask)
+	pointer_event_msg.append_array(_encode_u16(mPointer.fpos_x))
+	pointer_event_msg.append_array(_encode_u16(mPointer.fpos_y))
+	send_data(pointer_event_msg)
+	mPointer.ipos_x = int(mPointer.fpos_x)
+	mPointer.ipos_y = int(mPointer.fpos_y)
+	mPointer.dirty = false
 
 func set_password(password):
 	mPassword = password
@@ -665,27 +686,16 @@ func send_data(data):
 	mSendBuffer.append_array(data)
 	_send_data()
 
-func send_clipboard(text):
+func send_clipboard(string):
+	var text = string.to_ascii()
 	var client_cut_text_msg = RawArray()
 	client_cut_text_msg.append(MSG_TYPE_CLIENT_CUT_TEXT)
 	client_cut_text_msg.append(PADDING_BYTE)
 	client_cut_text_msg.append(PADDING_BYTE)
 	client_cut_text_msg.append(PADDING_BYTE)
-	client_cut_text_msg.append_array(_encode_u32(text.length()))
-	client_cut_text_msg.append_array(text.to_ascii())
+	client_cut_text_msg.append_array(_encode_u32(text.size()))
+	client_cut_text_msg.append_array(text)
 	send_data(client_cut_text_msg)
-
-func send_pointer():
-	rcos.log_debug(self, ["sending pointer event", mPointer.fpos_x, mPointer.fpos_y, mPointer.button_mask])
-	var pointer_event_msg = RawArray()
-	pointer_event_msg.append(MSG_TYPE_POINTER_EVENT)
-	pointer_event_msg.append(mPointer.button_mask)
-	pointer_event_msg.append_array(_encode_u16(mPointer.fpos_x))
-	pointer_event_msg.append_array(_encode_u16(mPointer.fpos_y))
-	send_data(pointer_event_msg)
-	mPointer.ipos_x = int(mPointer.fpos_x)
-	mPointer.ipos_y = int(mPointer.fpos_y)
-	mPointer.dirty = false
 
 func set_key_pressed(keysym, pressed = true):
 	var key_event_msg = RawArray()
@@ -700,6 +710,8 @@ func send_char(c):
 	if c == null || c.length() != 1:
 		return
 	var keysym = c.to_ascii()[0]
+	if keysym == 10: 
+		keysym = mScancode2Keysym.x11keysyms.XK_Return
 	var key_event_msg = RawArray()
 	key_event_msg.append(MSG_TYPE_KEY_EVENT)
 	key_event_msg.append(1)
@@ -714,7 +726,7 @@ func send_text(text):
 	for c in text:
 		send_char(c)
 
-func set_pointer_pos_x(val):
+func set_pointer_pos_x(val, move = false):
 	if typeof(val) == TYPE_INT:
 		val = val
 	elif typeof(val) == TYPE_REAL:
@@ -728,9 +740,13 @@ func set_pointer_pos_x(val):
 			val = int(val)
 	else:
 		val = 0
-	mPointer.fpos_x = clamp(val, 0, mDesktop.size.x)
+	if move:
+		mPointer.fpos_x += clamp(val, 0, mDesktop.size.x)
+	else:
+		mPointer.fpos_x = clamp(val, 0, mDesktop.size.x)
+	_update_pointer()
 
-func set_pointer_pos_y(val):
+func set_pointer_pos_y(val, move = false):
 	if typeof(val) == TYPE_INT:
 		val = val
 	elif typeof(val) == TYPE_REAL:
@@ -744,7 +760,11 @@ func set_pointer_pos_y(val):
 			val = int(val)
 	else:
 		val = 0
-	mPointer.fpos_y = clamp(val, 0, mDesktop.size.y)
+	if move:
+		mPointer.fpos_y += clamp(val, 0, mDesktop.size.y)
+	else:
+		mPointer.fpos_y = clamp(val, 0, mDesktop.size.y)
+	_update_pointer()
 
 func set_pointer_speed_x(val):
 	if val == null:

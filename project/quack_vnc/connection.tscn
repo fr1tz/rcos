@@ -23,10 +23,10 @@ wait_time = 0.05
 one_shot = false
 autostart = false
 
-[node name="update_pointer_timer" type="Timer" parent="."]
+[node name="move_pointer_timer" type="Timer" parent="."]
 
 process_mode = 1
-wait_time = 0.1
+wait_time = 0.02
 one_shot = false
 autostart = false
 

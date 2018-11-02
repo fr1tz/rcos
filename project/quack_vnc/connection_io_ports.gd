@@ -24,6 +24,9 @@ enum PortClass {
 	PTR_POS,
 	PTR_POS_X,
 	PTR_POS_Y,
+	PTR_POS_DELTA,
+	PTR_POS_X_DELTA,
+	PTR_POS_Y_DELTA,
 	PTR_SPEED,
 	PTR_SPEED_X,
 	PTR_SPEED_Y,
@@ -146,6 +149,18 @@ func _add_input_ports(prefix):
 		"port_class": PTR_POS_Y,
 		"data_type": "number"
 	}
+	mInputPortsMeta["pointer/pos/dxy"] = {
+		"port_class": PTR_POS_DELTA,
+		"data_type": "vec2"
+	}
+	mInputPortsMeta["pointer/pos/dx"] = {
+		"port_class": PTR_POS_X_DELTA,
+		"data_type": "number"
+	}
+	mInputPortsMeta["pointer/pos/dy"] = {
+		"port_class": PTR_POS_Y_DELTA,
+		"data_type": "number"
+	}
 	mInputPortsMeta["pointer/speed/xy"] = {
 		"port_class": PTR_SPEED,
 		"data_type": "vec2"
@@ -193,22 +208,22 @@ func _input_port_data_changed(old_data, new_data, port):
 		if new_data != null:
 			var keysym = int(new_data)
 			mConnection.set_key_pressed(keysym, false)
-	elif port_class == PTR_POS:
+	elif port_class == PTR_POS || port_class == PTR_POS_DELTA:
 		var x = 0
 		var y = 0
 		if typeof(new_data) == TYPE_VECTOR2 || typeof(new_data) == TYPE_VECTOR3:
 			x = new_data.x
 			y = new_data.y
 		elif typeof(new_data) == TYPE_STRING:
-			var words = new_data.split(" ")
-			if words.size() > 0: x = words[0]
-			if words.size() > 1: y = words[1]
-		mConnection.set_pointer_pos_x(x)
-		mConnection.set_pointer_pos_y(y)
-	elif port_class == PTR_POS_X:
-		mConnection.set_pointer_pos_x(new_data)
-	elif port_class == PTR_POS_Y:
-		mConnection.set_pointer_pos_y(new_data)
+			var numbers = rlib.extract_numbers(new_data)
+			if numbers.size() >= 1: x = numbers[0]
+			if numbers.size() >= 2: y = numbers[1]
+		mConnection.set_pointer_pos_x(x, port_class == PTR_POS_DELTA)
+		mConnection.set_pointer_pos_y(y, port_class == PTR_POS_DELTA)
+	elif port_class == PTR_POS_X || port_class == PTR_POS_X_DELTA:
+		mConnection.set_pointer_pos_x(new_data, port_class == PTR_POS_X_DELTA)
+	elif port_class == PTR_POS_Y || port_class == PTR_POS_Y_DELTA:
+		mConnection.set_pointer_pos_y(new_data, port_class == PTR_POS_Y_DELTA)
 	elif port_class == PTR_SPEED:
 		var x = 0
 		var y = 0
@@ -216,9 +231,9 @@ func _input_port_data_changed(old_data, new_data, port):
 			x = new_data.x
 			y = new_data.y
 		elif typeof(new_data) == TYPE_STRING:
-			var words = new_data.split(" ", false)
-			if words.size() > 0: x = words[0]
-			if words.size() > 1: y = words[1]
+			var numbers = rlib.extract_numbers(new_data)
+			if numbers.size() >= 1: x = numbers[0]
+			if numbers.size() >= 2: y = numbers[1]
 		mConnection.set_pointer_speed_x(x)
 		mConnection.set_pointer_speed_y(y)
 	elif port_class == PTR_SPEED_X:
@@ -270,22 +285,21 @@ func _cursor_fb_changed(fb):
 func _fb_image_output_port_data_access(port):
 	_update_fb_image_output_port()
 
-func _connection_established():
-	_add_io_ports()
-	var fb_size = mConnection.get_desktop_size()
-	mOutputPortsMeta["framebuffer/width"].port.put_data(fb_size.x)
-	mOutputPortsMeta["framebuffer/height"].port.put_data(fb_size.y)
-	mOutputPortsMeta["framebuffer/size"].port.put_data(fb_size)
-	var port = mOutputPortsMeta["framebuffer/image"].port
-	port.connect("data_access", self, "_fb_image_output_port_data_access", [port])
-
-func _connection_error(status):
-	_remove_io_ports()
+func _connection_state_changed(new_state):
+	if new_state == mConnection.CS_ERROR:
+		_remove_io_ports()
+	elif new_state == mConnection.CS_SERVER_INIT_MSG_RECEIVED:
+		_add_io_ports()
+		var fb_size = mConnection.get_desktop_size()
+		mOutputPortsMeta["framebuffer/width"].port.put_data(fb_size.x)
+		mOutputPortsMeta["framebuffer/height"].port.put_data(fb_size.y)
+		mOutputPortsMeta["framebuffer/size"].port.put_data(fb_size)
+		var port = mOutputPortsMeta["framebuffer/image"].port
+		port.connect("data_access", self, "_fb_image_output_port_data_access", [port])
 
 func initialize(connection):
 	mConnection = connection
-	mConnection.connect("connection_established", self, "_connection_established")
-	mConnection.connect("connection_error", self, "_connection_error")
+	mConnection.connect("connection_state_changed", self, "_connection_state_changed")
 	mConnection.connect("bell_msg_received", self, "_bell_msg_received")
 	mConnection.connect("server_cut_text_msg_received", self, "_server_cut_text_msg_received")
 	mConnection.connect("desktop_fb_changed", self, "_desktop_fb_changed")
