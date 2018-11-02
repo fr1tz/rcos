@@ -139,26 +139,74 @@ func _add_input_ports(prefix):
 	}
 	mInputPortsMeta["pointer/pos/xy"] = {
 		"port_class": PTR_POS,
+		"percent": false,
+		"move": false,
 		"data_type": "vec2"
 	}
 	mInputPortsMeta["pointer/pos/x"] = {
 		"port_class": PTR_POS_X,
+		"percent": false,
+		"move": false,
 		"data_type": "number"
 	}
 	mInputPortsMeta["pointer/pos/y"] = {
 		"port_class": PTR_POS_Y,
+		"percent": false,
+		"move": false,
 		"data_type": "number"
 	}
-	mInputPortsMeta["pointer/pos/dxy"] = {
-		"port_class": PTR_POS_DELTA,
+	mInputPortsMeta["pointer/pos/xy%"] = {
+		"port_class": PTR_POS,
+		"percent": true,
+		"move": false,
 		"data_type": "vec2"
 	}
-	mInputPortsMeta["pointer/pos/dx"] = {
-		"port_class": PTR_POS_X_DELTA,
+	mInputPortsMeta["pointer/pos/x%"] = {
+		"port_class": PTR_POS_X,
+		"percent": true,
+		"move": false,
 		"data_type": "number"
 	}
-	mInputPortsMeta["pointer/pos/dy"] = {
-		"port_class": PTR_POS_Y_DELTA,
+	mInputPortsMeta["pointer/pos/y%"] = {
+		"port_class": PTR_POS_Y,
+		"percent": true,
+		"move": false,
+		"data_type": "number"
+	}
+	mInputPortsMeta["pointer/move/xy"] = {
+		"port_class": PTR_POS,
+		"percent": false,
+		"move": true,
+		"data_type": "vec2"
+	}
+	mInputPortsMeta["pointer/move/x"] = {
+		"port_class": PTR_POS_X,
+		"percent": false,
+		"move": true,
+		"data_type": "number"
+	}
+	mInputPortsMeta["pointer/move/y"] = {
+		"port_class": PTR_POS_Y,
+		"percent": false,
+		"move": true,
+		"data_type": "number"
+	}
+	mInputPortsMeta["pointer/move/xy%"] = {
+		"port_class": PTR_POS,
+		"percent": true,
+		"move": true,
+		"data_type": "vec2"
+	}
+	mInputPortsMeta["pointer/move/x%"] = {
+		"port_class": PTR_POS_X,
+		"percent": true,
+		"move": true,
+		"data_type": "number"
+	}
+	mInputPortsMeta["pointer/move/y%"] = {
+		"port_class": PTR_POS_Y,
+		"percent": true,
+		"move": true,
 		"data_type": "number"
 	}
 	mInputPortsMeta["pointer/speed/xy"] = {
@@ -208,7 +256,7 @@ func _input_port_data_changed(old_data, new_data, port):
 		if new_data != null:
 			var keysym = int(new_data)
 			mConnection.set_key_pressed(keysym, false)
-	elif port_class == PTR_POS || port_class == PTR_POS_DELTA:
+	elif port_class == PTR_POS:
 		var x = 0
 		var y = 0
 		if typeof(new_data) == TYPE_VECTOR2 || typeof(new_data) == TYPE_VECTOR3:
@@ -218,12 +266,18 @@ func _input_port_data_changed(old_data, new_data, port):
 			var numbers = rlib.extract_numbers(new_data)
 			if numbers.size() >= 1: x = numbers[0]
 			if numbers.size() >= 2: y = numbers[1]
-		mConnection.set_pointer_pos_x(x, port_class == PTR_POS_DELTA)
-		mConnection.set_pointer_pos_y(y, port_class == PTR_POS_DELTA)
-	elif port_class == PTR_POS_X || port_class == PTR_POS_X_DELTA:
-		mConnection.set_pointer_pos_x(new_data, port_class == PTR_POS_X_DELTA)
-	elif port_class == PTR_POS_Y || port_class == PTR_POS_Y_DELTA:
-		mConnection.set_pointer_pos_y(new_data, port_class == PTR_POS_Y_DELTA)
+		var percent = port.get_meta("percent")
+		var move = port.get_meta("move")
+		mConnection.set_pointer_pos_x(x, percent, move)
+		mConnection.set_pointer_pos_y(y, percent, move)
+	elif port_class == PTR_POS_X:
+		var percent = port.get_meta("percent")
+		var move = port.get_meta("move")
+		mConnection.set_pointer_pos_x(new_data, percent, move)
+	elif port_class == PTR_POS_Y:
+		var percent = port.get_meta("percent")
+		var move = port.get_meta("move")
+		mConnection.set_pointer_pos_y(new_data, percent, move)
 	elif port_class == PTR_SPEED:
 		var x = 0
 		var y = 0

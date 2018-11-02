@@ -196,7 +196,6 @@ func _send_data():
 		return
 	mStream.set_nodelay(true)
 	var r = mStream.put_partial_data(mSendBuffer)
-	prints(mPointer.fpos_x, mPointer.fpos_y, mSendBuffer.size())
 	var error = r[0]
 	var nbytes = r[1]
 	if error:
@@ -726,44 +725,40 @@ func send_text(text):
 	for c in text:
 		send_char(c)
 
-func set_pointer_pos_x(val, move = false):
-	if typeof(val) == TYPE_INT:
-		val = val
-	elif typeof(val) == TYPE_REAL:
-		val = val*mDesktop.size.x
-	elif typeof(val) == TYPE_VECTOR2 || typeof(val) == TYPE_VECTOR3:
+func set_pointer_pos_x(val, percent = false, move = false):
+	var type = typeof(val)
+	if type == TYPE_VECTOR2 || type == TYPE_VECTOR3:
 		val = val.x
-	elif typeof(val) == TYPE_STRING:
-		if val.find(".") >= 0:
-			val = float(val)*mDesktop.size.x
-		else:
-			val = int(val)
 	else:
-		val = 0
+		val = float(val)
+	if percent:
+		if type == TYPE_INT:
+			val = val/100*mDesktop.size.x
+		elif typeof(val) == TYPE_REAL:
+			val = val*mDesktop.size.x
 	if move:
-		mPointer.fpos_x += clamp(val, 0, mDesktop.size.x)
+		mPointer.fpos_x += val
 	else:
-		mPointer.fpos_x = clamp(val, 0, mDesktop.size.x)
+		mPointer.fpos_x = val 
+	mPointer.fpos_x = clamp(mPointer.fpos_x, 0, mDesktop.size.x)
 	_update_pointer()
 
-func set_pointer_pos_y(val, move = false):
-	if typeof(val) == TYPE_INT:
-		val = val
-	elif typeof(val) == TYPE_REAL:
-		val = val*mDesktop.size.y
-	elif typeof(val) == TYPE_VECTOR2 || typeof(val) == TYPE_VECTOR3:
+func set_pointer_pos_y(val, percent = false, move = false):
+	var type = typeof(val)
+	if type == TYPE_VECTOR2 || type == TYPE_VECTOR3:
 		val = val.x
-	elif typeof(val) == TYPE_STRING:
-		if val.find(".") >= 0:
-			val = float(val)*mDesktop.size.y
-		else:
-			val = int(val)
 	else:
-		val = 0
+		val = float(val)
+	if percent:
+		if type == TYPE_INT:
+			val = val/100*mDesktop.size.y
+		elif typeof(val) == TYPE_REAL:
+			val = val*mDesktop.size.y
 	if move:
-		mPointer.fpos_y += clamp(val, 0, mDesktop.size.y)
+		mPointer.fpos_y += val
 	else:
-		mPointer.fpos_y = clamp(val, 0, mDesktop.size.y)
+		mPointer.fpos_y = val 
+	mPointer.fpos_y = clamp(mPointer.fpos_y, 0, mDesktop.size.y)
 	_update_pointer()
 
 func set_pointer_speed_x(val):
@@ -796,6 +791,7 @@ func set_button_pressed(button_num, val):
 	else:
 		mPointer.button_mask &= ~(1 << (button_num-1))
 	mPointer.dirty = true
+	_update_pointer()
 
 func process_key_event(event):
 	var keysym = null
