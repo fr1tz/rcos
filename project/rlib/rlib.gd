@@ -253,6 +253,7 @@ func _extract_numbers(string):
 				nfloat = true
 			if nbegin == -1:
 				nbegin = i
+				nend = i
 			else:
 				nend = i
 		elif nbegin != -1 && nend != -1:
