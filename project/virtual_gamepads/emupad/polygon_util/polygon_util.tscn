@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=1]
-
-[ext_resource path="res://virtual_gamepads/emupad/polygon_util/polygon_util.gd" type="Script" id=1]
-
-[node name="polygon_util" type="Node"]
-
-script/script = ExtResource( 1 )
-
-

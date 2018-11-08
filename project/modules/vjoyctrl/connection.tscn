@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://modules/vjoyctrl/connection.gd" type="Script" id=1]
+
+[node name="connection" type="Node"]
+
+script/script = ExtResource( 1 )
+
+[node name="io_timer" type="Timer" parent="."]
+
+process_mode = 1
+wait_time = 0.1
+one_shot = false
+autostart = false
+
+
