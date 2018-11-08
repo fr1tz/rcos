@@ -154,11 +154,19 @@ flat = false
 
 editor/display_folded = true
 visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+margin/right = 0.0
+margin/bottom = 0.0
 root_path = NodePath("/root/data_router/output_ports")
 
 [node name="input_port_selector" parent="." instance=ExtResource( 5 )]
 
 visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+margin/right = 0.0
+margin/bottom = 0.0
 root_path = NodePath("/root/data_router/input_ports")
 
 
