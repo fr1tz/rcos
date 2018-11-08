@@ -17,7 +17,7 @@ extends ReferenceFrame
 
 var mActiveTaskId = -1
 
-onready var mOpsButton = get_node("ops_button/button")
+onready var mRcosButton = get_node("rcos_button")
 onready var mTaskbarItemsGroup = "taskbar_items_"+str(get_instance_ID())
 
 func _init():
@@ -27,9 +27,9 @@ func _ready():
 	var items_scroller = get_node("items_scroller")
 	items_scroller.connect("scrolling_started", self, "show_titles")
 	items_scroller.connect("scrolling_stopped", self, "hide_titles")
-	mOpsButton.connect("pressed", self, "_on_ops_button_pressed")
+	mRcosButton.connect("pressed", self, "_on_rcos_button_pressed")
 
-func _on_ops_button_pressed():
+func _on_rcos_button_pressed():
 	if mActiveTaskId == -1:
 		return
 	var task = rcos.get_task(mActiveTaskId)
@@ -43,6 +43,32 @@ func _on_ops_button_pressed():
 
 func _item_selected(task_id):
 	emit_signal("task_selected", task_id)
+
+func _update_taskbar_item(item, task):
+	if task.properties.has("name"):
+		item.set_title(task.properties.name)
+	else:
+		item.set_title("Unnamed Task")
+	if task.properties.has("task_color"):
+		item.set_task_color(task.properties.task_color)
+	else:
+		item.set_task_color(null)
+	if task.properties.has("icon"):
+		item.set_icon(task.properties.icon)
+	else:
+		item.set_icon(null)
+	if task.properties.has("icon_label"):
+		item.set_icon_label(task.properties.icon_label)
+	else:
+		item.set_icon_label(null)
+	if task.properties.has("icon_frame_color"):
+		item.set_icon_frame_color(task.properties.icon_frame_color)
+	else:
+		item.set_icon_frame_color(null)
+	if task.properties.has("icon_spin_speed"):
+		item.set_icon_spin_speed(task.properties.icon_spin_speed)
+	else:
+		item.set_icon_spin_speed(0)
 
 func show_titles():
 	get_tree().call_group(0, mTaskbarItemsGroup, "show_title")
@@ -61,12 +87,7 @@ func add_task(task):
 	item.add_to_group(mTaskbarItemsGroup)
 	item.set_task_id(task.get_id())
 	item.set_parent_task_id(task.get_parent_task_id())
-	if task.properties.has("name"):
-		item.set_title(task.properties.name)
-	if task.properties.has("icon"):
-		item.set_icon(task.properties.icon)
-	if task.properties.has("icon_spin_speed"):
-		item.set_icon_spin_speed(task.properties.icon_spin_speed)
+	_update_taskbar_item(item, task)
 	item.hide_title()
 	item.connect("selected", self, "_item_selected", [task.get_id()])
 	var parent_task_id = task.get_parent_task_id()
@@ -80,18 +101,18 @@ func add_task(task):
 				items.add_child(item)
 				items.move_child(item, i+1)
 				break
-	
 
 func change_task(task):
 	var items = get_node("items_scroller/items")
 	for item in items.get_children():
 		if item.get_task_id() == task.get_id():
-			item.set_title(task.properties.name)
-			item.set_icon(task.properties.icon)
-			if task.properties.has("icon_spin_speed"):
-				item.set_icon_spin_speed(task.properties.icon_spin_speed)
-			else:
-				item.set_icon_spin_speed(0)
+			_update_taskbar_item(item, task)
+#			item.set_title(task.properties.name)
+#			item.set_icon(task.properties.icon)
+#			if task.properties.has("icon_spin_speed"):
+#				item.set_icon_spin_speed(task.properties.icon_spin_speed)
+#			else:
+#				item.set_icon_spin_speed(0)
 			return
 
 func remove_task(task):

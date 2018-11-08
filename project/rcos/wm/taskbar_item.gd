@@ -22,7 +22,7 @@ func _init():
 	add_user_signal("selected")
 
 func _ready():
-	get_node("button").connect("pressed", self, "emit_signal", ["selected"])
+	get_node("square/button").connect("pressed", self, "emit_signal", ["selected"])
 
 func get_task_id():
 	return mTaskId
@@ -39,22 +39,34 @@ func set_parent_task_id(parent_task_id):
 func set_title(string):
 	get_node("title").set_text(string)
 
-func set_icon(texture):
-	if texture == null:
-		return
-	get_node("icon").set_texture(texture)
-
-func set_icon_spin_speed(speed):
-	get_node("icon").set_spin_speed(speed)
-
 func show_title():
 	get_node("title").show()
 
 func hide_title():
 	get_node("title").hide()
 
+func set_task_color(color):
+	if color == null: color = Color(0, 0, 0, 0)
+	get_node("square/task_color").set_frame_color(color)
+
+func set_icon(texture):
+	if texture == null:
+		return
+	get_node("square/icon").set_texture(texture)
+
+func set_icon_frame_color(color):
+	if color == null: color = Color(0, 0, 0, 0)
+	get_node("square/icon_frame").set_modulate(color)
+
+func set_icon_label(text):
+	if text == null: text = ""
+	get_node("square/icon_label").set_text(text)
+
+func set_icon_spin_speed(speed):
+	get_node("square/icon").set_spin_speed(speed)
+
 func mark_active():
-	get_node("button_down").show()
+	get_node("square/button_down").show()
 
 func mark_inactive():
-	get_node("button_down").hide()
+	get_node("square/button_down").hide()
