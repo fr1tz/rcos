@@ -59,6 +59,10 @@ func _init():
 	add_user_signal("connection_added")
 	add_user_signal("connection_removed")
 
+func _ready():
+	mOutputPorts.set_meta("icon32", load("res://data_router/icons/32/output_port.png"))
+	mInputPorts.set_meta("icon32", load("res://data_router/icons/32/input_port.png"))
+
 func _add_port(port_path, port_type, initial_data = null):
 	port_path = port_path.replace(":", "_")
 	var parent_node = null
@@ -151,10 +155,12 @@ func has_output_port(port_path):
 	return mOutputPorts.has_node(port_path)
 
 func has_connection(output_port_path, input_port_path):
+	if !mOutputPorts.has_node(output_port_path):
+		return false
+	if !mInputPorts.has_node(input_port_path):
+		return false
 	var output_port = mOutputPorts.get_node(output_port_path)
 	var input_port = mInputPorts.get_node(input_port_path)
-	if output_port == null || input_port == null:
-		return false
 	return output_port.get_connections().has(input_port)
 
 func get_input_ports():
