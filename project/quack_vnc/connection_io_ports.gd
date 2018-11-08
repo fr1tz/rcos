@@ -70,14 +70,21 @@ func _add_io_ports():
 			var sep_pos = words[0].find(":")
 			if sep_pos > 0:
 				host = words[0].left(sep_pos)
-	var prefix 
+	var server_id
 	var server_port = mConnection.get_remote_port()
 	if server_port >= 5900 && server_port <= 5999:
-		prefix = host.to_lower()+"/rfb:"+str(server_port-5900)
+		server_id = "_"+str(server_port-5900)
 	else:
-		prefix = host.to_lower()+"/rfb::"+str(server_port)
+		server_id = "__"+str(server_port)
+	var prefix = host.to_lower()+"/rfb"+str(server_id)
 	_add_output_ports(prefix)
 	_add_input_ports(prefix)
+	var icon = load("res://quack_vnc/graphics/icon.server.png")
+	var node1 = data_router.get_output_port(prefix)
+	var node2 = data_router.get_input_port(prefix)
+	for node in [node1, node2]:
+		node.set_meta("icon32", icon)
+		node.set_meta("icon_label", server_id.replace("_", ":"))
 
 func _remove_io_ports():
 	for port in mOutputPorts:
@@ -88,7 +95,8 @@ func _remove_io_ports():
 func _add_output_ports(prefix):
 	mOutputPortsMeta["bell"] = {
 		"port_class": BELL,
-		"data_type": "bool"
+		"data_type": "bool",
+		"icon32": load("res://quack_vnc/graphics/icon.bell.png")
 	}
 	mOutputPortsMeta["clipboard/text"] = {
 		"port_class": CLIPBOARD_TEXT,
@@ -118,6 +126,15 @@ func _add_output_ports(prefix):
 			var meta_value = mOutputPortsMeta[port_path][meta_name]
 			port.set_meta(meta_name, meta_value)
 		mOutputPorts.push_back(port)
+	var node_meta = {}
+	node_meta["framebuffer"] = {
+		"icon32": load("res://quack_vnc/graphics/icon.fb.png")
+	}
+	for node_path in node_meta.keys():
+		var node = data_router.get_output_port(prefix+"/"+node_path)
+		for meta_name in node_meta[node_path].keys():
+			var meta_value = node_meta[node_path][meta_name]
+			node.set_meta(meta_name, meta_value)
 
 func _add_input_ports(prefix):
 	mInputPortsMeta["clipboard/text"] = {

@@ -63,8 +63,15 @@ func _connection_state_changed(new_state):
 		}
 		rcos.change_task(mTaskId, task_properties)
 	elif new_state == mConnection.CS_SERVER_INIT_MSG_RECEIVED:
+		var server_id
+		var server_port = mConnection.get_remote_port()
+		if server_port >= 5900 && server_port <= 5999:
+			server_id = ":"+str(server_port-5900)
+		else:
+			server_id = "::"+str(server_port)
 		var task_properties = {
-			"icon": load("res://quack_vnc/graphics/icon.png"),
+			"icon": load("res://quack_vnc/graphics/icon.server.png"),
+			"icon_label": server_id,
 			"icon_spin_speed": 0
 		}
 		rcos.change_task(mTaskId, task_properties)
@@ -73,6 +80,15 @@ func connect_to_server(address, port):
 	rcos.log_notice(self, "Opening connection to "+address+":"+str(port))
 	mServerAddress = address
 	mServerTcpPort = port
+	if rcos.has_node("services/host_info_service"):
+		var host_info_service = rcos.get_node("services/host_info_service")
+		var host_info = host_info_service.get_host_info_from_address(mServerAddress)
+		if host_info != null:
+			var color = host_info.get_host_color()
+			var task_properties = {
+				"task_color": color
+			}
+			rcos.change_task(mTaskId, task_properties)
 	mConnection.connect_to_server(address, port)
 
 func kill():
