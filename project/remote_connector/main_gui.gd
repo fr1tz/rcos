@@ -36,7 +36,7 @@ func _ready():
 	mOpenConnectionButton.connect("pressed", mOpenConnectionDialog, "set_hidden", [false])
 	if rcos.has_node("services/host_info_service"):
 		mHostInfoService = rcos.get_node("services/host_info_service")
-		mHostInfoService.connect("host_info_changed", self, "_host_info_changed")
+		#mHostInfoService.connect("host_info_changed", self, "_host_info_changed")
 	if rcos.has_node("services/network_scanner_service"):
 		mNetworkScannerService = rcos.get_node("services/network_scanner_service")
 		mNetworkScannerService.connect("scan_started", self, "_scan_started")
@@ -94,10 +94,10 @@ func _on_concealed():
 
 func _on_size_changed():
 	rcos.log_debug(self, "_on_size_changed()")
-	var width = float(get_viewport().get_rect().size.x - 4 - 8 - 10)
-	var new_column_count = floor(width/(42+2))
-	for interface_container in mInterfaceWidgetContainers.get_children():
-		interface_container.mInterfaceWidgets.set_columns(new_column_count)
+#	var width = float(get_viewport().get_rect().size.x - 4 - 8 - 10)
+#	var new_column_count = floor(width/(42+2))
+#	for interface_container in mInterfaceWidgetContainers.get_children():
+#		interface_container.mInterfaceWidgets.set_columns(new_column_count)
 
 func _interface_widget_selected(interface_widget):
 	if interface_widget == mSelectedInterfaceWidget:
