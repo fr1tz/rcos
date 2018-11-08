@@ -35,19 +35,19 @@ root_path = null
 
 [node name="items_scroller" parent="." instance=ExtResource( 3 )]
 
-editor/display_folded = true
 margin/top = 40.0
 margin/bottom = 40.0
 
 [node name="items" type="VBoxContainer" parent="items_scroller"]
 
+anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 40.0
+margin/right = 0.0
 margin/bottom = 40.0
 custom_constants/separation = 0
 alignment = 0
@@ -56,7 +56,6 @@ alignment = 0
 
 [node name="current_node_path" type="Panel" parent="."]
 
-editor/display_folded = true
 anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
