@@ -19,6 +19,7 @@ onready var mModeButtons = get_node("mode_buttons")
 onready var mTabs = get_node("tabs")
 onready var mStickConfigGui = get_node("tabs/stick_config_gui")
 onready var mDpadConfigGui = get_node("tabs/dpad_config_gui")
+onready var mTouchpadConfigGui = get_node("tabs/touchpad_config_gui")
 onready var mButtonConfigGui = get_node("tabs/button_config_gui")
 
 func _ready():
@@ -29,7 +30,9 @@ func _mode_button_selected(button_idx):
 		set_mode("stick")
 	elif button_idx == 1 && mDpadConfigGui.is_hidden():
 		set_mode("dpad")
-	elif button_idx == 2 && mButtonConfigGui.is_hidden():
+	elif button_idx == 2 && mTouchpadConfigGui.is_hidden():
+		set_mode("touchpad")
+	elif button_idx == 3 && mButtonConfigGui.is_hidden():
 		set_mode("button")
 
 func set_mode(mode):
@@ -41,14 +44,19 @@ func set_mode(mode):
 	elif mode == "dpad":
 		mModeButtons.set_selected(1)
 		mDpadConfigGui.set_hidden(false)
-	elif mode == "button":
+	elif mode == "touchpad":
 		mModeButtons.set_selected(2)
+		mTouchpadConfigGui.set_hidden(false)
+	elif mode == "button":
+		mModeButtons.set_selected(3)
 		mButtonConfigGui.set_hidden(false)
 	get_meta("widget_root_node").config_gui.set_dirty()
 
 func get_mode():
-	if mModeButtons.get_selected() == 2:
+	if mModeButtons.get_selected() == 3:
 		return "button"
+	elif mModeButtons.get_selected() == 2:
+		return "touchpad"
 	elif mModeButtons.get_selected() == 1:
 		return "dpad"
 	else:
@@ -63,16 +71,24 @@ func load_emupad_config(emupad_config):
 		set_mode("stick")
 	elif emupad_config.emulate == "dpad":
 		set_mode("dpad")
+	elif emupad_config.emulate == "touchpad":
+		set_mode("touchpad")
 	elif emupad_config.emulate == "button":
 		set_mode("button")
 	else:
 		return false
-	if !mStickConfigGui.load_stick_config(emupad_config.stick_config):
-		return false
-	if !mDpadConfigGui.load_dpad_config(emupad_config.dpad_config):
-		return false
-	if !mButtonConfigGui.load_button_config(emupad_config.button_config):
-		return false
+	if emupad_config.has("stick_config"):
+		if !mStickConfigGui.load_stick_config(emupad_config.stick_config):
+			return false
+	if emupad_config.has("dpad_config"):
+		if !mDpadConfigGui.load_dpad_config(emupad_config.dpad_config):
+			return false
+	if emupad_config.has("touchpad_config"):
+		if !mTouchpadConfigGui.load_touchpad_config(emupad_config.touchpad_config):
+			return false
+	if emupad_config.has("button_config"):
+		if !mButtonConfigGui.load_button_config(emupad_config.button_config):
+			return false
 	return true
 
 func create_emupad_config():
@@ -80,6 +96,7 @@ func create_emupad_config():
 		"emulate": get_mode(),
 		"stick_config": mStickConfigGui.create_stick_config(),
 		"dpad_config": mDpadConfigGui.create_dpad_config(),
+		"touchpad_config": mTouchpadConfigGui.create_touchpad_config(),
 		"button_config": mButtonConfigGui.create_button_config()
 	}
 	return emupad_config

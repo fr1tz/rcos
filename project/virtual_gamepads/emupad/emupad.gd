@@ -15,7 +15,7 @@
 
 extends Polygon2D
 
-export(String, "Stick", "DPad", "Button") var emulate
+export(String, "Stick", "DPad", "Touchpad", "Button") var emulate
 export(int) var radius = 64
 export(int) var threshold = 0
 export(int) var button_mode = 0
@@ -26,12 +26,42 @@ export(Color) var outline_color_light = Color(0.5, 0.5, 1)
 export(Color) var fill_color_dark = Color(0, 0, 0.5)
 export(Color) var fill_color_light = Color(0, 0, 1)
 
+# Common output ports
+const OUTPUT_PORT_PAD_ACTIVE = 0
+const OUTPUT_PORT_XY = 1
+const OUTPUT_PORT_X = 2
+const OUTPUT_PORT_Y = 3
+# DPad specific output ports
+const OUTPUT_PORT_AREA_ACTIVE_START = 4
+const OUTPUT_PORT_AREA_C_ACTIVE = 4
+const OUTPUT_PORT_AREA_N_ACTIVE = 5
+const OUTPUT_PORT_AREA_NE_ACTIVE = 6
+const OUTPUT_PORT_AREA_E_ACTIVE = 7
+const OUTPUT_PORT_AREA_SE_ACTIVE = 8
+const OUTPUT_PORT_AREA_S_ACTIVE = 9
+const OUTPUT_PORT_AREA_SW_ACTIVE = 10
+const OUTPUT_PORT_AREA_W_ACTIVE = 11
+const OUTPUT_PORT_AREA_NW_ACTIVE = 12
+const OUTPUT_PORT_AREA_SELECTED_START = 13
+const OUTPUT_PORT_AREA_C_SELECTED = 13
+const OUTPUT_PORT_AREA_N_SELECTED = 14
+const OUTPUT_PORT_AREA_NE_SELECTED = 15
+const OUTPUT_PORT_AREA_E_SELECTED = 16
+const OUTPUT_PORT_AREA_SE_SELECTED = 17
+const OUTPUT_PORT_AREA_S_SELECTED = 18
+const OUTPUT_PORT_AREA_SW_SELECTED = 19
+const OUTPUT_PORT_AREA_W_SELECTED = 20
+const OUTPUT_PORT_AREA_NW_SELECTED = 21
+const NUM_OUTPUT_PORTS = 22
+
 var mWidgetHost = null
 
-var mOutputPorts = {}
+var mOutputPorts = []
+var mOutputPortsMeta = {}
 var mEmupadConfig = null
 var mOn = false
 var mPressed = false
+var mDPadActiveArea = -1
 var mCentroid = null
 var mIncenter = null
 var mFrameVertices = null
@@ -44,13 +74,45 @@ var mGizmo = {
 func _init():
 	add_user_signal("pad_pressed")
 	add_user_signal("pad_released")
+	mOutputPorts.resize(NUM_OUTPUT_PORTS)
+	mOutputPortsMeta["pad_active"] = {
+		"idx": OUTPUT_PORT_PAD_ACTIVE
+	}
+	mOutputPortsMeta["xy"] = {
+		"idx": OUTPUT_PORT_XY
+	}
+	mOutputPortsMeta["x"] = {
+		"idx": OUTPUT_PORT_X
+	}
+	mOutputPortsMeta["y"] = {
+		"idx": OUTPUT_PORT_Y
+	}
+	var areas = ["c", "n", "ne", "e", "se", "s", "sw", "w", "nw"]
+	for i in range(0, 9):
+		mOutputPortsMeta["areas/"+areas[i]+"/active"] = {
+			"idx": OUTPUT_PORT_AREA_C_ACTIVE + i
+		}
+		mOutputPortsMeta["areas/"+areas[i]+"/selected"] = {
+			"idx": OUTPUT_PORT_AREA_C_SELECTED + i
+		}
 
 func _ready():
 	mWidgetHost = get_meta("widget_host_api")
 
 func _exit_tree():
-	for output_port in mOutputPorts.values():
-		data_router.remove_port(output_port)
+	for output_port in mOutputPorts:
+		if output_port != null:
+			data_router.remove_port(output_port)
+
+func _create_output_port(port_name):
+	var prefix = get_meta("io_ports_path_prefix")
+	if prefix == null || !mOutputPortsMeta.has(port_name):
+		return
+	var port_meta = mOutputPortsMeta[port_name]
+	var port_path = prefix+"/"+port_name
+	var port = data_router.add_output_port(port_path)
+	mOutputPorts[port_meta.idx] = port
+	return port
 
 func get_outline_color():
 	if mOn:
@@ -128,29 +190,43 @@ func _widget_frame_input(event):
 	var index = 0
 	if touchscreen:
 		index = event.index
+	var old_gizmo_target = mGizmo.target
+	var old_dpad_active_area = mDPadActiveArea
 	if index == mIndex:
 		if touch && !event.pressed:
 			mIndex = -1
+			if mDPadActiveArea >= 0:
+				mOutputPorts[OUTPUT_PORT_AREA_SELECTED_START+mDPadActiveArea].put_data(true)
+				mOutputPorts[OUTPUT_PORT_AREA_SELECTED_START+mDPadActiveArea].put_data(false)
+				mOutputPorts[OUTPUT_PORT_AREA_ACTIVE_START+mDPadActiveArea].put_data(false)
+			mDPadActiveArea = -1
 			if emulate != "Button" || button_mode == 0:
 				mPressed = false
-				mOutputPorts["pressed"].put_data(false)
+				mOutputPorts[OUTPUT_PORT_PAD_ACTIVE].put_data(false)
 				update()
 				mWidgetHost.disable_overlay_draw(self)
 				emit_signal("pad_released")
 		else:
 			mGizmo.target = event.pos
-			var vec = mGizmo.center - mGizmo.target
-			if vec.length() > radius:
-				mGizmo.center = mGizmo.target + vec.normalized() * radius
+			if emulate == "Touchpad":
+				mGizmo.center = mGizmo.target
+			else:
+				var vec = mGizmo.center - mGizmo.target
+				if vec.length() > radius:
+					mGizmo.center = mGizmo.target + vec.normalized() * radius
 	elif touch && event.pressed && has_point(event.pos):
 		mIndex = index
 		mGizmo.center = event.pos
-		mGizmo.target = mGizmo.center
+		mGizmo.target = event.pos
+		old_gizmo_target = event.pos
 		if emulate == "Button" && button_mode == 1:
 			mPressed = !mPressed
 		else:
 			mPressed = true
-		mOutputPorts["pressed"].put_data(mPressed)
+		mOutputPorts[OUTPUT_PORT_PAD_ACTIVE].put_data(mPressed)
+		if emulate == "DPad":
+			mDPadActiveArea = 0
+			mOutputPorts[OUTPUT_PORT_AREA_C_ACTIVE].put_data(true)
 		update()
 		mWidgetHost.enable_overlay_draw(self)
 		if mPressed:
@@ -160,21 +236,60 @@ func _widget_frame_input(event):
 	mWidgetHost.update_overlay_draw()
 	if emulate == "Stick":
 		var vec = get_vec()
-		mOutputPorts["xy"].put_data(vec)
-		mOutputPorts["x"].put_data(vec.x)
-		mOutputPorts["y"].put_data(vec.y)
-#		var pixel_vec = Vector2(0, 0)
-#		if is_active():
-#			var vec = mGizmo.target - mGizmo.center
-#			if vec.length() > threshold:
-#				pixel_vec = vec
-#		mOutputPorts["x_pixels"].put_data(pixel_vec.x)
-#		mOutputPorts["y_pixels"].put_data(pixel_vec.y)	
+		mOutputPorts[OUTPUT_PORT_XY].put_data(vec)
+		mOutputPorts[OUTPUT_PORT_X].put_data(vec.x)
+		mOutputPorts[OUTPUT_PORT_Y].put_data(vec.y)
 	elif emulate == "DPad":
-		var vec = get_vec()
-		mOutputPorts["xy"].put_data(vec)
-		mOutputPorts["x"].put_data(vec.x)
-		mOutputPorts["y"].put_data(vec.y)
+		var vec
+		if !is_active():
+			vec = Vector2(0, 0)
+			mDPadActiveArea = -1
+		else:
+			vec = mGizmo.target - mGizmo.center
+			if vec.length() <= threshold:
+				vec = Vector2(0, 0)
+				mDPadActiveArea = 0
+			else:
+				var angle = get_vec_angle() + 22.5
+				if angle > 360:
+					angle = 0
+				if angle <= 45:
+					vec = Vector2(0, -1)
+					mDPadActiveArea = 1
+				elif angle <= 90:
+					vec = Vector2(1, -1)
+					mDPadActiveArea = 2
+				elif angle <= 135:
+					vec = Vector2(1, 0)
+					mDPadActiveArea = 3
+				elif angle <= 180:
+					vec = Vector2(1, 1)
+					mDPadActiveArea = 4
+				elif angle <= 225:
+					vec = Vector2(0, 1)
+					mDPadActiveArea = 5
+				elif angle <= 270:
+					vec = Vector2(-1, 1)
+					mDPadActiveArea = 6
+				elif angle <= 325:
+					vec = Vector2(-1, 0)
+					mDPadActiveArea = 7
+				else:
+					vec = Vector2(-1, -1)
+					mDPadActiveArea = 8
+		if mDPadActiveArea != old_dpad_active_area:
+			if old_dpad_active_area >= 0:
+				mOutputPorts[OUTPUT_PORT_AREA_ACTIVE_START+old_dpad_active_area].put_data(false)
+			if mDPadActiveArea >= 0:
+				mOutputPorts[OUTPUT_PORT_AREA_ACTIVE_START+mDPadActiveArea].put_data(true)
+		mOutputPorts[OUTPUT_PORT_XY].put_data(vec)
+		mOutputPorts[OUTPUT_PORT_X].put_data(vec.x)
+		mOutputPorts[OUTPUT_PORT_Y].put_data(vec.y)
+	elif emulate == "Touchpad":
+		var vec = mGizmo.target - old_gizmo_target
+		mOutputPorts[OUTPUT_PORT_XY].put_data(vec)
+		mOutputPorts[OUTPUT_PORT_X].put_data(vec.x)
+		mOutputPorts[OUTPUT_PORT_Y].put_data(vec.y)
 
 func _draw():
 	var vertices = Vector2Array()
@@ -188,7 +303,8 @@ func _draw():
 func _overlay_draw(overlay):
 	if !is_active():
 		return
-	overlay.draw_line(get_pos()+get_center(), mGizmo.center, get_outline_color(), 4)
+	if emulate != "Touchpad":
+		overlay.draw_line(get_pos()+get_center(), mGizmo.center, get_outline_color(), 4)
 	overlay.draw_circle(mGizmo.center, radius, hi_color)
 	overlay.draw_circle(mGizmo.center, radius-2, get_outline_color())
 	if emulate == "DPad":
@@ -259,31 +375,46 @@ func get_vec():
 		return ret
 
 func load_emupad_config(emupad_config):
-	for output_port in mOutputPorts.values():
-		data_router.remove_port(output_port)
-	var port_path_prefix = get_meta("io_ports_path_prefix")
+	for output_port in mOutputPorts:
+		if output_port != null:
+			data_router.remove_port(output_port)
+	var port
 	mEmupadConfig = emupad_config
 	button_mode = 0
 	if mEmupadConfig.emulate == "stick":
 		emulate = "Stick"
 		radius = mEmupadConfig.stick_config.radius
 		threshold = mEmupadConfig.stick_config.threshold
-		mOutputPorts["xy"] = data_router.add_output_port(port_path_prefix+"/xy")
-		mOutputPorts["x"] = data_router.add_output_port(port_path_prefix+"/x")
-		mOutputPorts["y"] = data_router.add_output_port(port_path_prefix+"/y")
+		for port_name in ["xy", "x", "y"]:
+			_create_output_port(port_name)
 	elif mEmupadConfig.emulate == "dpad":
 		emulate = "DPad"
 		radius = mEmupadConfig.dpad_config.radius
 		threshold = mEmupadConfig.dpad_config.threshold
-		mOutputPorts["xy"] = data_router.add_output_port(port_path_prefix+"/xy")
-		mOutputPorts["x"] = data_router.add_output_port(port_path_prefix+"/x")
-		mOutputPorts["y"] = data_router.add_output_port(port_path_prefix+"/y")
+		for port_name in ["xy", "x", "y"]:
+			_create_output_port(port_name)
+		var prefix = get_meta("io_ports_path_prefix")
+		for area in ["c", "n", "ne", "e", "se", "s", "sw", "w", "nw"]:
+			_create_output_port("areas/"+area+"/active")
+			_create_output_port("areas/"+area+"/selected")
+			var area_node = data_router.get_output_port(prefix+"/areas/"+area)
+			var icon_path = "res://virtual_gamepads/emupad/graphics/icon.dpad.area."+area+".png"
+			area_node.set_meta("icon32", load(icon_path))
+		var areas_node = data_router.get_output_port(prefix+"/areas")
+		var icon_path = "res://virtual_gamepads/emupad/graphics/icon.dpad.areas.png"
+		areas_node.set_meta("icon32", load(icon_path))
+	elif mEmupadConfig.emulate == "touchpad":
+		emulate = "Touchpad"
+		radius = 16
+		threshold = 0
+		for port_name in ["xy", "x", "y"]:
+			_create_output_port(port_name)
 	else:
 		emulate = "Button"
 		radius = 16
 		threshold = 0
 		button_mode = mEmupadConfig.button_config.mode
-	mOutputPorts["pressed"] = data_router.add_output_port(port_path_prefix+"/pressed")
+	_create_output_port("pad_active")
 
 func set_polygon(verts):
 	.set_polygon(verts)

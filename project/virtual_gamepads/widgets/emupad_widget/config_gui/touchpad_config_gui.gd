@@ -1,4 +1,4 @@
-# Copyright © 2018 Michael Goldener <mg@wasted.ch>
+# Copyright © 2017, 2018 Michael Goldener <mg@wasted.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,24 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends Node
+extends Control
 
 func _ready():
-	rcos.add_task({
-		"type": "widget_factory",
-		"product_name": "Gamepad Widget",
-		"product_id": "virtual_gamepads.emupad_widget",
-		"product_icon": load("res://virtual_gamepads/widgets/emupad_widget/graphics/icon.widget.png"),
-		"config_presets": [
-			"Stick",
-			"DPad",
-			"Touchpad",
-			"1 Button",
-			"2 Buttons",
-			"4 Buttons"
-		],
-		"create_widget_func": funcref(self, "create_widget")
-	})
+	return
 
-func create_widget():
-	return rlib.instance_scene("res://virtual_gamepads/widgets/emupad_widget/emupad_widget.tscn")
+func load_touchpad_config(touchpad_config):
+	return true
+
+func create_touchpad_config():
+	var touchpad_config = {}
+	return touchpad_config

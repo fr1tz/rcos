@@ -1,19 +1,20 @@
-[gd_scene load_steps=9 format=1]
+[gd_scene load_steps=10 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/emupad_config_gui.gd" type="Script" id=2]
 [ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/stick_config_gui.gd" type="Script" id=3]
 [ext_resource path="res://rcos/fonts/teko/bitmap/teko-regular-22.fnt" type="BitmapFont" id=4]
 [ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/dpad_config_gui.gd" type="Script" id=5]
-[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/button_config_gui.gd" type="Script" id=6]
-[ext_resource path="res://rcos/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=7]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/touchpad_config_gui.gd" type="Script" id=6]
+[ext_resource path="res://virtual_gamepads/widgets/emupad_widget/config_gui/button_config_gui.gd" type="Script" id=7]
+[ext_resource path="res://rcos/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=8]
 
 [sub_resource type="DynamicFont" id=1]
 
 font/size = 24
 font/use_mipmaps = false
 font/use_filter = false
-font/font = ExtResource( 7 )
+font/font = ExtResource( 8 )
 
 [node name="emupad_config_gui" type="Control"]
 
@@ -41,7 +42,7 @@ margin/right = 0.0
 margin/bottom = 40.0
 custom_constants/button_separator = 2
 flat = false
-button/count = 3
+button/count = 4
 button/min_button_size = -1.0
 button/align = 4
 button/0/text = "Stick"
@@ -50,9 +51,12 @@ button/0/icon = null
 button/1/text = "DPad"
 button/1/tooltip = ""
 button/1/icon = null
-button/2/text = "Button"
+button/2/text = "Touchpad"
 button/2/tooltip = ""
 button/2/icon = null
+button/3/text = "Button"
+button/3/tooltip = ""
+button/3/icon = null
 button/selected = 0
 
 [node name="tabs" type="MarginContainer" parent="."]
@@ -368,8 +372,9 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="button_config_gui" type="Control" parent="tabs"]
+[node name="touchpad_config_gui" type="Control" parent="tabs"]
 
+visibility/visible = false
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -379,6 +384,19 @@ margin/top = 0.0
 margin/right = 192.0
 margin/bottom = 231.0
 script/script = ExtResource( 6 )
+
+[node name="button_config_gui" type="Control" parent="tabs"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 192.0
+margin/bottom = 231.0
+script/script = ExtResource( 7 )
 
 [node name="button_num" type="Control" parent="tabs/button_config_gui"]
 

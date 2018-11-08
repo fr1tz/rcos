@@ -60,6 +60,9 @@ func _get_default_widget_config():
 			},
 			"button_config": {
 				"mode": 0
+			},
+			"touchpad_config": {
+				"mode": 0
 			}
 		}
 	return widget_config
@@ -74,6 +77,9 @@ func _config_string_to_widget_config(config_string):
 	elif config_string == "DPad":
 		widget_config = _get_default_widget_config()
 		widget_config.pad_configs[0].emulate = "dpad"
+	elif config_string == "Touchpad":
+		widget_config = _get_default_widget_config()
+		widget_config.pad_configs[0].emulate = "touchpad"
 	elif config_string == "1 Button":
 		widget_config = _get_default_widget_config()
 		widget_config.pad_configs[0].emulate = "button"

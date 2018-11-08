@@ -39,6 +39,8 @@ func load_emupad_config(emupad_config):
 		mIcon.set_text(ICON_STICK)
 	elif emupad_config.emulate == "dpad":
 		mIcon.set_text(ICON_DPAD)
+	elif emupad_config.emulate == "touchpad":
+		mIcon.set_text("")
 	elif emupad_config.emulate == "button":
 		mIcon.set_text(ICON_BUTTON)
 	_released()
