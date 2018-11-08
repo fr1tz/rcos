@@ -19,6 +19,7 @@ var mWidgetPanelId = -1
 var mTaskId = -1
 var mSelectedReshapeControl = null
 
+onready var mIOPorts = get_node("widget_panel_io_ports")
 onready var mEditWidgetsButton = get_node("button_area/edit_widgets_button")
 onready var mAddWidgetButton = get_node("button_area/add_widget_button")
 onready var mAddOutputPortButton = get_node("button_area/add_output_port_button")
@@ -64,8 +65,8 @@ func _load_from_file():
 
 func _on_widget_factory_item_selected(item):
 	var task_id = item.get_widget_factory_task_id()
-	var config_preset = item.get_config_preset()
 	var pos = mWidgetPanel.get_pos().abs()
+	var config_preset = item.get_config_preset()
 	mWidgetPanel.create_widget(task_id, pos, config_preset)
 	show_grid()
 
@@ -135,6 +136,7 @@ func init(panel_id, task_id, io_ports_path_prefix):
 	mWidgetPanelId = panel_id
 	mTaskId = task_id
 	mWidgetPanel.set_io_ports_path_prefix(io_ports_path_prefix)
+	mIOPorts.initialize(self, io_ports_path_prefix)
 
 func go_back():
 	var properties = rcos.get_task_properties(mTaskId)
@@ -192,3 +194,6 @@ func activate_fullscreen():
 		"fullscreen": true
 	}
 	rcos.change_task(mTaskId, new_task_properties)
+
+func get_widget_panel_id():
+	return mWidgetPanelId

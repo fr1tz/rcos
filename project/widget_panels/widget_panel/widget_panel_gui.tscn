@@ -1,15 +1,16 @@
-[gd_scene load_steps=13 format=1]
+[gd_scene load_steps=14 format=1]
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://widget_panels/widget_panel/widget_panel_gui.gd" type="Script" id=2]
-[ext_resource path="res://rcos/lib/widget_panel.tscn" type="PackedScene" id=3]
-[ext_resource path="res://widget_panels/widget_panel/reshape_grid.tscn" type="PackedScene" id=4]
-[ext_resource path="res://widget_panels/graphics/icons/edit_widget.png" type="Texture" id=5]
-[ext_resource path="res://widget_panels/graphics/icons/add_widget.png" type="Texture" id=6]
-[ext_resource path="res://widget_panels/graphics/icons/add_output_port.png" type="Texture" id=7]
-[ext_resource path="res://widget_panels/graphics/icons/add_input_port.png" type="Texture" id=8]
-[ext_resource path="res://widget_grid/graphics/button_focus.tres" type="StyleBox" id=9]
-[ext_resource path="res://widget_panels/widget_factories_panel/widget_factories_panel.tscn" type="PackedScene" id=10]
+[ext_resource path="res://widget_panels/widget_panel/widget_panel_io_ports.tscn" type="PackedScene" id=3]
+[ext_resource path="res://rcos/lib/widget_panel.tscn" type="PackedScene" id=4]
+[ext_resource path="res://widget_panels/widget_panel/reshape_grid.tscn" type="PackedScene" id=5]
+[ext_resource path="res://widget_panels/graphics/icons/edit_widget.png" type="Texture" id=6]
+[ext_resource path="res://widget_panels/graphics/icons/add_widget.png" type="Texture" id=7]
+[ext_resource path="res://widget_panels/graphics/icons/add_output_port.png" type="Texture" id=8]
+[ext_resource path="res://widget_panels/graphics/icons/add_input_port.png" type="Texture" id=9]
+[ext_resource path="res://widget_grid/graphics/button_focus.tres" type="StyleBox" id=10]
+[ext_resource path="res://widget_panels/widget_factories_panel/widget_factories_panel.tscn" type="PackedScene" id=11]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -53,6 +54,8 @@ margin/bottom = 0.0
 color = Color( 0.480469, 0.480469, 0.480469, 1 )
 script/script = ExtResource( 2 )
 
+[node name="widget_panel_io_ports" parent="." instance=ExtResource( 3 )]
+
 [node name="grid_area" type="Control" parent="."]
 
 editor/display_folded = true
@@ -67,7 +70,7 @@ margin/top = 40.0
 margin/right = 0.0
 margin/bottom = 0.0
 
-[node name="widget_panel" parent="grid_area" instance=ExtResource( 3 )]
+[node name="widget_panel" parent="grid_area" instance=ExtResource( 4 )]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -86,7 +89,7 @@ margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
 
-[node name="reshape_grid" parent="grid_area" instance=ExtResource( 4 )]
+[node name="reshape_grid" parent="grid_area" instance=ExtResource( 5 )]
 
 visibility/visible = false
 anchor/right = 1
@@ -120,7 +123,7 @@ custom_styles/pressed = SubResource( 1 )
 toggle_mode = true
 enabled_focus_mode = 2
 shortcut = null
-icon = ExtResource( 5 )
+icon = ExtResource( 6 )
 flat = false
 
 [node name="add_widget_button" type="Button" parent="button_area"]
@@ -136,7 +139,7 @@ margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-icon = ExtResource( 6 )
+icon = ExtResource( 7 )
 flat = false
 
 [node name="add_output_port_button" type="Button" parent="button_area"]
@@ -152,7 +155,7 @@ margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-icon = ExtResource( 7 )
+icon = ExtResource( 8 )
 flat = false
 
 [node name="add_input_port_button" type="Button" parent="button_area"]
@@ -168,7 +171,7 @@ margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-icon = ExtResource( 8 )
+icon = ExtResource( 9 )
 flat = false
 
 [node name="fullscreen_button" type="Button" parent="button_area"]
@@ -243,7 +246,7 @@ margin/right = 40.0
 margin/bottom = 40.0
 custom_styles/hover = SubResource( 2 )
 custom_styles/pressed = SubResource( 1 )
-custom_styles/focus = ExtResource( 9 )
+custom_styles/focus = ExtResource( 10 )
 custom_styles/normal = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
@@ -263,7 +266,7 @@ margin/right = 80.0
 margin/bottom = 40.0
 custom_styles/hover = SubResource( 2 )
 custom_styles/pressed = SubResource( 1 )
-custom_styles/focus = ExtResource( 9 )
+custom_styles/focus = ExtResource( 10 )
 custom_styles/normal = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
@@ -283,7 +286,7 @@ margin/right = 80.0
 margin/bottom = 80.0
 custom_styles/hover = SubResource( 2 )
 custom_styles/pressed = SubResource( 1 )
-custom_styles/focus = ExtResource( 9 )
+custom_styles/focus = ExtResource( 10 )
 custom_styles/normal = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
@@ -303,7 +306,7 @@ margin/right = 120.0
 margin/bottom = 40.0
 custom_styles/hover = SubResource( 2 )
 custom_styles/pressed = SubResource( 1 )
-custom_styles/focus = ExtResource( 9 )
+custom_styles/focus = ExtResource( 10 )
 custom_styles/normal = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
@@ -323,7 +326,7 @@ margin/right = 120.0
 margin/bottom = 80.0
 custom_styles/hover = SubResource( 2 )
 custom_styles/pressed = SubResource( 1 )
-custom_styles/focus = ExtResource( 9 )
+custom_styles/focus = ExtResource( 10 )
 custom_styles/normal = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
@@ -331,7 +334,7 @@ shortcut = null
 text = "Conf"
 flat = false
 
-[node name="widget_factories_panel" parent="." instance=ExtResource( 10 )]
+[node name="widget_factories_panel" parent="." instance=ExtResource( 11 )]
 
 visibility/visible = false
 

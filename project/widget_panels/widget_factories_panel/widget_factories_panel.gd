@@ -34,11 +34,11 @@ func update_available_widgets(widget_factory_tasks):
 		if properties.has("config_presets"):
 			for preset in properties.config_presets:
 				var item = rlib.instance_scene("res://widget_panels/widget_factories_panel/widget_factory_item.tscn")
-				item.initialize(task_id, properties.product_name, preset)
+				item.initialize(task_id, preset)
 				item.connect("pressed", self, "_on_item_selected", [item, task_id])
 				mWidgetFactoryList.add_child(item)
 		else:
 			var item = rlib.instance_scene("res://widget_panels/widget_factories_panel/widget_factory_item.tscn")
-			item.initialize(task_id, properties.product_name, null)
+			item.initialize(task_id)
 			item.connect("pressed", self, "_on_item_selected", [item, task_id])
 			mWidgetFactoryList.add_child(item)

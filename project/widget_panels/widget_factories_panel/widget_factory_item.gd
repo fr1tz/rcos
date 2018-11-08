@@ -19,13 +19,16 @@ var mWidgetFactoryTaskId = -1
 var mProductName = null
 var mConfigPreset = null
 
-func initialize(widget_factory_task_id, product_name, config_preset):
+func initialize(widget_factory_task_id, config_preset = null):
+	var properties = rcos.get_task_properties(widget_factory_task_id)
 	mWidgetFactoryTaskId = widget_factory_task_id
-	mProductName = product_name
+	mProductName = properties.product_name
 	mConfigPreset = config_preset
 	set_text(mProductName)
 	if typeof(mConfigPreset) == TYPE_STRING:
 		set_text(get_text() + " (" + mConfigPreset + ")")
+	if properties.has("product_icon"):
+		set_button_icon(properties.product_icon)
 
 func get_widget_factory_task_id():
 	return mWidgetFactoryTaskId
