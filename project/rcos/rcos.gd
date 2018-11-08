@@ -62,6 +62,7 @@ func _init():
 		data_router.set_node_icon("localhost", load("res://data_router/icons/32/generic_device.png"), 32)
 	else:
 		data_router.set_node_icon("localhost", load("res://data_router/icons/32/smartphone.png"), 32)
+	data_router.set_node_icon("localhost/x11", load("res://data_router/icons/32/x11.png"), 32)
 	data_router.set_node_icon("localhost/android", load("res://data_router/icons/32/android.png"), 32)
 	data_router.set_node_icon("localhost/windows", load("res://data_router/icons/32/windows_os.png"), 32)
 
