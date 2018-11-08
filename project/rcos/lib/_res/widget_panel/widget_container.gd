@@ -112,6 +112,18 @@ func add_widget(widget, io_ports_path_prefix):
 	var size = get_size()
 	mWidgetFrame.set_size(size)
 	get_node("widget_product_id_label").set_hidden(true)
+	var widget_icon = null
+	if mWidget.has_meta("icon32"):
+		widget_icon = mWidget.get_meta("icon32")
+	var widget_icon_label = mWidgetName.right(mWidgetName.find_last("_")+1)
+	var node1 = data_router.get_output_port(io_ports_path_prefix)
+	var node2 = data_router.get_input_port(io_ports_path_prefix)
+	for node in [node1, node2]:
+		if node == null:
+			continue
+		node.set_meta("icon_label", widget_icon_label)
+		if widget_icon && node.get_meta("icon32") == null:
+			node.set_meta("icon32", widget_icon)
 
 func get_widget():
 	return mWidget

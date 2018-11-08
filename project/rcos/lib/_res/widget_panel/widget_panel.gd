@@ -130,13 +130,15 @@ func create_widget(widget_factory_task_id, pos, config_string = ""):
 	var widget = properties.create_widget_func.call_func()
 	if widget == null:
 		return
+	if properties.has("product_icon"):
+		widget.set_meta("icon32", properties.product_icon)
 	if config_string == null:
 		config_string = ""
 	var widget_name = widget.get_name()
 	var i = 1
-	while mWidgetContainers.has_node(widget_name+"."+str(i)+"_container"):
+	while mWidgetContainers.has_node(widget_name+"_"+str(i)+"_container"):
 		i += 1
-	widget_name += "."+str(i)
+	widget_name += "_"+str(i)
 	var widget_container = create_widget_container()
 	widget_container.init(mWidgetHostApi, widget_name, properties.product_id,
 		widget_container.ORIENTATION_N, config_string)
@@ -262,6 +264,8 @@ func load_from_file(filename):
 					var widget = task.properties.create_widget_func.call_func()
 					if widget == null:
 						break
+					if task.properties.has("product_icon"):
+						widget.set_meta("icon32", task.properties.product_icon)
 					_add_widget_to_container(widget, widget_container)
 	mLoadingFromFile = false
 	_update_widget_margins()
@@ -280,6 +284,8 @@ func _on_task_added(task):
 			var widget = task.properties.create_widget_func.call_func()
 			if widget == null:
 				return
+			if task.properties.has("product_icon"):
+				widget.set_meta("icon32", task.properties.product_icon)
 			var widget_name = widget_container.get_widget_name()
 			var pos = widget_container.get_pos()
 			var size = widget_container.get_size()
