@@ -13,23 +13,63 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends Node
+extends ColorFrame
 
-var mModuleNodes = {}
+onready var mInitMessages = get_node("PanelContainer/init_messages")
 
-func _spawn_module(module_name):
-	var module_node = rcos.spawn_module(module_name)
-	mModuleNodes[module_name] = module_node
+var mInitRoutine = null
 
 func _ready():
-	_spawn_module("host_clipboard_io_ports")
-	_spawn_module("host_sensors_io_ports")
-	_spawn_module("host_joysticks_io_ports")
-	_spawn_module("pointer_io_ports")
-	_spawn_module("ffa_widgets")
-	_spawn_module("remote_connector")
-	_spawn_module("io_ports_connector")
-	_spawn_module("widget_panels")
-	_spawn_module("virtual_gamepads")
-	mModuleNodes["remote_connector"].request_focus()
+	var color = Globals.get("application/boot_bg_color")
+	set_frame_color(color)
+	get_node("PanelContainer/background").set_frame_color(color)
+	mInitMessages.set_text("")
+	mInitMessages.set_scroll_active(false)
+	mInitMessages.set_scroll_follow(true)
+	mInitRoutine = _init_routine()
+	set_process(true)
+
+func _print_init_msg(text):
+	mInitMessages.add_text(text)
+
+func _process(delta):
+	if mInitRoutine != null:
+		mInitRoutine = mInitRoutine.resume()
+
+func _spawn_module(module_name):
+	_print_init_msg("* Spawning module " + module_name + "...")
+	var module = rcos.spawn_module(module_name)
+	if module == null:
+		_print_init_msg(" FAILED\n")
+		_print_init_msg(" *** INIT FAILED! UNABLE TO SPAWN MODULE " + module_name)
+		return null
+	_print_init_msg(" DONE\n")
+	return module
+
+func _init_routine():
+	var print_init_msg_func = funcref(self, "_print_init_msg")
+	var rcos_init_routine = rcos.initialize(print_init_msg_func)
+	while rcos_init_routine != null:
+		rcos_init_routine = rcos_init_routine.resume()
+		yield()
+	var module_names = [
+		"host_clipboard_io_ports",
+		"host_sensors_io_ports",
+		"host_joysticks_io_ports",
+		"pointer_io_ports",
+		"ffa_widgets",
+		"remote_connector",
+		"io_ports_connector",
+		"widget_panels",
+		"virtual_gamepads"
+	]
+	var modules = {}
+	for module_name in module_names:
+		var module = _spawn_module(module_name)
+		if module == null:
+			return null
+		modules[module_name] = module
+		yield()
+	#modules["remote_connector"].request_focus()
 	queue_free()
+	return null

@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends ColorFrame
+extends ReferenceFrame
 
-onready var gui = get_node("wm")
+onready var gui = get_node("gui")
 
 const PORT_TYPE_TCP = 0
 const PORT_TYPE_UDP = 1
@@ -25,10 +25,13 @@ var mNextPort = {
 	PORT_TYPE_UDP: 22000
 }
 
+var mInitRoutine = null
+
 var mOutputPorts = {}
 var mInputPorts = {}
 
 var mTmpDirPath = ""
+var mInfoFiles = {}
 var mModuleInfo = {}
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
@@ -36,15 +39,7 @@ var mURLHandlers = []
 var mTaskNodes = {} # Task ID -> Task Node
 
 func _init():
-	OS.set_target_fps(30)
-	#get_tree().set_auto_accept_quit(false)
-	#OS.set_low_processor_usage_mode(true)	
-	mTmpDirPath = rlib.join_array([
-		"user://tmp/rcos", 
-		OS.get_process_ID(),
-		OS.get_unix_time()
-	], "-") + "/"
-	mModuleInfo = _find_modules()
+	add_user_signal("init_finished")
 	add_user_signal("module_added")
 	add_user_signal("module_removed")
 	add_user_signal("url_handler_added")
@@ -54,8 +49,73 @@ func _init():
 	add_user_signal("task_changed")
 	add_user_signal("task_removed")
 	add_user_signal("new_log_entry3")
+
+func _init_routine(print_init_msg_func, args = null):
+	print_init_msg_func.call_func("*** BEGIN RC/OS INIT ***\n")
+	var root_canvas_script = load("res://rcos/root_canvas.gd")
+	get_node("/root").set_script(root_canvas_script)
+	yield()
+	print_init_msg_func.call_func("* Setting target FPS to 30...")
+	yield()
+	OS.set_target_fps(30)
+	print_init_msg_func.call_func(" DONE\n")
+	yield()
+	print_init_msg_func.call_func("* Querying host model name...")
+	yield()
 	var model_name = OS.get_model_name()
+	print_init_msg_func.call_func(" '" + model_name + "'\n")
+	yield()
+	print_init_msg_func.call_func("* Querying host OS name...")
+	yield()
 	var os_name = OS.get_name()
+	print_init_msg_func.call_func(" '" + os_name + "'\n")
+	yield()
+	#get_tree().set_auto_accept_quit(false)
+	#OS.set_low_processor_usage_mode(true)	
+	mTmpDirPath = rlib.join_array([
+		"user://tmp/rcos", 
+		OS.get_process_ID(),
+		OS.get_unix_time()
+	], "-") + "/"
+	print_init_msg_func.call_func("* Temp directory is " + mTmpDirPath + "\n")
+	yield()
+	print_init_msg_func.call_func("* Building info file database...\n")
+	yield()
+	var info_file_paths = rlib.find_files("res://", "*.info")
+	print_init_msg_func.call_func("* Found " + str(info_file_paths.size()) + " info files.\n")
+	yield()
+	for filename in info_file_paths:
+		print_init_msg_func.call_func("* Processing " + filename)
+		yield()
+		var config_file = ConfigFile.new()
+		var err = config_file.load(filename)
+		if err != OK:
+			print_init_msg_func.call_func(" ERROR: " + str(err)) + "\n"
+		else:
+			mInfoFiles[filename] = config_file
+			print_init_msg_func.call_func(" OK\n")
+		yield()
+	print_init_msg_func.call_func("* Building module database...\n")
+	yield()
+	for filename in mInfoFiles.keys():
+		var config_file = mInfoFiles[filename]
+		if !config_file.has_section("module"):
+			continue
+		var path = config_file.get_value("module", "path", "")
+		if path == "":
+			path = filename.basename()+".tscn"
+		elif path.begins_with("/"):
+			path = "res://" + path.right(1)
+		else:
+			path = filename.get_base_dir() + "/" + path
+		var module = {
+			"name": filename.get_file().basename(),
+			"desc": config_file.get_value("module", "desc", "No description"),
+			"path": path
+		}
+		mModuleInfo[module.name] = module
+		print_init_msg_func.call_func("* Found module: " + module.name + "\n")
+		yield()
 	data_router.set_node_icon("rcos", load("res://data_router/icons/32/rcos.png"), 32)
 	# Select icon for localhost node
 	if model_name == "GenericDevice":
@@ -65,21 +125,9 @@ func _init():
 	data_router.set_node_icon("localhost/x11", load("res://data_router/icons/32/x11.png"), 32)
 	data_router.set_node_icon("localhost/android", load("res://data_router/icons/32/android.png"), 32)
 	data_router.set_node_icon("localhost/windows", load("res://data_router/icons/32/windows_os.png"), 32)
-
-func _ready():
-	var root_canvas_script = load("res://rcos/root_canvas.gd")
-	get_node("/root").set_script(root_canvas_script)
-	_add_io_ports()
-	if !add_service(rlib.instance_scene("res://rcos/services/url_handler_service/url_handler_service.tscn")):
-		log_error(self, "Unable to add URL handler service")
-	if !add_service(rlib.instance_scene("res://rcos/services/host_info_service/host_info_service.tscn")):
-		log_error(self, "Unable to add host info service")
-	if !add_service(rlib.instance_scene("res://rcos/services/network_scanner_service/network_scanner_service.tscn")):
-		log_error(self, "Unable to add network scanner service")
-	if !add_service(rlib.instance_scene("res://rcos/services/widgets_service/widgets_service.tscn")):
-		log_error(self, "Unable to add widgets service")
-
-func _add_io_ports():
+	# Create I/O ports...
+	print_init_msg_func.call_func("* Creating output port: /rcos/open(url)...")
+	yield()
 	var port_path_prefix = "rcos/"
 	var port = data_router.add_input_port(port_path_prefix+"/open(url)")
 	port.set_meta("data_type", "string")
@@ -87,6 +135,54 @@ func _add_io_ports():
 	mInputPorts["open(url)"] = port
 	for port in mInputPorts.values():
 		port.connect("data_changed", self, "_on_input_data_changed", [port])
+	print_init_msg_func.call_func(" DONE\n")
+	yield()
+	print_init_msg_func.call_func("* Starting services...\n")
+	var services = {
+		"URL Handler service": "res://rcos/services/url_handler_service/url_handler_service.tscn",
+		"Host Info service": "res://rcos/services/host_info_service/host_info_service.tscn",
+		"Network Scanner service": "res://rcos/services/network_scanner_service/network_scanner_service.tscn",
+		"Widgets service": "res://rcos/services/widgets_service/widgets_service.tscn"
+	}
+	for service_name in services.keys():
+		print_init_msg_func.call_func("* Starting " + service_name + "...")
+		yield()
+		var scene_path = services[service_name]
+		var service_packed = load(scene_path)
+		if service_packed == null:
+			print_init_msg_func.call_func(" FAILED\n")
+			print_init_msg_func.call_func("*** INIT FAILED: UNABLE TO LOAD " + service_name.to_upper() + "\n")
+			return null
+		var service = service_packed.instance()
+		if service == null:
+			print_init_msg_func.call_func(" FAILED\n")
+			print_init_msg_func.call_func("*** INIT FAILED: UNABLE TO INSTANCE " + service_name.to_upper() + "\n")
+			return null
+		if !add_service(service):
+			print_init_msg_func.call_func(" FAILED\n")
+			print_init_msg_func.call_func("*** INIT FAILED: UNABLE TO ADD " + service_name.to_upper() + "\n")
+			return null
+		print_init_msg_func.call_func(" DONE\n")
+		yield()
+	print_init_msg_func.call_func("* Loading Window Manager...")
+	yield()
+	var wm_packed = load("res://rcos/wm/wm.tscn")
+	if wm_packed == null:
+		print_init_msg_func.call_func(" FAILED\n")
+		print_init_msg_func.call_func(" *** INIT FAILED: UNABLE TO LOAD WINDOW MANAGER")
+		return null
+	var wm = wm_packed.instance()
+	if wm_packed == null:
+		print_init_msg_func.call_func(" FAILED\n")
+		print_init_msg_func.call_func(" *** INIT FAILED: UNABLE TO INSTANCE WINDOW MANAGER")
+		return null
+	print_init_msg_func.call_func(" DONE\n")
+	yield()
+	get_node("gui/wm_screen").add_child(wm)
+	get_node("gui/wm_screen").set_hidden(false)
+	print_init_msg_func.call_func("*** RC/OS INIT FINISHED ***\n")
+	emit_signal("init_finished")
+	return null
 
 func _on_input_data_changed(old_data, new_data, port):
 	if port.get_name() == "open(url)":
@@ -144,6 +240,9 @@ func enable_canvas_input(node):
 func disable_canvas_input(node):
 	var group = "_canvas_input"+str(node.get_viewport().get_instance_ID())
 	node.remove_from_group(group)
+
+func get_info_files():
+	return mInfoFiles
 
 func get_module_info():
 	return mModuleInfo
@@ -226,18 +325,18 @@ func spawn_module(module_name, instance_name = null):
 			module_name = module_name+"_module"
 		else:
 			log_error(self, "spawn_module(): Unknown module: " + module_name)
-			return false
+			return null
 	var module = mModuleInfo[module_name]
 	if instance_name == null:
 		instance_name = module.name
 	var scene_packed = load(module.path)
 	if scene_packed == null:
 		log_error(self, "spawn_module(): Error loading " + module.path)
-		return false
+		return null
 	var module_node = scene_packed.instance()
 	if module_node == null:
 		log_error(self, "spawn_module(): Error instancing " + module.path)
-		return false
+		return null
 	var node = Node.new()
 	node.set_name(str(mNextAvailableModuleId))
 	node.add_child(module_node)
@@ -288,3 +387,6 @@ func open(url):
 			url_handler.open_func.call_func(url)
 			return true
 	return false
+
+func initialize(print_init_msg_func, args = null):
+	return _init_routine(print_init_msg_func, args)

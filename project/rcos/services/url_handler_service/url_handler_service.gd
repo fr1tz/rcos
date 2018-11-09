@@ -19,13 +19,9 @@ func _ready():
 
 func find_url_handlers():
 	var paths = []
-	var info_files = rlib.find_files("res://", "*.info")
-	for filename in info_files:
-		var config_file = ConfigFile.new()
-		var err = config_file.load(filename)
-		if err != OK:
-			log_error(self, "Error reading info file " + filename + ": " + str(err))
-			continue
+	var info_files = rcos.get_info_files()
+	for filename in info_files.keys():
+		var config_file = info_files[filename]
 		if !config_file.has_section("url_handler"):
 			continue
 		var path = config_file.get_value("url_handler", "path", filename.basename()+".tscn")

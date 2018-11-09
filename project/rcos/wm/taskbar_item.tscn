@@ -2,18 +2,18 @@
 
 [ext_resource path="res://rcos/wm/taskbar_item.gd" type="Script" id=1]
 [ext_resource path="res://rcos/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://remote_connector/graphics/host_icon_frame.png" type="Texture" id=3]
+[ext_resource path="res://data_router/icons/32/host_icon_frame.png" type="Texture" id=3]
 [ext_resource path="res://rcos/wm/icon.gd" type="Script" id=4]
 [ext_resource path="res://rcos/fonts/teko/Teko-Bold.ttf" type="DynamicFontData" id=5]
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=1]
 
 font/size = 18
 font/use_mipmaps = false
 font/use_filter = false
 font/font = ExtResource( 2 )
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxFlat" id=2]
 
 content_margin/left = -1.0
 content_margin/right = -1.0
@@ -26,7 +26,7 @@ border_size = 1
 border_blend = true
 draw_bg = true
 
-[sub_resource type="StyleBoxFlat" id=2]
+[sub_resource type="StyleBoxFlat" id=3]
 
 content_margin/left = -1.0
 content_margin/right = -1.0
@@ -39,7 +39,7 @@ border_size = 1
 border_blend = true
 draw_bg = true
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="DynamicFont" id=4]
 
 font/size = 16
 extra_spacing/char = 1
@@ -107,7 +107,7 @@ margin/left = 0.0
 margin/top = 5.0
 margin/right = 46.0
 margin/bottom = 0.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_as_outline = 2
 text = "Window Title"
@@ -143,7 +143,7 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
-custom_styles/panel = SubResource( 1 )
+custom_styles/panel = SubResource( 2 )
 
 [node name="button_down" type="Panel" parent="square"]
 
@@ -157,7 +157,7 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
-custom_styles/panel = SubResource( 2 )
+custom_styles/panel = SubResource( 3 )
 
 [node name="task_color" type="ColorFrame" parent="square"]
 
@@ -209,7 +209,7 @@ margin/left = 37.0
 margin/top = 3.0
 margin/right = 2.0
 margin/bottom = -1.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 4 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = 1
 custom_constants/shadow_offset_y = 1

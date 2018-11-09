@@ -11,7 +11,7 @@
 [ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=9]
 [ext_resource path="res://rcos/wm/graphics/rcos_button_box.png" type="Texture" id=10]
 
-[sub_resource type="GDScript" id=11]
+[sub_resource type="GDScript" id=1]
 
 script/source = "extends Sprite
 
@@ -24,13 +24,6 @@ func _process(delta):
 	mRot -= 0.1
 	set_rot(mRot)
 "
-
-[sub_resource type="StyleBoxEmpty" id=1]
-
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
 
 [sub_resource type="StyleBoxEmpty" id=2]
 
@@ -81,26 +74,33 @@ content_margin/right = -1.0
 content_margin/top = -1.0
 content_margin/bottom = -1.0
 
-[sub_resource type="Theme" id=9]
+[sub_resource type="StyleBoxEmpty" id=9]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="Theme" id=10]
 
 HScrollBar/icons/decrement = null
 HScrollBar/icons/decrement_hilite = null
 HScrollBar/icons/increment = null
 HScrollBar/icons/increment_hilite = null
-HScrollBar/styles/grabber = SubResource( 1 )
-HScrollBar/styles/grabber_hilite = SubResource( 2 )
-HScrollBar/styles/scroll = SubResource( 3 )
-HScrollBar/styles/scroll_focus = SubResource( 4 )
+HScrollBar/styles/grabber = SubResource( 2 )
+HScrollBar/styles/grabber_hilite = SubResource( 3 )
+HScrollBar/styles/scroll = SubResource( 4 )
+HScrollBar/styles/scroll_focus = SubResource( 5 )
 VScrollBar/icons/decrement = null
 VScrollBar/icons/decrement_hilite = null
 VScrollBar/icons/increment = null
 VScrollBar/icons/increment_hilite = null
-VScrollBar/styles/grabber = SubResource( 5 )
-VScrollBar/styles/grabber_hilite = SubResource( 6 )
-VScrollBar/styles/scroll = SubResource( 7 )
-VScrollBar/styles/scroll_focus = SubResource( 8 )
+VScrollBar/styles/grabber = SubResource( 6 )
+VScrollBar/styles/grabber_hilite = SubResource( 7 )
+VScrollBar/styles/scroll = SubResource( 8 )
+VScrollBar/styles/scroll_focus = SubResource( 9 )
 
-[sub_resource type="StyleBoxTexture" id=10]
+[sub_resource type="StyleBoxTexture" id=11]
 
 content_margin/left = -1.0
 content_margin/right = -1.0
@@ -166,6 +166,7 @@ stretch_mode = 2
 
 [node name="rcos_button" type="Button" parent="."]
 
+editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -197,7 +198,7 @@ stretch_mode = 4
 
 transform/pos = Vector2( 20, 20 )
 texture = ExtResource( 6 )
-script/script = SubResource( 11 )
+script/script = SubResource( 1 )
 
 [node name="part3" type="TextureFrame" parent="rcos_button"]
 
@@ -214,7 +215,7 @@ stretch_mode = 4
 
 [node name="items_scroller" parent="." instance=ExtResource( 8 )]
 
-theme/theme = SubResource( 9 )
+theme/theme = SubResource( 10 )
 margin/left = -200.0
 margin/top = 44.0
 
@@ -245,6 +246,6 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 44.0
 margin/bottom = 44.0
-custom_styles/panel = SubResource( 10 )
+custom_styles/panel = SubResource( 11 )
 
 

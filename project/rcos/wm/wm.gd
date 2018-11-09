@@ -47,8 +47,8 @@ func _ready():
 	rcos.connect("task_added", self, "_on_task_added")
 	rcos.connect("task_removed", self, "_on_task_removed")
 	rcos.connect("task_changed", self, "_on_task_changed")
+	rcos.enable_canvas_input(self)
 	mTaskbar.connect("task_selected", self, "show_task")
-	#set_process_input(true)
 
 func _resized():
 	if mActiveTaskId != null:
@@ -74,18 +74,12 @@ func _canvas_input(event):
 	var index = 0
 	if touchscreen:
 		index = event.index
-	if !mDanglingControls.has(index):
+	var dangling_control = rcos.gui.get_dangling_control(index)
+	if dangling_control == null:
 		return
-	var dangling_control = mDanglingControls[index]
 	dangling_control.set_pos(event.pos - dangling_control.get_size()/2)
 	if mTaskbar.get_rect().has_point(event.pos):
 		mTaskbar.select_task_by_pos(event.pos)
-	if touch && !event.pressed:
-		get_node("overlay/dangling_controls").remove_child(dangling_control)
-		dangling_control.free()
-		mDanglingControls.erase(index)
-		if mDanglingControls.size() == 0:
-			rcos.disable_canvas_input(self)
 
 func _on_task_added(task):
 	mTaskbar.add_task(task)
