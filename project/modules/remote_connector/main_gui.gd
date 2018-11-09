@@ -44,7 +44,7 @@ func _ready():
 		mNetworkScannerService.connect("scan_finished", self, "_scan_finished")
 		mScanButton.connect("pressed", mNetworkScannerService, "start_scan")
 		mCancelScanButton.connect("pressed", mNetworkScannerService, "stop_scan")
-		mNetworkScannerService.call_deferred("start_scan")
+		#mNetworkScannerService.call_deferred("start_scan")
 	else:
 		mScanButton.set_hidden(true)
 	mOpenConnectionDialog.initialize(self)

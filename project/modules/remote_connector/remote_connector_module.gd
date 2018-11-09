@@ -31,4 +31,7 @@ func _ready():
 
 func request_focus():
 	if mTaskId >= 0:
-		rcos.gui.show_task(mTaskId)
+		var task_properties = {
+			"wants_focus": true
+		}
+		rcos.change_task(mTaskId, task_properties)
