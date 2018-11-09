@@ -64,7 +64,10 @@ func _refresh():
 		else:
 			item.set_text("")
 			item.set_icon(icon)
-		item.set_icon_label(n.get_meta("icon_label"))
+		if n.has_meta("icon_label"):
+			item.set_icon_label(n.get_meta("icon_label"))
+		else:
+			item.set_icon_label("")
 		items.add_child(item)
 		items.move_child(item, 0)
 		item.connect("pressed", self, "_set_current_node", [n])
@@ -97,7 +100,10 @@ func _refresh():
 		if icon == null:
 			icon = data_router.get_node_icon(n, 32)
 		item.set_icon(icon)
-		item.set_icon_label(n.get_meta("icon_label"))
+		if n.has_meta("icon_label"):
+			item.set_icon_label(n.get_meta("icon_label"))
+		else:
+			item.set_icon_label("")
 
 func _cancel():
 	emit_signal("canceled")

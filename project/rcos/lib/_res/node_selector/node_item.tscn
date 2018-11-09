@@ -2,7 +2,7 @@
 
 [ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://rcos/lib/_res/node_selector/node_item.gd" type="Script" id=2]
-[ext_resource path="res://remote_connector/graphics/host_icon_frame.png" type="Texture" id=3]
+[ext_resource path="res://data_router/icons/32/host_icon_frame.png" type="Texture" id=3]
 [ext_resource path="res://rcos/fonts/teko/Teko-Bold.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://rcos/fonts/teko/Teko-Light.ttf" type="DynamicFontData" id=5]
 
@@ -97,7 +97,7 @@ focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 40.0
+margin/left = 41.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
