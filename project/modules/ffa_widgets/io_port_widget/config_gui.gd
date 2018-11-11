@@ -32,7 +32,7 @@ func _select_input_port():
 	_show_port_selector("/root/data_router/input_ports")
 
 func _show_port_selector(root_path):
-	mPortSelector = rlib.instance_scene("res://rcos/lib/node_selector.tscn")
+	mPortSelector = rlib.instance_scene("res://rcos_core/lib/node_selector.tscn")
 	mPortSelector.root_path = root_path
 	add_child(mPortSelector)
 	mPortSelector.connect("canceled", self, "_hide_port_selector")

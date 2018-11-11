@@ -1,9 +1,9 @@
 [gd_scene load_steps=14 format=1]
 
-[ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/widget_panels/widget_panel/widget_panel_gui.gd" type="Script" id=2]
 [ext_resource path="res://modules/widget_panels/widget_panel/widget_panel_io_ports.tscn" type="PackedScene" id=3]
-[ext_resource path="res://rcos/lib/widget_panel.tscn" type="PackedScene" id=4]
+[ext_resource path="res://rcos_core/lib/widget_panel.tscn" type="PackedScene" id=4]
 [ext_resource path="res://modules/widget_panels/widget_panel/reshape_grid.tscn" type="PackedScene" id=5]
 [ext_resource path="res://modules/widget_panels/graphics/icons/edit_widget.png" type="Texture" id=6]
 [ext_resource path="res://modules/widget_panels/graphics/icons/add_widget.png" type="Texture" id=7]

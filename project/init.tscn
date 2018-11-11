@@ -2,7 +2,7 @@
 
 [ext_resource path="res://init.gd" type="Script" id=1]
 [ext_resource path="res://boot_splash.png" type="Texture" id=2]
-[ext_resource path="res://rcos/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://rcos_core/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -58,6 +58,7 @@ stretch_mode = 6
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 
+editor/display_folded = true
 anchor/left = 2
 anchor/top = 2
 anchor/right = 2

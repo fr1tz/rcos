@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=1]
-
-[ext_resource path="res://rcos/services/widgets_service/widgets_service.gd" type="Script" id=1]
-
-[node name="widgets_service" type="Node"]
-
-script/script = ExtResource( 1 )
-
-

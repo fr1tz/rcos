@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=1]
 
-[ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/ffa_widgets/io_port_widget/io_port_widget.gd" type="Script" id=2]
 [ext_resource path="res://modules/ffa_widgets/io_port_widget/config_gui.tscn" type="PackedScene" id=3]
 [ext_resource path="res://modules/ffa_widgets/io_port_widget/graphics/missing_port_overlay.png" type="Texture" id=4]

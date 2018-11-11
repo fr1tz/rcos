@@ -1,9 +1,9 @@
 [gd_scene load_steps=14 format=1]
 
 [ext_resource path="res://modules/remote_connector/open_connection_dialog.gd" type="Script" id=1]
-[ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=2]
-[ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=3]
-[ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=4]
+[ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=2]
+[ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=3]
+[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=4]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 

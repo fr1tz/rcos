@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=1]
 
-[ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/quack_vnc/fullscreen_dialog.gd" type="Script" id=2]
 [ext_resource path="res://modules/quack_vnc/fb_viewer.tscn" type="PackedScene" id=3]
 

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://modules/widget_grid/widget_grid_editor/widget_grid_editor.gd" type="Script" id=1]
 [ext_resource path="res://modules/widget_grid/graphics/icons/widget_grid.png" type="Texture" id=2]
-[ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=3]
+[ext_resource path="res://rcos_core/lib/canvas.tscn" type="PackedScene" id=3]
 [ext_resource path="res://modules/widget_grid/widget_grid_editor/widget_grid_editor_gui.tscn" type="PackedScene" id=4]
 
 [node name="widget_grid_editor" type="Node"]

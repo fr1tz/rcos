@@ -1,0 +1,142 @@
+[gd_scene load_steps=6 format=1]
+
+[ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://rcos_core/lib/_res/node_selector/node_selector.gd" type="Script" id=2]
+[ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=3]
+[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=4]
+
+[sub_resource type="StyleBoxFlat" id=1]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 0.195313, 0.195313, 0.195313, 1 )
+light_color = Color( 0.8, 0.8, 0.8, 1 )
+dark_color = Color( 0.8, 0.8, 0.8, 1 )
+border_size = 0
+border_blend = true
+draw_bg = true
+
+[node name="node_selector" type="Panel"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = ExtResource( 1 )
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 200.0
+margin/bottom = 400.0
+custom_styles/panel = SubResource( 1 )
+script/script = ExtResource( 2 )
+root_path = null
+
+[node name="items_scroller" parent="." instance=ExtResource( 3 )]
+
+margin/top = 40.0
+margin/bottom = 40.0
+
+[node name="items" type="VBoxContainer" parent="items_scroller"]
+
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 40.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="scroller_input_area" parent="items_scroller" instance=ExtResource( 4 )]
+
+[node name="current_node_path" type="Panel" parent="."]
+
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 40.0
+custom_styles/panel = SubResource( 1 )
+
+[node name="scroller" parent="current_node_path" instance=ExtResource( 3 )]
+
+[node name="items" type="HBoxContainer" parent="current_node_path/scroller"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 200.0
+margin/bottom = 40.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="scroller_input_area" parent="current_node_path/scroller" instance=ExtResource( 4 )]
+
+[node name="text" type="Label" parent="current_node_path"]
+
+anchor/right = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 5.0
+margin/top = 0.0
+margin/right = 5.0
+margin/bottom = 40.0
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="refresh_button" type="Button" parent="."]
+
+anchor/top = 1
+anchor/right = 3
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 40.0
+margin/right = 0.0
+margin/bottom = 0.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Refresh"
+flat = false
+
+[node name="cancel_button" type="Button" parent="."]
+
+anchor/left = 3
+anchor/top = 1
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 40.0
+margin/right = 0.0
+margin/bottom = 0.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Cancel"
+flat = false
+
+

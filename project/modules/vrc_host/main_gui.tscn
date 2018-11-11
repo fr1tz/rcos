@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=1]
 
 [ext_resource path="res://modules/vrc_host/status_screen/status_screen.tscn" type="PackedScene" id=1]
-[ext_resource path="res://rcos/lib/window.tscn" type="PackedScene" id=2]
+[ext_resource path="res://rcos_core/lib/window.tscn" type="PackedScene" id=2]
 
 [node name="main_gui" type="Panel"]
 

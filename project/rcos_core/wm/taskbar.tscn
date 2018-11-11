@@ -1,0 +1,251 @@
+[gd_scene load_steps=22 format=1]
+
+[ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://rcos_core/wm/taskbar.gd" type="Script" id=2]
+[ext_resource path="res://rcos_core/wm/graphics/taskbar_border.png" type="Texture" id=3]
+[ext_resource path="res://rcos_core/wm/rcos_button.gd" type="Script" id=4]
+[ext_resource path="res://rcos_core/wm/graphics/rcos_button_icon_part1.png" type="Texture" id=5]
+[ext_resource path="res://rcos_core/wm/graphics/rcos_button_icon_part2.png" type="Texture" id=6]
+[ext_resource path="res://rcos_core/wm/graphics/rcos_button_icon_part3.png" type="Texture" id=7]
+[ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=8]
+[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=9]
+[ext_resource path="res://rcos_core/wm/graphics/rcos_button_box.png" type="Texture" id=10]
+
+[sub_resource type="GDScript" id=1]
+
+script/source = "extends Sprite
+
+var mRot = 0
+
+func _ready():
+	set_process(true)
+
+func _process(delta):
+	mRot -= 0.1
+	set_rot(mRot)
+"
+
+[sub_resource type="StyleBoxEmpty" id=2]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=3]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=4]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=5]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=6]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=8]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=9]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="Theme" id=10]
+
+HScrollBar/icons/decrement = null
+HScrollBar/icons/decrement_hilite = null
+HScrollBar/icons/increment = null
+HScrollBar/icons/increment_hilite = null
+HScrollBar/styles/grabber = SubResource( 2 )
+HScrollBar/styles/grabber_hilite = SubResource( 3 )
+HScrollBar/styles/scroll = SubResource( 4 )
+HScrollBar/styles/scroll_focus = SubResource( 5 )
+VScrollBar/icons/decrement = null
+VScrollBar/icons/decrement_hilite = null
+VScrollBar/icons/increment = null
+VScrollBar/icons/increment_hilite = null
+VScrollBar/styles/grabber = SubResource( 6 )
+VScrollBar/styles/grabber_hilite = SubResource( 7 )
+VScrollBar/styles/scroll = SubResource( 8 )
+VScrollBar/styles/scroll_focus = SubResource( 9 )
+
+[sub_resource type="StyleBoxTexture" id=11]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+texture = ExtResource( 10 )
+margin/left = 2.0
+margin/right = 2.0
+margin/top = 2.0
+margin/bottom = 2.0
+expand_margin/left = 0.0
+expand_margin/right = 0.0
+expand_margin/top = 0.0
+expand_margin/bottom = 0.0
+draw_center = true
+
+[node name="taskbar" type="ReferenceFrame"]
+
+anchor/left = 1
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = ExtResource( 1 )
+margin/left = 44.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+script/script = ExtResource( 2 )
+
+[node name="background" type="ColorFrame" parent="."]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+color = Color( 0.398438, 0.398438, 0.398438, 1 )
+
+[node name="taskbar_border" type="TextureFrame" parent="."]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 42.0
+margin/bottom = 0.0
+texture = ExtResource( 3 )
+modulate = Color( 0.721569, 0.721569, 0.721569, 1 )
+expand = true
+stretch_mode = 2
+
+[node name="rcos_button" type="Button" parent="."]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 3.0
+margin/top = 1.0
+margin/right = 43.0
+margin/bottom = 41.0
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+flat = false
+script/script = ExtResource( 4 )
+
+[node name="part1" type="TextureFrame" parent="rcos_button"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 1.0
+margin/top = 1.0
+margin/right = 39.0
+margin/bottom = 39.0
+texture = ExtResource( 5 )
+stretch_mode = 4
+
+[node name="part2" type="Sprite" parent="rcos_button"]
+
+transform/pos = Vector2( 20, 20 )
+texture = ExtResource( 6 )
+script/script = SubResource( 1 )
+
+[node name="part3" type="TextureFrame" parent="rcos_button"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 1.0
+margin/top = 1.0
+margin/right = 39.0
+margin/bottom = 39.0
+texture = ExtResource( 7 )
+stretch_mode = 4
+
+[node name="items_scroller" parent="." instance=ExtResource( 8 )]
+
+theme/theme = SubResource( 10 )
+margin/left = -200.0
+margin/top = 44.0
+
+[node name="items" type="VBoxContainer" parent="items_scroller"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 243.0
+margin/bottom = 40.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="scroller_input_area" parent="items_scroller" instance=ExtResource( 9 )]
+
+margin/left = 200.0
+
+[node name="Panel" type="Panel" parent="."]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 44.0
+margin/bottom = 44.0
+custom_styles/panel = SubResource( 11 )
+
+

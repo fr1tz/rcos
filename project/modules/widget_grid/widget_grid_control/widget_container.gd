@@ -104,7 +104,7 @@ func add_widget(widget, widget_io_ports_path_prefix):
 	#main_canvas_size.x = main_canvas_placeholder.get_margin(MARGIN_RIGHT)
 	#main_canvas_size.y = main_canvas_placeholder.get_margin(MARGIN_BOTTOM)
 	#main_canvas_min_size = main_canvas_placeholder.get_custom_minimum_size()
-	main_canvas = rlib.instance_scene("res://rcos/lib/canvas.tscn")
+	main_canvas = rlib.instance_scene("res://rcos_core/lib/canvas.tscn")
 	main_canvas_placeholder.replace_by(main_canvas)
 	main_canvas_placeholder.free()
 	main_canvas.set_rect(Rect2(Vector2(0, 0), main_canvas_size))
@@ -115,7 +115,7 @@ func add_widget(widget, widget_io_ports_path_prefix):
 		var config_canvas_placeholder = mWidget.get_node("config_canvas")
 		config_canvas_size.x = config_canvas_placeholder.get_margin(MARGIN_RIGHT)
 		config_canvas_size.y = config_canvas_placeholder.get_margin(MARGIN_BOTTOM)
-		config_canvas = rlib.instance_scene("res://rcos/lib/canvas.tscn")
+		config_canvas = rlib.instance_scene("res://rcos_core/lib/canvas.tscn")
 		config_canvas_placeholder.replace_by(config_canvas)
 		config_canvas_placeholder.free()
 		config_canvas.resizable = false

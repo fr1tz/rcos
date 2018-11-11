@@ -2,7 +2,7 @@
 
 [ext_resource path="res://modules/quack_vnc/quack_vnc_module.gd" type="Script" id=1]
 [ext_resource path="res://modules/quack_vnc/connection.tscn" type="PackedScene" id=2]
-[ext_resource path="res://rcos/lib/canvas.tscn" type="PackedScene" id=3]
+[ext_resource path="res://rcos_core/lib/canvas.tscn" type="PackedScene" id=3]
 [ext_resource path="res://modules/quack_vnc/rfb_client_gui.tscn" type="PackedScene" id=4]
 
 [node name="quack_vnc_module" type="Node"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=1]
 
-[ext_resource path="res://rcos/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/widget_grid/widget_grid_editor/widget_grid_editor_gui.gd" type="Script" id=2]
 [ext_resource path="res://modules/widget_grid/widget_grid_control/widget_grid_control.tscn" type="PackedScene" id=3]
 [ext_resource path="res://modules/widget_grid/widget_grid_editor/reshape_grid.tscn" type="PackedScene" id=4]
@@ -10,7 +10,7 @@
 [ext_resource path="res://modules/widget_grid/graphics/icons/add_input_port.png" type="Texture" id=8]
 [ext_resource path="res://modules/widget_grid/graphics/button_focus.tres" type="StyleBox" id=9]
 [ext_resource path="res://modules/widget_grid/widget_factories_panel/widget_factories_panel.tscn" type="PackedScene" id=10]
-[ext_resource path="res://rcos/lib/node_selector.tscn" type="PackedScene" id=11]
+[ext_resource path="res://rcos_core/lib/node_selector.tscn" type="PackedScene" id=11]
 
 [sub_resource type="StyleBoxFlat" id=1]
 

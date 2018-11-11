@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=1]
 
 [ext_resource path="res://modules/widget_grid/widget_factories_panel/widget_factories_panel.gd" type="Script" id=1]
-[ext_resource path="res://rcos/lib/scroller_container.tscn" type="PackedScene" id=2]
-[ext_resource path="res://rcos/lib/scroller_input_area.tscn" type="PackedScene" id=3]
+[ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=2]
+[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=3]
 
 [node name="widget_factories_panel" type="Panel"]
 
