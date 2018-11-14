@@ -17,6 +17,10 @@ extends ReferenceFrame
 
 onready var gui = get_node("gui")
 
+const COROUTINE_TYPE_NET_INPUT = 1
+const COROUTINE_TYPE_NET_OUTPUT = 2
+const COROUTINE_TYPE_ANIMATION = 3
+
 const PORT_TYPE_TCP = 0
 const PORT_TYPE_UDP = 1
 
