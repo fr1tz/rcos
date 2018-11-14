@@ -97,7 +97,13 @@ func _on_task_removed(task):
 
 func _on_task_changed(task):
 	mTaskbar.change_task(task)
+	var show_task = false
 	if task.get_id() == mActiveTaskId:
+		show_task = true
+	elif task.properties.has("wants_focus") && task.properties.wants_focus:
+		show_task = true
+		task.properties.erase("wants_focus")
+	if show_task:
 		show_task(task.get_id())
 
 func show_task(task_id):
