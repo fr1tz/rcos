@@ -70,6 +70,7 @@ func _init_routine():
 			return null
 		modules[module_name] = module
 		yield()
-	#modules["remote_connector"].request_focus()
+	modules["remote_connector"].request_focus()
+	rcos.get_node("services/network_scanner_service").start_scan()
 	queue_free()
 	return null

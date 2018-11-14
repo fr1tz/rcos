@@ -58,7 +58,6 @@ stretch_mode = 6
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 
-editor/display_folded = true
 anchor/left = 2
 anchor/top = 2
 anchor/right = 2
