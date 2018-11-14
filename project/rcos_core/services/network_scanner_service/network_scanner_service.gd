@@ -14,7 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var mScanners = []
-var mScanning = false
+var mPerformScan = false
+var mScanRoutine = null
 
 func _init():
 	add_user_signal("scan_started")
@@ -22,23 +23,40 @@ func _init():
 	add_user_signal("scan_finished")
 
 func _ready():
-	for scanner in find_network_scanners():
-		add_scanner(scanner)
-	get_node("abort_scan_timer").connect("timeout", self, "stop_scan")
-
-func _service_discovered(info):
-	emit_signal("service_discovered", info)
-
-func find_network_scanners():
-	var scanners = []
 	var info_files = rcos.get_info_files()
 	for filename in info_files.keys():
 		var config_file = info_files[filename]
 		if !config_file.has_section("network_scanner"):
 			continue
 		var path = config_file.get_value("network_scanner", "path", filename.basename()+".tscn")
-		scanners.push_back(path)
-	return scanners
+		if !mScanners.has(path):
+			mScanners.push_back(path)
+	mScanRoutine = coroutines.create(self, "_scan_routine")
+	get_node("abort_scan_timer").connect("timeout", self, "stop_scan")
+
+func _service_discovered(info):
+	emit_signal("service_discovered", info)
+
+func _scan_routine():
+	while mPerformScan:
+		emit_signal("scan_started")
+		for scanner_path in mScanners:
+			var scanner = rlib.instance_scene(scanner_path)
+			if scanner:
+				scanner.connect("service_discovered", self, "_service_discovered")
+				get_node("scanners").add_child(scanner)
+			yield()
+		get_node("abort_scan_timer").start()
+		while mPerformScan && get_node("scanners").get_child_count() > 0:
+			yield()
+		get_node("abort_scan_timer").stop()
+		mPerformScan = false
+		emit_signal("scan_finished")
+		for scanner in get_node("scanners").get_children():
+			get_node("scanners").remove_child(scanner)
+			scanner.free()
+			yield()
+	return null
 
 func add_scanner(scene_path):
 	if !mScanners.has(scene_path):
@@ -48,24 +66,9 @@ func remove_scanner(scene_path):
 	mScanners.erase(scene_path)
 
 func start_scan():
-	if mScanning:
-		return
-	for scanner_path in mScanners:
-		var scanner = rlib.instance_scene(scanner_path)
-		if scanner:
-			scanner.connect("service_discovered", self, "_service_discovered")
-			get_node("scanners").add_child(scanner)
-	if get_node("scanners").get_child_count() == 0:
-		stop_scan()
-		return
-	get_node("abort_scan_timer").start()
-	mScanning = true
-	emit_signal("scan_started")
+	mPerformScan = true
+	if !mScanRoutine.is_running():
+		mScanRoutine.start()
 
 func stop_scan():
-	for scanner in get_node("scanners").get_children():
-		get_node("scanners").remove_child(scanner)
-		scanner.free()
-	get_node("abort_scan_timer").stop()
-	mScanning = false
-	emit_signal("scan_finished")
+	mPerformScan = false
