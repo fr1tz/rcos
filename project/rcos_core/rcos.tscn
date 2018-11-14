@@ -41,7 +41,7 @@ margin/bottom = 0.0
 color = Color( 0, 0, 0, 1 )
 script/script = ExtResource( 2 )
 
-[node name="wm_screen" type="Control" parent="gui"]
+[node name="window_manager" type="Control" parent="gui"]
 
 anchor/right = 1
 anchor/bottom = 1

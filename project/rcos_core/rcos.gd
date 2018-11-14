@@ -25,8 +25,6 @@ var mNextPort = {
 	PORT_TYPE_UDP: 22000
 }
 
-var mInitRoutine = null
-
 var mOutputPorts = {}
 var mInputPorts = {}
 
@@ -54,11 +52,6 @@ func _init_routine(print_init_msg_func, args = null):
 	print_init_msg_func.call_func("*** BEGIN RC/OS INIT ***\n")
 	var root_canvas_script = load("res://rcos_core/root_canvas.gd")
 	get_node("/root").set_script(root_canvas_script)
-	yield()
-	print_init_msg_func.call_func("* Setting target FPS to 30...")
-	yield()
-	OS.set_target_fps(30)
-	print_init_msg_func.call_func(" DONE\n")
 	yield()
 	print_init_msg_func.call_func("* Querying host model name...")
 	yield()
@@ -176,12 +169,12 @@ func _init_routine(print_init_msg_func, args = null):
 		print_init_msg_func.call_func(" FAILED\n")
 		print_init_msg_func.call_func(" *** INIT FAILED: UNABLE TO INSTANCE WINDOW MANAGER")
 		return null
+	get_node("gui/window_manager").add_child(wm)
 	print_init_msg_func.call_func(" DONE\n")
 	yield()
-	get_node("gui/wm_screen").add_child(wm)
-	get_node("gui/wm_screen").set_hidden(false)
 	print_init_msg_func.call_func("*** RC/OS INIT FINISHED ***\n")
 	emit_signal("init_finished")
+	OS.set_target_fps(30)
 	return null
 
 func _on_input_data_changed(old_data, new_data, port):
