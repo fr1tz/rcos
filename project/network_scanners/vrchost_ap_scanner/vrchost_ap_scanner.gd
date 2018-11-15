@@ -17,20 +17,27 @@ extends Node
 
 var mAccessPoints = []
 var mUDP = PacketPeerUDP.new()
+var mReadPacketsRoutine = null
 
 func _init():
 	add_user_signal("service_discovered")
 
+func _exit_tree():
+	coroutines.destroy(mReadPacketsRoutine)
+
 func _ready():
 	if mUDP.listen(44000) != 0:
-		rcos.log_error(self, "Unable to listen on UDP port 44000")
-	else:
-		get_node("read_packets_timer").connect("timeout", self, "_read_packets")
-		get_node("read_packets_timer").start()
+		rcos.log_error(self, "Unable to listen on UDP port 44001")
+		queue_free()
+		return
+	mReadPacketsRoutine = coroutines.create(self, "_read_packets_routine", rcos.COROUTINE_TYPE_NET_INPUT)
+	mReadPacketsRoutine.start()
 
-func _read_packets():
-	while mUDP.get_available_packet_count() > 0:
-		_process_udp_datagram()
+func _read_packets_routine():
+	while true:
+		if mUDP.get_available_packet_count() > 0:
+			_process_udp_datagram()
+		yield()
 
 func _process_udp_datagram():
 	var data = mUDP.get_packet()
