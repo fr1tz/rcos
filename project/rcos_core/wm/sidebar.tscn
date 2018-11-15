@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://rcos_core/wm/graphics/taskbar_border.png" type="Texture" id=1]
+
+[node name="sidebar" type="ColorFrame"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+color = Color( 0.398438, 0.398438, 0.398438, 1 )
+
+[node name="border" type="TextureFrame" parent="."]
+
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 2.0
+margin/bottom = 0.0
+texture = ExtResource( 1 )
+modulate = Color( 0.721569, 0.721569, 0.721569, 1 )
+expand = true
+stretch_mode = 2
+
+

@@ -17,9 +17,9 @@ extends Panel
 
 var mScreenTouches = 0
 
-onready var mDesktop = get_node("desktop")
-onready var mWindow = get_node("desktop/window")
-onready var mTaskbar = get_node("taskbar")
+onready var mDesktop = get_node("hsplit/desktop")
+onready var mWindow = get_node("hsplit/desktop/window")
+onready var mTaskbar = get_node("vsplit/hsplit2/taskbar")
 
 var mActiveTaskId = -1
 var mDanglingControls = {}
@@ -49,8 +49,14 @@ func _ready():
 	rcos.connect("task_changed", self, "_on_task_changed")
 	rcos.enable_canvas_input(self)
 	mTaskbar.connect("task_selected", self, "show_task")
+	_resized()
 
 func _resized():
+	var isquare_size = rcos.get_isquare_size()
+	get_node("hsplit").set_split_offset(get_size().x-isquare_size)
+	get_node("vsplit").set_split_offset(isquare_size)
+	get_node("vsplit/hsplit1").set_split_offset(get_size().x-isquare_size)
+	get_node("vsplit/hsplit2").set_split_offset(get_size().x-isquare_size)
 	if mActiveTaskId != null:
 		show_task(mActiveTaskId)
 #	var root_canvas = get_node("root_window").get_canvas()

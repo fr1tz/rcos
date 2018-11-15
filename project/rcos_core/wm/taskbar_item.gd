@@ -52,7 +52,7 @@ func set_task_color(color):
 func set_icon(texture):
 	if texture == null:
 		return
-	get_node("square/icon").set_texture(texture)
+	get_node("square/center/icon").set_texture(texture)
 
 func set_icon_frame_color(color):
 	if color == null: color = Color(0, 0, 0, 0)
@@ -63,7 +63,7 @@ func set_icon_label(text):
 	get_node("square/icon_label").set_text(text)
 
 func set_icon_spin_speed(speed):
-	get_node("square/icon").set_spin_speed(speed)
+	get_node("square/center/icon").set_spin_speed(speed)
 
 func mark_active():
 	get_node("square/button_down").show()

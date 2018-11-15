@@ -17,29 +17,22 @@ extends ReferenceFrame
 
 var mActiveTaskId = -1
 
-onready var mRcosButton = get_node("rcos_button")
 onready var mTaskbarItemsGroup = "taskbar_items_"+str(get_instance_ID())
 
 func _init():
 	add_user_signal("task_selected")
 
 func _ready():
-	var items_scroller = get_node("items_scroller")
+	connect("resized", self, "_resized")
+	var items_scroller = get_node("scroller")
 	items_scroller.connect("scrolling_started", self, "show_titles")
 	items_scroller.connect("scrolling_stopped", self, "hide_titles")
-	mRcosButton.connect("pressed", self, "_on_rcos_button_pressed")
+	_resized()
 
-func _on_rcos_button_pressed():
-	if mActiveTaskId == -1:
-		return
-	var task = rcos.get_task(mActiveTaskId)
-	if task == null:
-		return
-	var ops = task.ops
-	if ops == null || ops.empty():
-		return
-	var op = ops[0]
-	op[1].call_func()
+func _resized():
+	var isquare_size = rcos.get_isquare_size()
+	for item in get_node("scroller/items").get_children():
+		item.set_custom_minimum_size(Vector2(isquare_size, isquare_size))
 
 func _item_selected(task_id):
 	emit_signal("task_selected", task_id)
@@ -77,13 +70,15 @@ func hide_titles():
 	get_tree().call_group(0, mTaskbarItemsGroup, "hide_title")
 
 func get_num_task_items():
-	return get_node("items_scroller/items").get_child_count()
+	return get_node("scroller/items").get_child_count()
 
 func add_task(task):
 	if task.properties.has("type") && task.properties.type == "widget_factory":
 		return
-	var items = get_node("items_scroller/items")
+	var items = get_node("scroller/items")
 	var item = load("res://rcos_core/wm/taskbar_item.tscn").instance()
+	var isquare_size = rcos.get_isquare_size()
+	item.set_custom_minimum_size(Vector2(isquare_size, isquare_size))
 	item.add_to_group(mTaskbarItemsGroup)
 	item.set_task_id(task.get_id())
 	item.set_parent_task_id(task.get_parent_task_id())
@@ -103,7 +98,7 @@ func add_task(task):
 				break
 
 func change_task(task):
-	var items = get_node("items_scroller/items")
+	var items = get_node("scroller/items")
 	for item in items.get_children():
 		if item.get_task_id() == task.get_id():
 			_update_taskbar_item(item, task)
@@ -116,7 +111,7 @@ func change_task(task):
 			return
 
 func remove_task(task):
-	var items = get_node("items_scroller/items")
+	var items = get_node("scroller/items")
 	for item in items.get_children():
 		if item.get_task_id() == task.get_id():
 			items.remove_child(item)
@@ -125,7 +120,7 @@ func remove_task(task):
 
 func mark_active_task(task_id):
 	mActiveTaskId = task_id
-	var items = get_node("items_scroller/items")
+	var items = get_node("scroller/items")
 	for item in items.get_children():
 		if item.get_task_id() == mActiveTaskId:
 			item.mark_active()
@@ -133,7 +128,7 @@ func mark_active_task(task_id):
 			item.mark_inactive()
 
 func select_task_by_pos(pos):
-	var items = get_node("items_scroller/items")
+	var items = get_node("scroller/items")
 	for item in items.get_children():
 		if item.get_global_rect().has_point(pos):
 			emit_signal("task_selected", item.get_task_id())
