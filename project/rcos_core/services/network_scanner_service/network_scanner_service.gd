@@ -22,6 +22,9 @@ func _init():
 	add_user_signal("service_discovered")
 	add_user_signal("scan_finished")
 
+func _exit_tree():
+	coroutines.destroy(mScanRoutine)
+
 func _ready():
 	var info_files = rcos.get_info_files()
 	for filename in info_files.keys():
