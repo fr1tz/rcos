@@ -39,6 +39,7 @@ var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
 var mURLHandlers = []
 var mTaskNodes = {} # Task ID -> Task Node
+var mISquareSize = 40
 
 func _init():
 	add_user_signal("init_finished")
@@ -67,6 +68,22 @@ func _init_routine(print_init_msg_func, args = null):
 	var os_name = OS.get_name()
 	print_init_msg_func.call_func(" '" + os_name + "'\n")
 	yield()
+	print_init_msg_func.call_func("* Querying screen size...")
+	yield()
+	var res = OS.get_screen_size()
+	print_init_msg_func.call_func(" " + str(res) + "\n")
+	yield()
+	print_init_msg_func.call_func("* Querying screen DPI...")
+	yield()
+	var dpi = OS.get_screen_dpi()
+	print_init_msg_func.call_func(" " + str(dpi) + "\n")
+	yield()
+	if model_name == "GenericDevice":
+		mISquareSize = 40 
+	else:
+		mISquareSize = dpi/4
+	if mISquareSize < 40:
+		mISquareSize = 40
 	#get_tree().set_auto_accept_quit(false)
 	#OS.set_low_processor_usage_mode(true)	
 	mTmpDirPath = rlib.join_array([
@@ -240,6 +257,9 @@ func disable_canvas_input(node):
 
 func get_info_files():
 	return mInfoFiles
+
+func get_isquare_size():
+	return mISquareSize
 
 func get_module_info():
 	return mModuleInfo
