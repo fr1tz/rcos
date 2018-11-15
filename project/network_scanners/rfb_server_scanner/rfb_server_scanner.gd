@@ -23,7 +23,7 @@ func _init():
 	add_user_signal("service_discovered")
 
 func _exit_tree():
-	mScanRoutine.stop()
+	coroutines.destroy(mScanRoutine)
 
 func _ready():
 	mPackedHostScanner = load("res://network_scanners/rfb_server_scanner/host_scanner.tscn")
