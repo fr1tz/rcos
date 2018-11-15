@@ -15,12 +15,15 @@
 
 extends ReferenceFrame
 
+export(bool) var clip_content = true
+
 func _init():
 	add_user_signal("scrolling_started")
 	add_user_signal("scrolling_stopped")
 
 func _draw():
-     VisualServer.canvas_item_set_clip(get_canvas_item(),true)
+	if clip_content:
+		VisualServer.canvas_item_set_clip(get_canvas_item(),true)
 
 func scroll(scroll_vec):
 	var container = get_child(0)
