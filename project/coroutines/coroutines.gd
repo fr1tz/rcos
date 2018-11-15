@@ -38,3 +38,11 @@ func create(object, method_name, type = 0):
 	coroutine.initialize(object, method_name, type)
 	add_child(coroutine)
 	return coroutine
+
+func destroy(coroutine):
+	if coroutine == null || coroutine.get_parent() != self:
+		return
+	if mRunningCoroutines.has(coroutine):
+		mRunningCoroutines.erase(coroutine)
+	remove_child(coroutine)
+	coroutine.queue_free()

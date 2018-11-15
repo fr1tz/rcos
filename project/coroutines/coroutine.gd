@@ -35,7 +35,7 @@ func start(args = []):
 
 func stop():
 	if coroutines.mRunningCoroutines.has(self):
-		coroutines.mRunningCoroutines.remove(self)
+		coroutines.mRunningCoroutines.erase(self)
 
 func is_running():
 	return mState != null
