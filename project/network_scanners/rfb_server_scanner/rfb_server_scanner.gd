@@ -16,11 +16,23 @@
 
 extends Node
 
+var mPackedHostScanner = null
+var mScanRoutine = null
+
 func _init():
 	add_user_signal("service_discovered")
 
+func _exit_tree():
+	mScanRoutine.stop()
+
 func _ready():
+	mPackedHostScanner = load("res://network_scanners/rfb_server_scanner/host_scanner.tscn")
+	mScanRoutine = coroutines.create(self, "_scan_routine")
+	mScanRoutine.start()
+
+func _scan_routine():
 	_scan_host("127.0.0.1")
+	yield()
 	var networks = []
 	for addr in IP.get_local_addresses():
 		if addr.begins_with("10.") \
@@ -30,14 +42,13 @@ func _ready():
 			if !networks.has(network):
 				networks.push_back(network)
 	for network in networks:
-		_scan_network(network)
-
-func _scan_network(network):
-	for i in range(1, 255):
-		_scan_host(network+str(i))
+		for i in range(1, 255):
+			_scan_host(network+str(i))
+			yield()
+	return null
 
 func _scan_host(addr):
-	var host_scanner = rlib.instance_scene("res://network_scanners/rfb_server_scanner/host_scanner.tscn")
+	var host_scanner = mPackedHostScanner.instance()
 	get_node("hosts").add_child(host_scanner)
 	host_scanner.set_name(addr)
 	host_scanner.connect("service_discovered", self, "_service_discovered")

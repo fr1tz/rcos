@@ -15,11 +15,15 @@
 
 extends Node
 
+var mPackedPortTester = null
 var mHostAddress = ""
 var mPortTester = null
 
 func _init():
 	add_user_signal("service_discovered")
+
+func _ready():
+	mPackedPortTester = load("res://network_scanners/rfb_server_scanner/tcp_port_tester.tscn")
 
 func _port_open(port):
 	var url = "rfb://"+mHostAddress+":"+str(port-5900)
@@ -49,7 +53,7 @@ func _port_closed(port):
 
 func scan_host(addr):
 	mHostAddress = addr
-	mPortTester = rlib.instance_scene("res://network_scanners/rfb_server_scanner/tcp_port_tester.tscn")
+	mPortTester = mPackedPortTester.instance()
 	add_child(mPortTester)
 	mPortTester.connect("port_open", self, "_port_open")
 	mPortTester.connect("port_closed", self, "_port_closed")
