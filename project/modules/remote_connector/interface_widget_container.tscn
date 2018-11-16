@@ -85,7 +85,7 @@ margin/right = 194.0
 margin/bottom = 46.0
 color = Color( 0, 0, 0, 1 )
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="vbox" type="VBoxContainer" parent="."]
 
 focus/ignore_mouse = false
 focus/stop_mouse = false
@@ -97,7 +97,7 @@ margin/right = 194.0
 margin/bottom = 46.0
 alignment = 0
 
-[node name="header" type="ReferenceFrame" parent="VBoxContainer"]
+[node name="header" type="Container" parent="vbox"]
 
 rect/min_size = Vector2( 100, 40 )
 focus/ignore_mouse = false
@@ -109,8 +109,9 @@ margin/top = 0.0
 margin/right = 192.0
 margin/bottom = 40.0
 
-[node name="frame" type="Panel" parent="VBoxContainer/header"]
+[node name="frame" type="Panel" parent="vbox/header"]
 
+editor/display_folded = true
 anchor/right = 1
 anchor/bottom = 1
 rect/min_size = Vector2( 40, 40 )
@@ -124,7 +125,7 @@ margin/right = 0.0
 margin/bottom = 0.0
 custom_styles/panel = SubResource( 2 )
 
-[node name="frame_color" type="ColorFrame" parent="VBoxContainer/header/frame"]
+[node name="frame_color" type="ColorFrame" parent="vbox/header/frame"]
 
 visibility/self_opacity = 0.5
 anchor/right = 1
@@ -139,45 +140,88 @@ margin/right = 0.0
 margin/bottom = 0.0
 color = Color( 0, 0, 0, 1 )
 
-[node name="icon_frame" type="TextureFrame" parent="VBoxContainer/header"]
+[node name="hbox" type="HBoxContainer" parent="vbox/header"]
 
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+alignment = 0
+
+[node name="indent" type="Container" parent="vbox/header/hbox"]
+
+rect/min_size = Vector2( 20, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
+
+[node name="label" type="Container" parent="vbox/header/hbox"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 3
+size_flags/vertical = 2
+margin/left = 24.0
+margin/top = 0.0
+margin/right = 188.0
+margin/bottom = 40.0
+
+[node name="frame" type="TextureFrame" parent="vbox/header/hbox/label"]
+
+anchor/top = 3
+anchor/bottom = 3
 rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 0.0
+margin/top = 20.0
 margin/right = 40.0
-margin/bottom = 40.0
+margin/bottom = -20.0
 texture = ExtResource( 3 )
 stretch_mode = 4
 
-[node name="icon" type="TextureFrame" parent="VBoxContainer/header"]
+[node name="icon" type="TextureFrame" parent="vbox/header/hbox/label"]
 
+anchor/top = 3
+anchor/bottom = 3
 rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 0.0
+margin/top = 20.0
 margin/right = 40.0
-margin/bottom = 40.0
+margin/bottom = -20.0
 texture = ExtResource( 4 )
 stretch_mode = 4
 
-[node name="host_label" type="Label" parent="VBoxContainer/header"]
+[node name="label" type="Label" parent="vbox/header/hbox/label"]
 
+anchor/top = 3
 anchor/right = 1
+anchor/bottom = 3
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 45.0
-margin/top = 0.0
-margin/right = 39.0
-margin/bottom = 40.0
+margin/top = 20.0
+margin/right = 0.0
+margin/bottom = -20.0
 custom_fonts/font = ExtResource( 5 )
 text = "Host"
 valign = 1
@@ -185,18 +229,29 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="edit_button" type="Button" parent="VBoxContainer/header"]
+[node name="buttons" type="Container" parent="vbox/header/hbox"]
 
-anchor/left = 1
-anchor/right = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 35.0
+margin/left = 192.0
+margin/top = 0.0
+margin/right = 192.0
+margin/bottom = 40.0
+
+[node name="edit_button" type="Button" parent="vbox/header/hbox/buttons"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 5.0
 margin/top = 5.0
 margin/right = 5.0
-margin/bottom = 35.0
+margin/bottom = 5.0
 custom_fonts/font = SubResource( 3 )
 toggle_mode = false
 enabled_focus_mode = 2
@@ -204,7 +259,7 @@ shortcut = null
 text = ""
 flat = false
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="vbox"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -214,14 +269,15 @@ margin/left = 0.0
 margin/top = 44.0
 margin/right = 192.0
 margin/bottom = 44.0
+custom_constants/margin_left = 40
 
-[node name="interface_widgets" type="VBoxContainer" parent="VBoxContainer/MarginContainer"]
+[node name="interface_widgets" type="VBoxContainer" parent="vbox/MarginContainer"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 8.0
+margin/left = 40.0
 margin/top = 0.0
 margin/right = 192.0
 margin/bottom = 0.0

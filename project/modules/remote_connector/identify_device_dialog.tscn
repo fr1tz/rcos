@@ -112,14 +112,18 @@ script/script = ExtResource( 2 )
 
 [node name="Label" type="Label" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 31.0
-margin/top = 30.0
-margin/right = 167.0
-margin/bottom = 52.0
+margin/left = 0.155
+margin/top = 0.075
+margin/right = 0.835
+margin/bottom = 0.13
 custom_fonts/font = ExtResource( 3 )
 text = "Which device is this?"
 percent_visible = 1.0
@@ -128,14 +132,18 @@ max_lines_visible = -1
 
 [node name="device_address_label" type="Label" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 4.0
-margin/top = 9.0
-margin/right = 195.0
-margin/bottom = 21.0
+margin/left = 0.02
+margin/top = 0.0225
+margin/right = 0.975
+margin/bottom = 0.0525
 text = "(address)"
 align = 1
 percent_visible = 1.0
@@ -144,14 +152,18 @@ max_lines_visible = -1
 
 [node name="Label1" type="Label" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 60.0
-margin/top = 89.0
-margin/right = 135.0
-margin/bottom = 106.0
+margin/left = 0.3
+margin/top = 0.2225
+margin/right = 0.675
+margin/bottom = 0.265
 custom_fonts/font = ExtResource( 4 )
 text = "Known devices:"
 percent_visible = 1.0
@@ -160,14 +172,18 @@ max_lines_visible = -1
 
 [node name="devices_panel" type="Panel" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 20.0
-margin/top = 108.0
-margin/right = 180.0
-margin/bottom = 280.0
+margin/left = 0.1
+margin/top = 0.27
+margin/right = 0.9
+margin/bottom = 0.795
 custom_styles/panel = SubResource( 1 )
 
 [node name="devices_scroller" parent="devices_panel" instance=ExtResource( 5 )]
@@ -177,6 +193,7 @@ margin/left = 2.0
 margin/top = 2.0
 margin/right = 2.0
 margin/bottom = 2.0
+clip_content = true
 
 [node name="devices_list" type="VBoxContainer" parent="devices_panel/devices_scroller"]
 
@@ -197,14 +214,18 @@ alignment = 0
 
 [node name="add_device_button" type="Button" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 23.0
-margin/top = 287.0
-margin/right = 180.0
-margin/bottom = 312.0
+margin/left = 0.115
+margin/top = 0.8175
+margin/right = 0.9
+margin/bottom = 0.88
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -213,14 +234,18 @@ flat = false
 
 [node name="cancel_button" type="Button" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 23.0
-margin/top = 317.0
-margin/right = 180.0
-margin/bottom = 342.0
+margin/left = 0.115
+margin/top = 0.8925
+margin/right = 0.9
+margin/bottom = 0.955
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null

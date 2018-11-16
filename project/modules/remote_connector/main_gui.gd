@@ -15,11 +15,13 @@
 
 extends Panel
 
-onready var mInterfaceWidgetContainers = get_node("interfaces_panel/interfaces_scroller/interfaces_list")
-onready var mInfoWidget = get_node("info_panel/info_widget")
-onready var mOpenConnectionButton = get_node("buttons/open_connection")
-onready var mScanButton = get_node("buttons/scan")
-onready var mCancelScanButton = get_node("scan_progress/cancel_button")
+onready var mInterfaceWidgetContainers = get_node("vsplit/content/interfaces_panel/interfaces_scroller/interfaces_list")
+onready var mInfoWidget = get_node("vsplit/content/info_panel/info_widget")
+onready var mButtons = get_node("vsplit/button_bar/buttons")
+onready var mOpenConnectionButton = mButtons.get_node("open_connection")
+onready var mScanButton = mButtons.get_node("scan")
+onready var mScanProgress = mButtons.get_node("scan_progress")
+onready var mCancelScanButton = mButtons.get_node("cancel_scan_button")
 onready var mOpenConnectionDialog = get_node("dialogs/open_connection_dialog")
 onready var mIdentifyDeviceDialog = get_node("dialogs/identify_device_dialog")
 onready var mDeviceEditorDialog = get_node("dialogs/device_editor_dialog")
@@ -30,9 +32,9 @@ var mSelectedInterfaceWidget = null
 var mServices = []
 
 func _ready():
+	connect("resized", self, "_resized")
 	get_viewport().connect("display", self, "_on_displayed")
 	get_viewport().connect("conceal", self, "_on_concealed")
-	get_viewport().connect("size_changed", self, "_on_size_changed")
 	mOpenConnectionButton.connect("pressed", mOpenConnectionDialog, "set_hidden", [false])
 	if rcos.has_node("services/host_info_service"):
 		mHostInfoService = rcos.get_node("services/host_info_service")
@@ -47,9 +49,20 @@ func _ready():
 		#mNetworkScannerService.call_deferred("start_scan")
 	else:
 		mScanButton.set_hidden(true)
+	mScanProgress.set_hidden(true)
+	mCancelScanButton.set_hidden(true)
 	mOpenConnectionDialog.initialize(self)
 	mIdentifyDeviceDialog.initialize(self, mDeviceEditorDialog)
 	mDeviceEditorDialog.initialize(self)
+	_resized()
+
+func _resized():
+	var isquare_size = rcos.get_isquare_size()
+	mButtons.get_child(0).set_custom_minimum_size(Vector2(isquare_size, isquare_size))
+	mButtons.get_child(1).set_custom_minimum_size(Vector2(isquare_size, isquare_size))
+	mButtons.get_child(2).set_custom_minimum_size(Vector2(2*isquare_size, isquare_size))
+	mButtons.get_child(3).set_custom_minimum_size(Vector2(isquare_size, isquare_size))
+	get_node("vsplit").set_split_offset(isquare_size)
 
 func _scan_started():
 	mServices = []
@@ -57,10 +70,14 @@ func _scan_started():
 		mInterfaceWidgetContainers.remove_child(c)
 		c.free()
 	mSelectedInterfaceWidget = null
-	get_node("scan_progress").set_hidden(false)
+	mScanButton.set_hidden(true)
+	mScanProgress.set_hidden(false)
+	mCancelScanButton.set_hidden(false)
 
 func _scan_finished():
-	get_node("scan_progress").set_hidden(true)
+	mScanButton.set_hidden(false)
+	mScanProgress.set_hidden(true)
+	mCancelScanButton.set_hidden(true)
 
 func _service_discovered(service_info):
 	mServices.push_back(service_info)
@@ -91,13 +108,6 @@ func _on_displayed():
 func _on_concealed():
 	#print("connector: _on_concealed")
 	rcos.log_debug(self, "_on_concealed()")
-
-func _on_size_changed():
-	rcos.log_debug(self, "_on_size_changed()")
-#	var width = float(get_viewport().get_rect().size.x - 4 - 8 - 10)
-#	var new_column_count = floor(width/(42+2))
-#	for interface_container in mInterfaceWidgetContainers.get_children():
-#		interface_container.mInterfaceWidgets.set_columns(new_column_count)
 
 func _interface_widget_selected(interface_widget):
 	if interface_widget == mSelectedInterfaceWidget:

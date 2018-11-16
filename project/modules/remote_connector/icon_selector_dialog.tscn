@@ -111,14 +111,18 @@ script/script = ExtResource( 2 )
 
 [node name="Label1" type="Label" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 0.0
-margin/top = 5.0
-margin/right = 199.0
-margin/bottom = 22.0
+margin/top = 0.0125
+margin/right = 0.995
+margin/bottom = 0.055
 custom_fonts/font = ExtResource( 3 )
 text = "Select Icon:"
 align = 1
@@ -128,14 +132,18 @@ max_lines_visible = -1
 
 [node name="icons_panel" type="Panel" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 18.0
-margin/top = 26.0
-margin/right = 182.0
-margin/bottom = 350.0
+margin/left = 0.09
+margin/top = 0.065
+margin/right = 0.91
+margin/bottom = 0.875
 custom_styles/panel = SubResource( 1 )
 
 [node name="icons_scroller" parent="icons_panel" instance=ExtResource( 4 )]
@@ -145,6 +153,7 @@ margin/left = 2.0
 margin/top = 2.0
 margin/right = 2.0
 margin/bottom = 2.0
+clip_content = true
 
 [node name="icons_list" type="GridContainer" parent="icons_panel/icons_scroller"]
 
@@ -166,15 +175,18 @@ columns = 4
 
 [node name="cancel_button" type="Button" parent="."]
 
-anchor/right = 1
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 18.0
-margin/top = 361.0
-margin/right = 18.0
-margin/bottom = 386.0
+margin/left = 0.09
+margin/top = 0.9025
+margin/right = 0.91
+margin/bottom = 0.965
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null

@@ -1,16 +1,14 @@
-[gd_scene load_steps=23 format=1]
+[gd_scene load_steps=21 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/remote_connector/device_editor_dialog.gd" type="Script" id=2]
 [ext_resource path="res://rcos_core/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=3]
 [ext_resource path="res://data_router/icons/32/question_mark.png" type="Texture" id=4]
 [ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=5]
-[ext_resource path="res://rcos_core/lib/_res/scroller_container/scroller_container.gd" type="Script" id=6]
-[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=7]
-[ext_resource path="res://rcos_core/lib/_res/scroller_container/scroller_input_area.gd" type="Script" id=8]
-[ext_resource path="res://rcos_core/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=9]
-[ext_resource path="res://modules/remote_connector/icon_selector_dialog.tscn" type="PackedScene" id=10]
-[ext_resource path="res://modules/remote_connector/color_selector_dialog.tscn" type="PackedScene" id=11]
+[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=6]
+[ext_resource path="res://rcos_core/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=7]
+[ext_resource path="res://modules/remote_connector/icon_selector_dialog.tscn" type="PackedScene" id=8]
+[ext_resource path="res://modules/remote_connector/color_selector_dialog.tscn" type="PackedScene" id=9]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -105,7 +103,7 @@ VScrollBar/styles/scroll_focus = SubResource( 9 )
 font/size = 16
 font/use_mipmaps = false
 font/use_filter = false
-font/font = ExtResource( 9 )
+font/font = ExtResource( 7 )
 
 [node name="device_editor_dialog" type="ColorFrame"]
 
@@ -124,14 +122,18 @@ script/script = ExtResource( 2 )
 
 [node name="Label" type="Label" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 10.0
-margin/top = 10.0
-margin/right = 104.0
-margin/bottom = 27.0
+margin/left = 0.05
+margin/top = 0.025
+margin/right = 0.52
+margin/bottom = 0.0675
 custom_fonts/font = ExtResource( 3 )
 text = "Device Name:"
 percent_visible = 1.0
@@ -140,14 +142,18 @@ max_lines_visible = -1
 
 [node name="Label1" type="Label" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 10.0
-margin/top = 80.0
-margin/right = 61.0
-margin/bottom = 97.0
+margin/left = 0.05
+margin/top = 0.2
+margin/right = 0.305
+margin/bottom = 0.2425
 custom_fonts/font = ExtResource( 3 )
 text = "Icon:"
 percent_visible = 1.0
@@ -156,14 +162,18 @@ max_lines_visible = -1
 
 [node name="Label2" type="Label" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 60.0
-margin/top = 80.0
-margin/right = 111.0
-margin/bottom = 97.0
+margin/left = 0.3
+margin/top = 0.2
+margin/right = 0.555
+margin/bottom = 0.2425
 custom_fonts/font = ExtResource( 3 )
 text = "Color:"
 percent_visible = 1.0
@@ -172,14 +182,18 @@ max_lines_visible = -1
 
 [node name="Label3" type="Label" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 10.0
-margin/top = 150.0
-margin/right = 62.0
-margin/bottom = 167.0
+margin/left = 0.05
+margin/top = 0.375
+margin/right = 0.31
+margin/bottom = 0.4175
 custom_fonts/font = ExtResource( 3 )
 text = "Addresses:"
 percent_visible = 1.0
@@ -188,15 +202,18 @@ max_lines_visible = -1
 
 [node name="hostname_edit" type="LineEdit" parent="."]
 
-anchor/right = 1
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 10.0
-margin/top = 30.0
-margin/right = 10.0
-margin/bottom = 70.0
+margin/left = 0.05
+margin/top = 0.075
+margin/right = 0.95
+margin/bottom = 0.175
 placeholder/alpha = 0.6
 focus_mode = 2
 caret/caret_blink = false
@@ -204,14 +221,18 @@ caret/caret_blink_speed = 0.65
 
 [node name="icon_button" type="Button" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 10.0
-margin/top = 100.0
-margin/right = 50.0
-margin/bottom = 140.0
+margin/left = 0.05
+margin/top = 0.25
+margin/right = 0.25
+margin/bottom = 0.35
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -221,15 +242,18 @@ align = 0
 
 [node name="color_button" type="Button" parent="."]
 
-editor/display_folded = true
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 60.0
-margin/top = 100.0
-margin/right = 100.0
-margin/bottom = 140.0
+margin/left = 0.3
+margin/top = 0.25
+margin/right = 0.5
+margin/bottom = 0.35
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -253,30 +277,28 @@ color = Color( 1, 1, 1, 1 )
 [node name="addresses_panel" type="Panel" parent="."]
 
 editor/display_folded = true
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 10.0
-margin/top = 174.0
-margin/right = 190.0
-margin/bottom = 339.0
+margin/left = 0.05
+margin/top = 0.435
+margin/right = 0.95
+margin/bottom = 0.8475
 custom_styles/panel = SubResource( 1 )
 
-[node name="addresses_scroller" type="ReferenceFrame" parent="addresses_panel" instance=ExtResource( 5 )]
+[node name="addresses_scroller" parent="addresses_panel" instance=ExtResource( 5 )]
 
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
 theme/theme = SubResource( 10 )
 margin/left = 2.0
 margin/top = 2.0
 margin/right = 2.0
 margin/bottom = 2.0
-script/script = ExtResource( 6 )
+clip_content = true
 
 [node name="addresses_list" type="VBoxContainer" parent="addresses_panel/addresses_scroller"]
 
@@ -293,20 +315,7 @@ margin/bottom = 0.0
 custom_constants/separation = 1
 alignment = 0
 
-[node name="scroller_input_area" type="ReferenceFrame" parent="addresses_panel/addresses_scroller" instance=ExtResource( 7 )]
-
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-script/script = ExtResource( 8 )
-debug = false
+[node name="scroller_input_area" parent="addresses_panel/addresses_scroller" instance=ExtResource( 6 )]
 
 [node name="add_address_edit" type="LineEdit" parent="."]
 
@@ -345,14 +354,18 @@ flat = false
 
 [node name="cancel_button" type="Button" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 10.0
-margin/top = 350.0
-margin/right = 95.0
-margin/bottom = 390.0
+margin/left = 0.05
+margin/top = 0.875
+margin/right = 0.475
+margin/bottom = 0.975
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -361,14 +374,18 @@ flat = false
 
 [node name="save_button" type="Button" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 105.0
-margin/top = 350.0
-margin/right = 190.0
-margin/bottom = 390.0
+margin/left = 0.525
+margin/top = 0.875
+margin/right = 0.95
+margin/bottom = 0.975
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -389,8 +406,18 @@ margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
 
-[node name="icon_selector_dialog" parent="dialogs" instance=ExtResource( 10 )]
+[node name="icon_selector_dialog" parent="dialogs" instance=ExtResource( 8 )]
 
-[node name="color_selector_dialog" parent="dialogs" instance=ExtResource( 11 )]
+anchor/right = 1
+anchor/bottom = 1
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="color_selector_dialog" parent="dialogs" instance=ExtResource( 9 )]
+
+anchor/right = 1
+anchor/bottom = 1
+margin/right = 0.0
+margin/bottom = 0.0
 
 

@@ -1,13 +1,11 @@
-[gd_scene load_steps=19 format=1]
+[gd_scene load_steps=17 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/remote_connector/color_selector_dialog.gd" type="Script" id=2]
 [ext_resource path="res://rcos_core/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=3]
 [ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=4]
-[ext_resource path="res://rcos_core/lib/_res/scroller_container/scroller_container.gd" type="Script" id=5]
-[ext_resource path="res://modules/remote_connector/color_button.tscn" type="PackedScene" id=6]
-[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=7]
-[ext_resource path="res://rcos_core/lib/_res/scroller_container/scroller_input_area.gd" type="Script" id=8]
+[ext_resource path="res://modules/remote_connector/color_button.tscn" type="PackedScene" id=5]
+[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=6]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -114,14 +112,18 @@ script/script = ExtResource( 2 )
 
 [node name="Label1" type="Label" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 0.0
-margin/top = 5.0
-margin/right = 199.0
-margin/bottom = 22.0
+margin/top = 0.0125
+margin/right = 0.995
+margin/bottom = 0.055
 custom_fonts/font = ExtResource( 3 )
 text = "Select Color:"
 align = 1
@@ -131,15 +133,18 @@ max_lines_visible = -1
 
 [node name="cancel_button" type="Button" parent="."]
 
-anchor/right = 1
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 18.0
-margin/top = 361.0
-margin/right = 18.0
-margin/bottom = 386.0
+margin/left = 0.09
+margin/top = 0.9025
+margin/right = 0.91
+margin/bottom = 0.965
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -148,30 +153,28 @@ flat = false
 
 [node name="colors_panel" type="Panel" parent="."]
 
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 18.0
-margin/top = 26.0
-margin/right = 182.0
-margin/bottom = 350.0
+margin/left = 0.09
+margin/top = 0.065
+margin/right = 0.91
+margin/bottom = 0.875
 custom_styles/panel = SubResource( 1 )
 
-[node name="colors_scroller" type="ReferenceFrame" parent="colors_panel" instance=ExtResource( 4 )]
+[node name="colors_scroller" parent="colors_panel" instance=ExtResource( 4 )]
 
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
 theme/theme = SubResource( 10 )
 margin/left = 2.0
 margin/top = 2.0
 margin/right = 2.0
 margin/bottom = 2.0
-script/script = ExtResource( 5 )
+clip_content = true
 
 [node name="colors_list" type="GridContainer" parent="colors_panel/colors_scroller"]
 
@@ -191,40 +194,40 @@ custom_constants/vseparation = 0
 custom_constants/hseparation = 0
 columns = 4
 
-[node name="color_button5" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button5" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 color = Color( 0.511719, 0, 0, 1 )
 
-[node name="color_button6" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button6" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
 margin/right = 80.0
 color = Color( 0.535156, 0.246674, 0.246674, 1 )
 
-[node name="color_button7" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button7" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
 margin/right = 120.0
 color = Color( 1, 0.464844, 0.464844, 1 )
 
-[node name="color_button8" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button8" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
 margin/right = 160.0
 color = Color( 1, 0, 0, 1 )
 
-[node name="color_button29" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button29" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 40.0
 margin/bottom = 80.0
 color = Color( 0.515625, 0, 0.253784, 1 )
 
-[node name="color_button30" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button30" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -233,7 +236,7 @@ margin/right = 80.0
 margin/bottom = 80.0
 color = Color( 0.542969, 0.254517, 0.396489, 1 )
 
-[node name="color_button31" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button31" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -242,7 +245,7 @@ margin/right = 120.0
 margin/bottom = 80.0
 color = Color( 1, 0.492188, 0.742126, 1 )
 
-[node name="color_button32" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button32" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -251,14 +254,14 @@ margin/right = 160.0
 margin/bottom = 80.0
 color = Color( 1, 0, 0.492188, 1 )
 
-[node name="color_button9" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button9" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 80.0
 margin/bottom = 120.0
 color = Color( 0.546875, 0, 0.525513, 1 )
 
-[node name="color_button10" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button10" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -267,7 +270,7 @@ margin/right = 80.0
 margin/bottom = 120.0
 color = Color( 0.507812, 0.242004, 0.497429, 1 )
 
-[node name="color_button11" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button11" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -276,7 +279,7 @@ margin/right = 120.0
 margin/bottom = 120.0
 color = Color( 1, 0.488281, 0.896057, 1 )
 
-[node name="color_button12" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button12" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -285,14 +288,14 @@ margin/right = 160.0
 margin/bottom = 120.0
 color = Color( 1, 0, 0.960938, 1 )
 
-[node name="color_button13" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button13" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 120.0
 margin/bottom = 160.0
 color = Color( 0.203552, 0, 0.566406, 1 )
 
-[node name="color_button14" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button14" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -301,7 +304,7 @@ margin/right = 80.0
 margin/bottom = 160.0
 color = Color( 0.343913, 0.241013, 0.527344, 1 )
 
-[node name="color_button15" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button15" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -310,7 +313,7 @@ margin/right = 120.0
 margin/bottom = 160.0
 color = Color( 0.659668, 0.46875, 1, 1 )
 
-[node name="color_button16" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button16" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -319,14 +322,14 @@ margin/right = 160.0
 margin/bottom = 160.0
 color = Color( 0.359375, 0, 1, 1 )
 
-[node name="color_button17" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button17" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 160.0
 margin/bottom = 200.0
 color = Color( 0, 0.0426331, 0.496094, 1 )
 
-[node name="color_button18" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button18" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -335,7 +338,7 @@ margin/right = 80.0
 margin/bottom = 200.0
 color = Color( 0.225586, 0.250511, 0.515625, 1 )
 
-[node name="color_button19" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button19" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -344,7 +347,7 @@ margin/right = 120.0
 margin/bottom = 200.0
 color = Color( 0.453125, 0.500122, 1, 1 )
 
-[node name="color_button20" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button20" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -353,14 +356,14 @@ margin/right = 160.0
 margin/bottom = 200.0
 color = Color( 0, 0.0859375, 1, 1 )
 
-[node name="color_button21" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button21" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 200.0
 margin/bottom = 240.0
 color = Color( 0, 0.261841, 0.515625, 1 )
 
-[node name="color_button22" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button22" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -369,7 +372,7 @@ margin/right = 80.0
 margin/bottom = 240.0
 color = Color( 0.235138, 0.38154, 0.523438, 1 )
 
-[node name="color_button23" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button23" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -378,7 +381,7 @@ margin/right = 120.0
 margin/bottom = 240.0
 color = Color( 0.449219, 0.728912, 1, 1 )
 
-[node name="color_button24" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button24" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -387,14 +390,14 @@ margin/right = 160.0
 margin/bottom = 240.0
 color = Color( 0, 0.507812, 1, 1 )
 
-[node name="color_button25" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button25" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 240.0
 margin/bottom = 280.0
 color = Color( 0.185547, 0.625, 0.583801, 1 )
 
-[node name="color_button26" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button26" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -403,7 +406,7 @@ margin/right = 80.0
 margin/bottom = 280.0
 color = Color( 0.24556, 0.519531, 0.493846, 1 )
 
-[node name="color_button27" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button27" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -412,7 +415,7 @@ margin/right = 120.0
 margin/bottom = 280.0
 color = Color( 0.453125, 1, 0.94873, 1 )
 
-[node name="color_button28" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button28" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -421,14 +424,14 @@ margin/right = 160.0
 margin/bottom = 280.0
 color = Color( 0, 1, 0.90625, 1 )
 
-[node name="color_button33" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button33" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 280.0
 margin/bottom = 320.0
 color = Color( 0, 0.515625, 0.249756, 1 )
 
-[node name="color_button34" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button34" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -437,7 +440,7 @@ margin/right = 80.0
 margin/bottom = 320.0
 color = Color( 0.237183, 0.523438, 0.375837, 1 )
 
-[node name="color_button35" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button35" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -446,7 +449,7 @@ margin/right = 120.0
 margin/bottom = 320.0
 color = Color( 0.472656, 1, 0.728088, 1 )
 
-[node name="color_button36" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button36" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -455,14 +458,14 @@ margin/right = 160.0
 margin/bottom = 320.0
 color = Color( 0, 1, 0.484375, 1 )
 
-[node name="color_button37" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button37" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 320.0
 margin/bottom = 360.0
 color = Color( 0.051178, 0.503906, 0, 1 )
 
-[node name="color_button38" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button38" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -471,7 +474,7 @@ margin/right = 80.0
 margin/bottom = 360.0
 color = Color( 0.262281, 0.515625, 0.233643, 1 )
 
-[node name="color_button39" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button39" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -480,7 +483,7 @@ margin/right = 120.0
 margin/bottom = 360.0
 color = Color( 0.519196, 1, 0.464844, 1 )
 
-[node name="color_button40" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button40" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -489,14 +492,14 @@ margin/right = 160.0
 margin/bottom = 360.0
 color = Color( 0.101562, 1, 0, 1 )
 
-[node name="color_button41" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button41" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 360.0
 margin/bottom = 400.0
 color = Color( 0.230835, 0.484375, 0, 1 )
 
-[node name="color_button42" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button42" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -505,7 +508,7 @@ margin/right = 80.0
 margin/bottom = 400.0
 color = Color( 0.362752, 0.503906, 0.234238, 1 )
 
-[node name="color_button43" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button43" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -514,7 +517,7 @@ margin/right = 120.0
 margin/bottom = 400.0
 color = Color( 0.717834, 1, 0.460938, 1 )
 
-[node name="color_button44" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button44" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -523,14 +526,14 @@ margin/right = 160.0
 margin/bottom = 400.0
 color = Color( 0.476562, 1, 0, 1 )
 
-[node name="color_button45" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button45" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 400.0
 margin/bottom = 440.0
 color = Color( 0.34137, 0.464844, 0, 1 )
 
-[node name="color_button46" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button46" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -539,7 +542,7 @@ margin/right = 80.0
 margin/bottom = 440.0
 color = Color( 0.465785, 0.542969, 0.252396, 1 )
 
-[node name="color_button47" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button47" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -548,7 +551,7 @@ margin/right = 120.0
 margin/bottom = 440.0
 color = Color( 0.852661, 1, 0.445312, 1 )
 
-[node name="color_button48" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button48" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -557,14 +560,14 @@ margin/right = 160.0
 margin/bottom = 440.0
 color = Color( 0.734375, 1, 0, 1 )
 
-[node name="color_button49" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button49" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 440.0
 margin/bottom = 480.0
 color = Color( 0.507812, 0.464172, 0, 1 )
 
-[node name="color_button50" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button50" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -573,7 +576,7 @@ margin/right = 80.0
 margin/bottom = 480.0
 color = Color( 0.5, 0.477509, 0.238281, 1 )
 
-[node name="color_button51" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button51" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -582,7 +585,7 @@ margin/right = 120.0
 margin/bottom = 480.0
 color = Color( 1, 0.954346, 0.46875, 1 )
 
-[node name="color_button52" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button52" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -591,14 +594,14 @@ margin/right = 160.0
 margin/bottom = 480.0
 color = Color( 1, 0.914062, 0, 1 )
 
-[node name="color_button53" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button53" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/top = 480.0
 margin/bottom = 520.0
 color = Color( 0.464844, 0.22879, 0, 1 )
 
-[node name="color_button54" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button54" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 40.0
@@ -607,7 +610,7 @@ margin/right = 80.0
 margin/bottom = 520.0
 color = Color( 0.523438, 0.385342, 0.251495, 1 )
 
-[node name="color_button55" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button55" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 80.0
@@ -616,7 +619,7 @@ margin/right = 120.0
 margin/bottom = 520.0
 color = Color( 1, 0.738159, 0.484375, 1 )
 
-[node name="color_button56" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 6 )]
+[node name="color_button56" parent="colors_panel/colors_scroller/colors_list" instance=ExtResource( 5 )]
 
 rect/min_size = Vector2( 40, 40 )
 margin/left = 120.0
@@ -625,19 +628,6 @@ margin/right = 160.0
 margin/bottom = 520.0
 color = Color( 1, 0.492188, 0, 1 )
 
-[node name="scroller_input_area" type="ReferenceFrame" parent="colors_panel/colors_scroller" instance=ExtResource( 7 )]
-
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-script/script = ExtResource( 8 )
-debug = false
+[node name="scroller_input_area" parent="colors_panel/colors_scroller" instance=ExtResource( 6 )]
 
 

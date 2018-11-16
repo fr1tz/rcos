@@ -2,39 +2,26 @@
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/remote_connector/main_gui.gd" type="Script" id=2]
-[ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=3]
-[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=4]
-[ext_resource path="res://rcos_core/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=5]
-[ext_resource path="res://modules/remote_connector/graphics/scan.background.png" type="Texture" id=6]
-[ext_resource path="res://modules/remote_connector/graphics/scan.spinner.png" type="Texture" id=7]
-[ext_resource path="res://rcos_core/fonts/teko/bitmap/teko-regular-12.fnt" type="BitmapFont" id=8]
+[ext_resource path="res://rcos_core/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=3]
+[ext_resource path="res://modules/remote_connector/graphics/scan.background.png" type="Texture" id=4]
+[ext_resource path="res://modules/remote_connector/graphics/scan.spinner.png" type="Texture" id=5]
+[ext_resource path="res://rcos_core/fonts/teko/bitmap/teko-regular-12.fnt" type="BitmapFont" id=6]
+[ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=7]
+[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=8]
 [ext_resource path="res://modules/remote_connector/open_connection_dialog.tscn" type="PackedScene" id=9]
 [ext_resource path="res://modules/remote_connector/identify_device_dialog.tscn" type="PackedScene" id=10]
 [ext_resource path="res://modules/remote_connector/device_editor_dialog.tscn" type="PackedScene" id=11]
 
-[sub_resource type="StyleBoxFlat" id=1]
-
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
-bg_color = Color( 0.6, 0.6, 0.6, 1 )
-light_color = Color( 0.199219, 0.199219, 0.199219, 1 )
-dark_color = Color( 0.8, 0.8, 0.8, 1 )
-border_size = 2
-border_blend = true
-draw_bg = true
-
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=1]
 
 font/size = 16
 font/use_mipmaps = false
 font/use_filter = false
-font/font = ExtResource( 5 )
+font/font = ExtResource( 3 )
 
-[sub_resource type="GDScript" id=3]
+[sub_resource type="GDScript" id=2]
 
-script/source = "extends Panel
+script/source = "extends ReferenceFrame
 
 var mClock = 0
 
@@ -53,12 +40,25 @@ func _fixed_process(delta):
 	label.set_hidden(fmod(mClock, 0.5) > 0.25)
 "
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=3]
 
 font/size = 16
 font/use_mipmaps = false
 font/use_filter = false
-font/font = ExtResource( 5 )
+font/font = ExtResource( 3 )
+
+[sub_resource type="StyleBoxFlat" id=4]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 0.6, 0.6, 0.6, 1 )
+light_color = Color( 0.199219, 0.199219, 0.199219, 1 )
+dark_color = Color( 0.8, 0.8, 0.8, 1 )
+border_size = 2
+border_blend = true
+draw_bg = true
 
 [node name="main_gui" type="Panel"]
 
@@ -71,13 +71,12 @@ size_flags/vertical = 2
 theme/theme = ExtResource( 1 )
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 40.0
+margin/right = 0.0
 margin/bottom = 0.0
 script/script = ExtResource( 2 )
 
-[node name="interfaces_panel" type="Panel" parent="."]
+[node name="vsplit" type="VSplitContainer" parent="."]
 
-editor/display_folded = true
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false
@@ -85,19 +84,201 @@ focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 40.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+split/offset = 80
+split/collapsed = false
+split/dragger_visibility = 2
+
+[node name="button_bar" type="Control" parent="vsplit"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 240.0
+margin/bottom = 80.0
+
+[node name="buttons" type="HBoxContainer" parent="vsplit/button_bar"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = -400.0
+margin/bottom = 0.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="open_connection" type="Button" parent="vsplit/button_bar/buttons"]
+
+rect/min_size = Vector2( 80, 80 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 80.0
+margin/bottom = 80.0
+custom_fonts/font = SubResource( 1 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
+
+[node name="scan" type="Button" parent="vsplit/button_bar/buttons"]
+
+rect/min_size = Vector2( 80, 80 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 80.0
+margin/top = 0.0
+margin/right = 160.0
+margin/bottom = 80.0
+custom_fonts/font = SubResource( 1 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
+
+[node name="scan_progress" type="Panel" parent="vsplit/button_bar/buttons"]
+
+rect/min_size = Vector2( 160, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 160.0
+margin/top = 0.0
+margin/right = 320.0
+margin/bottom = 80.0
+
+[node name="CenterContainer" type="CenterContainer" parent="vsplit/button_bar/buttons/scan_progress"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+use_top_left = false
+
+[node name="scan_progress" type="ReferenceFrame" parent="vsplit/button_bar/buttons/scan_progress/CenterContainer"]
+
+rect/min_size = Vector2( 120, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 20.0
+margin/top = 20.0
+margin/right = 140.0
+margin/bottom = 60.0
+script/script = SubResource( 2 )
+
+[node name="spinner" type="TextureFrame" parent="vsplit/button_bar/buttons/scan_progress/CenterContainer/scan_progress"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
+texture = ExtResource( 4 )
+stretch_mode = 0
+
+[node name="icon" type="Sprite" parent="vsplit/button_bar/buttons/scan_progress/CenterContainer/scan_progress/spinner"]
+
+transform/pos = Vector2( 20, 20 )
+texture = ExtResource( 5 )
+
+[node name="label" type="Label" parent="vsplit/button_bar/buttons/scan_progress/CenterContainer/scan_progress"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 41.0
+margin/top = 14.0
+margin/right = 115.0
+margin/bottom = 26.0
+custom_fonts/font = ExtResource( 6 )
+text = "SCANNING NETWORK"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="cancel_scan_button" type="Button" parent="vsplit/button_bar/buttons"]
+
+rect/min_size = Vector2( 80, 80 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 320.0
+margin/top = 0.0
+margin/right = 400.0
+margin/bottom = 80.0
+custom_fonts/font = SubResource( 3 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
+
+[node name="content" type="Control" parent="vsplit"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 80.0
+margin/right = 240.0
+margin/bottom = 400.0
+
+[node name="interfaces_panel" type="Panel" parent="vsplit/content"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 100.0
-custom_styles/panel = SubResource( 1 )
+custom_styles/panel = SubResource( 4 )
 
-[node name="interfaces_scroller" parent="interfaces_panel" instance=ExtResource( 3 )]
+[node name="interfaces_scroller" parent="vsplit/content/interfaces_panel" instance=ExtResource( 7 )]
 
 margin/left = 2.0
 margin/top = 2.0
 margin/right = 2.0
 margin/bottom = 2.0
+clip_content = true
 
-[node name="interfaces_list" type="VBoxContainer" parent="interfaces_panel/interfaces_scroller"]
+[node name="interfaces_list" type="VBoxContainer" parent="vsplit/content/interfaces_panel/interfaces_scroller"]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -112,166 +293,9 @@ margin/bottom = 0.0
 custom_constants/separation = 1
 alignment = 0
 
-[node name="scroller_input_area" parent="interfaces_panel/interfaces_scroller" instance=ExtResource( 4 )]
+[node name="scroller_input_area" parent="vsplit/content/interfaces_panel/interfaces_scroller" instance=ExtResource( 8 )]
 
-[node name="buttons" type="ReferenceFrame" parent="."]
-
-editor/display_folded = true
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 200.0
-margin/bottom = 40.0
-
-[node name="open_connection" type="Button" parent="buttons"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
-custom_fonts/font = SubResource( 2 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = ""
-flat = false
-
-[node name="scan" type="Button" parent="buttons"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 40.0
-margin/top = 0.0
-margin/right = 80.0
-margin/bottom = 40.0
-custom_fonts/font = SubResource( 2 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = ""
-flat = false
-
-[node name="button1" type="Button" parent="buttons"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 80.0
-margin/top = 0.0
-margin/right = 120.0
-margin/bottom = 40.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-flat = false
-
-[node name="button2" type="Button" parent="buttons"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 120.0
-margin/top = 0.0
-margin/right = 160.0
-margin/bottom = 40.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-flat = false
-
-[node name="button3" type="Button" parent="buttons"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 160.0
-margin/top = 0.0
-margin/right = 200.0
-margin/bottom = 40.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-flat = false
-
-[node name="scan_progress" type="Panel" parent="."]
-
-editor/display_folded = true
-visibility/visible = false
-anchor/right = 1
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 40.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 40.0
-script/script = SubResource( 3 )
-
-[node name="spinner" type="TextureFrame" parent="scan_progress"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
-texture = ExtResource( 6 )
-stretch_mode = 0
-
-[node name="icon" type="Sprite" parent="scan_progress/spinner"]
-
-transform/pos = Vector2( 20, 20 )
-texture = ExtResource( 7 )
-
-[node name="label" type="Label" parent="scan_progress"]
-
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 41.0
-margin/top = 14.0
-margin/right = 115.0
-margin/bottom = 26.0
-custom_fonts/font = ExtResource( 8 )
-text = "SCANNING NETWORK"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="cancel_button" type="Button" parent="scan_progress"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 120.0
-margin/top = 2.0
-margin/right = 158.0
-margin/bottom = 38.0
-custom_fonts/font = SubResource( 4 )
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = ""
-flat = false
-
-[node name="info_panel" type="Panel" parent="."]
+[node name="info_panel" type="Panel" parent="vsplit/content"]
 
 editor/display_folded = true
 anchor/top = 1
@@ -285,9 +309,9 @@ margin/left = 0.0
 margin/top = 100.0
 margin/right = 0.0
 margin/bottom = 0.0
-custom_styles/panel = SubResource( 1 )
+custom_styles/panel = SubResource( 4 )
 
-[node name="info_widget" type="ReferenceFrame" parent="info_panel"]
+[node name="info_widget" type="ReferenceFrame" parent="vsplit/content/info_panel"]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -300,7 +324,7 @@ margin/top = 4.0
 margin/right = 4.0
 margin/bottom = 4.0
 
-[node name="label" type="Label" parent="info_panel/info_widget"]
+[node name="label" type="Label" parent="vsplit/content/info_panel/info_widget"]
 
 focus/ignore_mouse = true
 focus/stop_mouse = true
