@@ -43,20 +43,20 @@ func _escape():
 	get_tree().quit()
 
 func _ready():
-	connect("resized", self, "_resized")
 	rcos.connect("task_added", self, "_on_task_added")
 	rcos.connect("task_removed", self, "_on_task_removed")
 	rcos.connect("task_changed", self, "_on_task_changed")
 	rcos.enable_canvas_input(self)
+	mDesktop.connect("resized", self, "_desktop_resized")
 	mTaskbar.connect("task_selected", self, "show_task")
-	_resized()
+	var isquare = Vector2(rcos.get_isquare_size(), rcos.get_isquare_size())
+	get_node("hsplit/sidebar").set_custom_minimum_size(isquare)
+	get_node("vsplit/hsplit1").set_custom_minimum_size(isquare)
+	get_node("vsplit/hsplit1/rcos_panel").set_custom_minimum_size(isquare)
+	get_node("vsplit/hsplit2/taskbar").set_custom_minimum_size(isquare)
+	_desktop_resized()
 
-func _resized():
-	var isquare_size = rcos.get_isquare_size()
-	get_node("hsplit").set_split_offset(get_size().x-isquare_size)
-	get_node("vsplit").set_split_offset(isquare_size)
-	get_node("vsplit/hsplit1").set_split_offset(get_size().x-isquare_size)
-	get_node("vsplit/hsplit2").set_split_offset(get_size().x-isquare_size)
+func _desktop_resized():
 	if mActiveTaskId != null:
 		show_task(mActiveTaskId)
 #	var root_canvas = get_node("root_window").get_canvas()
@@ -121,6 +121,7 @@ func show_task(task_id):
 	mActiveTaskId = task_id
 	var canvas = properties.canvas
 	var fullscreen = false
+	print(mDesktop.get_rect().size)
 	var frame_rect = Rect2(Vector2(0, 0), mDesktop.get_rect().size)
 	if properties.has("fullscreen") && properties.fullscreen:
 		fullscreen = true
