@@ -16,19 +16,23 @@
 extends Button
 
 func set_icon(texture):
-	get_node("icon").set_texture(texture)
+	get_node("hsplit/icon/icon").set_texture(texture)
 
 func set_icon_frame_color(color):
 	if color == null: color = Color(0, 0, 0, 0)
-	get_node("icon_frame").set_modulate(color)
+	get_node("hsplit/icon/icon_frame").set_modulate(color)
 
 func set_icon_label(text):
 	if text == null: text = ""
-	get_node("icon_label").set_text(text)
+	get_node("hsplit/icon/icon_label").set_text(text)
 
 func set_text(text):
 	if text == null: text = ""
-	get_node("label").set_text(text)
+	if text == "":
+		get_node("hsplit/label").set_hidden(true)
+	else:
+		get_node("hsplit/label").set_hidden(false)
+		get_node("hsplit/label").set_text(text)
 
 func get_text():
-	return get_node("label").get_text()
+	return get_node("hsplit/label").get_text()

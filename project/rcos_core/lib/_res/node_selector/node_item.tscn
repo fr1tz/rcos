@@ -39,7 +39,21 @@ shortcut = null
 flat = false
 script/script = ExtResource( 2 )
 
-[node name="icon_frame" type="TextureFrame" parent="."]
+[node name="hsplit" type="HBoxContainer" parent="."]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+alignment = 1
+
+[node name="icon" type="ReferenceFrame" parent="hsplit"]
 
 rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = true
@@ -50,32 +64,58 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 40.0
 margin/bottom = 40.0
-texture = ExtResource( 3 )
-stretch_mode = 4
 
-[node name="icon" type="TextureFrame" parent="."]
+[node name="icon_frame" type="TextureFrame" parent="hsplit/icon"]
 
+anchor/left = 3
+anchor/top = 3
+anchor/right = 3
+anchor/bottom = 3
+rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 40.0
-margin/bottom = 40.0
+margin/left = 20.0
+margin/top = 20.0
+margin/right = -20.0
+margin/bottom = -20.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+
+[node name="icon" type="TextureFrame" parent="hsplit/icon"]
+
+anchor/left = 3
+anchor/top = 3
+anchor/right = 3
+anchor/bottom = 3
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 20.0
+margin/top = 20.0
+margin/right = -20.0
+margin/bottom = -20.0
 expand = true
 stretch_mode = 4
 
-[node name="icon_label" type="Label" parent="."]
+[node name="icon_label" type="Label" parent="hsplit/icon"]
 
+anchor/left = 3
+anchor/top = 3
+anchor/right = 3
+anchor/bottom = 3
+rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 0
-margin/left = 4.0
-margin/top = 7.0
-margin/right = 36.0
-margin/bottom = 36.0
+margin/left = 20.0
+margin/top = 18.0
+margin/right = -20.0
+margin/bottom = -22.0
 custom_fonts/font = SubResource( 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = 1
@@ -89,18 +129,16 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="label" type="Label" parent="."]
+[node name="label" type="Label" parent="hsplit"]
 
-anchor/right = 1
-anchor/bottom = 1
 focus/ignore_mouse = true
 focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 41.0
+size_flags/horizontal = 3
+size_flags/vertical = 2
+margin/left = 44.0
 margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
+margin/right = 200.0
+margin/bottom = 40.0
 custom_fonts/font = SubResource( 2 )
 text = "label"
 valign = 1

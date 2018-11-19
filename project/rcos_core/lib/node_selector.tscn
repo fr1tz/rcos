@@ -18,7 +18,7 @@ border_size = 0
 border_blend = true
 draw_bg = true
 
-[node name="node_selector" type="Panel"]
+[node name="node_selector" type="ColorFrame"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -29,18 +29,14 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 200.0
 margin/bottom = 400.0
-custom_styles/panel = SubResource( 1 )
+color = Color( 0, 0, 0, 1 )
 script/script = ExtResource( 2 )
 root_path = null
 
-[node name="items_scroller" parent="." instance=ExtResource( 3 )]
-
-margin/top = 40.0
-margin/bottom = 40.0
-
-[node name="items" type="VBoxContainer" parent="items_scroller"]
+[node name="vsplit" type="VBoxContainer" parent="."]
 
 anchor/right = 1
+anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
@@ -48,28 +44,28 @@ size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
-margin/bottom = 40.0
+margin/bottom = 0.0
 custom_constants/separation = 0
 alignment = 0
 
-[node name="scroller_input_area" parent="items_scroller" instance=ExtResource( 4 )]
+[node name="current_node_path" type="Panel" parent="vsplit"]
 
-[node name="current_node_path" type="Panel" parent="."]
-
-anchor/right = 1
+rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 0.0
+margin/right = 200.0
 margin/bottom = 40.0
 custom_styles/panel = SubResource( 1 )
 
-[node name="scroller" parent="current_node_path" instance=ExtResource( 3 )]
+[node name="scroller" parent="vsplit/current_node_path" instance=ExtResource( 3 )]
 
-[node name="items" type="HBoxContainer" parent="current_node_path/scroller"]
+clip_content = true
+
+[node name="items" type="HBoxContainer" parent="vsplit/current_node_path/scroller"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = false
@@ -82,9 +78,9 @@ margin/bottom = 40.0
 custom_constants/separation = 0
 alignment = 0
 
-[node name="scroller_input_area" parent="current_node_path/scroller" instance=ExtResource( 4 )]
+[node name="scroller_input_area" parent="vsplit/current_node_path/scroller" instance=ExtResource( 4 )]
 
-[node name="text" type="Label" parent="current_node_path"]
+[node name="text" type="Label" parent="vsplit/current_node_path"]
 
 anchor/right = 1
 focus/ignore_mouse = true
@@ -100,39 +96,75 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="refresh_button" type="Button" parent="."]
+[node name="items_scroller" parent="vsplit" instance=ExtResource( 3 )]
 
-anchor/top = 1
-anchor/right = 3
-anchor/bottom = 1
+anchor/right = 0
+anchor/bottom = 0
+rect/min_size = Vector2( 40, 40 )
+size_flags/horizontal = 3
+size_flags/vertical = 3
+margin/top = 40.0
+margin/right = 200.0
+margin/bottom = 360.0
+clip_content = true
+
+[node name="items" type="VBoxContainer" parent="vsplit/items_scroller"]
+
+anchor/right = 1
 focus/ignore_mouse = false
-focus/stop_mouse = true
+focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 40.0
+margin/top = 0.0
 margin/right = 0.0
-margin/bottom = 0.0
+margin/bottom = 40.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="scroller_input_area" parent="vsplit/items_scroller" instance=ExtResource( 4 )]
+
+[node name="buttons" type="HBoxContainer" parent="vsplit"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 360.0
+margin/right = 200.0
+margin/bottom = 400.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="refresh_button" type="Button" parent="vsplit/buttons"]
+
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 3
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 100.0
+margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
 text = "Refresh"
 flat = false
 
-[node name="cancel_button" type="Button" parent="."]
+[node name="cancel_button" type="Button" parent="vsplit/buttons"]
 
-anchor/left = 3
-anchor/top = 1
-anchor/right = 1
-anchor/bottom = 1
+rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
-size_flags/horizontal = 2
+size_flags/horizontal = 3
 size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 40.0
-margin/right = 0.0
-margin/bottom = 0.0
+margin/left = 100.0
+margin/top = 0.0
+margin/right = 200.0
+margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null

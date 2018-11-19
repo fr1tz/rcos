@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends Panel
+extends ColorFrame
 
 export(NodePath) var root_path = null
 
@@ -28,8 +28,13 @@ func _init():
 func _ready():
 	if rcos.has_node("services/host_info_service"):
 		mHostInfoService = rcos.get_node("services/host_info_service")
-	get_node("refresh_button").connect("pressed", self, "_refresh")
-	get_node("cancel_button").connect("pressed", self, "_cancel")
+	get_node("vsplit/buttons/refresh_button").connect("pressed", self, "_refresh")
+	get_node("vsplit/buttons/cancel_button").connect("pressed", self, "_cancel")
+	var isquare = Vector2(rcos.get_isquare_size(), rcos.get_isquare_size())
+	get_node("vsplit/current_node_path").set_custom_minimum_size(isquare)
+	get_node("vsplit/buttons").set_custom_minimum_size(isquare)
+	for c in get_node("vsplit/buttons").get_children():
+		c.set_custom_minimum_size(isquare)
 	if root_path == null:
 		return
 	mRootNode = get_node(root_path)
@@ -38,14 +43,15 @@ func _ready():
 	_set_current_node(mRootNode)
 
 func _refresh():
-	var items = get_node("current_node_path/scroller/items")
+	var isquare = Vector2(rcos.get_isquare_size(), rcos.get_isquare_size())
+	var items = get_node("vsplit/current_node_path/scroller/items")
 	for c in items.get_children():
 		items.remove_child(c)
 		c.queue_free()
 	var n = mCurrentNode
 	while n != mRootNode.get_parent():
 		var item = rlib.instance_scene("res://rcos_core/lib/_res/node_selector/node_item.tscn")
-		item.set_custom_minimum_size(Vector2(40, 40))
+		item.set_custom_minimum_size(isquare)
 		item.set_size(Vector2(40, 40))
 		item.set_icon_frame_color(Color(0, 0, 0, 0))
 		var icon = n.get_meta("icon32")
@@ -72,13 +78,13 @@ func _refresh():
 		items.move_child(item, 0)
 		item.connect("pressed", self, "_set_current_node", [n])
 		n = n.get_parent()
-	items = get_node("items_scroller/items")
+	items = get_node("vsplit/items_scroller/items")
 	for c in items.get_children():
 		items.remove_child(c)
 		c.queue_free()
 	for n in mCurrentNode.get_children():
 		var item = rlib.instance_scene("res://rcos_core/lib/_res/node_selector/node_item.tscn")
-		item.set_custom_minimum_size(Vector2(200, 40))
+		item.set_custom_minimum_size(isquare)
 		item.set_icon_frame_color(Color(0, 0, 0, 0))
 		items.add_child(item)
 		var label = n.get_name()
