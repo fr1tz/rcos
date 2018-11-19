@@ -15,7 +15,7 @@
 
 extends Panel
 
-onready var mConnectionItems = get_node("items_container/items")
+onready var mConnectionItems = get_node("vsplit/items_container/items")
 
 var mConnectionItemsByKey = {}
 var mConnectionItemsByOutput = {}
@@ -30,14 +30,18 @@ func _ready():
 	data_router.connect("input_port_added", self, "_input_port_added")
 	data_router.connect("connection_added", self, "_connection_added")
 	data_router.connect("connection_removed", self, "_connection_removed")
-	get_node("buttons/add_connection_button").connect("pressed", self, "_show_output_port_selector")
-	get_node("buttons/toggle_connection_button").connect("pressed", self, "_toggle_selected_connection_item")
-	get_node("buttons/remove_connection_button").connect("pressed", self, "_remove_selected_connection_item")
-	get_node("buttons/save_button").connect("pressed", self, "_save")
+	get_node("vsplit/buttons/add_connection_button").connect("pressed", self, "_show_output_port_selector")
+	get_node("vsplit/buttons/toggle_connection_button").connect("pressed", self, "_toggle_selected_connection_item")
+	get_node("vsplit/buttons/remove_connection_button").connect("pressed", self, "_remove_selected_connection_item")
+	get_node("vsplit/buttons/save_button").connect("pressed", self, "_save")
 	get_node("output_port_selector").connect("canceled", self, "_show_connections")
 	get_node("output_port_selector").connect("node_selected", self, "_output_port_selected")
 	get_node("input_port_selector").connect("canceled", self, "_show_connections")
 	get_node("input_port_selector").connect("node_selected", self, "_input_port_selected")
+	var isquare = Vector2(rcos.get_isquare_size(), rcos.get_isquare_size())
+	get_node("vsplit/buttons").set_custom_minimum_size(isquare)
+	for c in get_node("vsplit/buttons").get_children():
+		c.set_custom_minimum_size(isquare)
 
 func _output_port_added(output_port_node):
 	var output_path = data_router.output_node_to_port_path(output_port_node)
@@ -90,7 +94,9 @@ func _add_connection_item(output, input, disabled = false):
 	var item = rlib.instance_scene("res://modules/io_ports_connector/connection_item.tscn")
 	item.initialize(output_path, input_path, disabled)
 	item.connect("pressed", self, "_connection_item_selected", [item])
-	get_node("items_container/items").add_child(item)
+	var isquare = Vector2(rcos.get_isquare_size(), rcos.get_isquare_size())
+	item.set_custom_minimum_size(isquare)
+	get_node("vsplit/items_container/items").add_child(item)
 	mConnectionItemsByKey[key] = item
 	if mConnectionItemsByOutput.has(output_path):
 		mConnectionItemsByOutput[output_path].push_back(item)

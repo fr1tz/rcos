@@ -38,14 +38,16 @@ script/script = ExtResource( 2 )
 
 [node name="output_port_path_label" type="Label" parent="."]
 
+anchor/top = 3
+anchor/bottom = 3
 focus/ignore_mouse = true
 focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 21.0
-margin/top = 1.0
+margin/top = 19.0
 margin/right = 198.0
-margin/bottom = 22.0
+margin/bottom = -2.0
 custom_fonts/font = SubResource( 1 )
 valign = 1
 percent_visible = 1.0
@@ -54,14 +56,16 @@ max_lines_visible = -1
 
 [node name="input_port_path_label" type="Label" parent="."]
 
+anchor/top = 3
+anchor/bottom = 3
 focus/ignore_mouse = true
 focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 0
 margin/left = 21.0
-margin/top = 20.0
+margin/top = 0.0
 margin/right = 198.0
-margin/bottom = 41.0
+margin/bottom = -21.0
 custom_fonts/font = SubResource( 1 )
 valign = 1
 percent_visible = 1.0
@@ -71,14 +75,16 @@ max_lines_visible = -1
 [node name="output_port_icon" type="ReferenceFrame" parent="."]
 
 editor/display_folded = true
+anchor/top = 3
+anchor/bottom = 3
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 0.0
+margin/top = 20.0
 margin/right = 20.0
-margin/bottom = 20.0
+margin/bottom = 0.0
 
 [node name="existing" type="TextureFrame" parent="output_port_icon"]
 
@@ -113,14 +119,16 @@ stretch_mode = 0
 [node name="input_port_icon" type="ReferenceFrame" parent="."]
 
 editor/display_folded = true
+anchor/top = 3
+anchor/bottom = 3
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 20.0
+margin/top = 0.0
 margin/right = 20.0
-margin/bottom = 40.0
+margin/bottom = -20.0
 
 [node name="existing" type="TextureFrame" parent="input_port_icon"]
 
@@ -154,14 +162,16 @@ stretch_mode = 0
 
 [node name="connection_icon" type="ReferenceFrame" parent="."]
 
+anchor/top = 3
+anchor/bottom = 3
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 0.0
+margin/top = 20.0
 margin/right = 20.0
-margin/bottom = 40.0
+margin/bottom = -20.0
 
 [node name="active" type="TextureFrame" parent="connection_icon"]
 
