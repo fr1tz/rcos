@@ -14,9 +14,9 @@ content_margin/bottom = -1.0
 bg_color = Color( 0.309739, 0.298309, 0.664063, 1 )
 light_color = Color( 0.207031, 0.207031, 0.207031, 1 )
 dark_color = Color( 0.839844, 0.839844, 0.839844, 1 )
-border_size = 1
-border_blend = true
-draw_bg = true
+border_size = 2
+border_blend = false
+draw_bg = false
 
 [sub_resource type="StyleBoxFlat" id=2]
 
@@ -27,9 +27,9 @@ content_margin/bottom = -1.0
 bg_color = Color( 0.664063, 0.298309, 0.298309, 1 )
 light_color = Color( 0.843137, 0.843137, 0.843137, 1 )
 dark_color = Color( 0.223529, 0.223529, 0.223529, 1 )
-border_size = 1
-border_blend = true
-draw_bg = true
+border_size = 2
+border_blend = false
+draw_bg = false
 
 [node name="io_port_widget" type="ReferenceFrame"]
 
@@ -97,27 +97,26 @@ focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 1.0
-margin/top = 1.0
-margin/right = 1.0
-margin/bottom = 1.0
-color = Color( 1, 1, 1, 1 )
+margin/left = 2.0
+margin/top = 2.0
+margin/right = 2.0
+margin/bottom = 2.0
+color = Color( 0, 0, 0, 1 )
 
 [node name="icon" type="TextureFrame" parent="."]
 
-anchor/left = 3
-anchor/top = 3
-anchor/right = 3
-anchor/bottom = 3
+anchor/right = 1
+anchor/bottom = 1
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 16.0
-margin/top = 16.0
-margin/right = -16.0
-margin/bottom = -16.0
-stretch_mode = 0
+margin/left = 3.0
+margin/top = 3.0
+margin/right = 3.0
+margin/bottom = 3.0
+expand = true
+stretch_mode = 4
 
 [node name="missing_port_overlay" type="TextureFrame" parent="."]
 

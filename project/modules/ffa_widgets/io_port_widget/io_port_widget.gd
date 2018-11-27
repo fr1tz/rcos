@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends Node
+extends ReferenceFrame
 
 onready var mConfigGui = get_node("config_canvas/config_gui")
 
@@ -24,8 +24,22 @@ var mIconPath = ""
 var mPort = null
 
 func _ready():
+	connect("resized", self, "_resized")
 	mWidgetHost = get_meta("widget_host_api")
 	mWidgetHost.enable_widget_frame_input(self)
+
+func _resized():
+	var icon_width = 32
+	var icon_height = 32
+	var tex = get_node("icon").get_texture()
+	if tex:
+		var image = tex.get_data()
+		var icon_width = image.get_width()
+		var icon_height = image.get_height()
+	if get_size().x < icon_width || get_size().y < icon_height:
+		get_node("icon").set_stretch_mode(TextureFrame.STRETCH_KEEP_ASPECT_CENTERED)
+	else:
+		get_node("icon").set_stretch_mode(TextureFrame.STRETCH_KEEP_CENTERED)
 
 func _widget_frame_input(event):
 	if mPort == null:
