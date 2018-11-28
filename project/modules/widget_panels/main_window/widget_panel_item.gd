@@ -13,31 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends Node
+extends Button
 
-var mTaskId = -1
+var mWidgetPanelWindow = null
 
-func _exit_tree():
-	hide()
+func get_widget_panel_window():
+	return mWidgetPanelWindow
 
-func show():
-	if mTaskId != -1:
-		return
-	var task_properties = {
-		"name": "Widget Panels",
-		"icon": get_node("icon").get_texture(),
-		"canvas": get_node("canvas"),
-	}
-	mTaskId = rcos.add_task(task_properties)
-
-func hide():
-	if mTaskId == -1:
-		return
-	rcos.remove_task(mTaskId)
-	mTaskId = -1
-
-func get_task_id():
-	return mTaskId
-
-func get_gui():
-	return get_node("canvas").get_child(0)
+func initialize(widget_panel_window):
+	mWidgetPanelWindow = widget_panel_window

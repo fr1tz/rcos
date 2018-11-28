@@ -16,12 +16,14 @@
 extends Button
 
 var mWidgetFactoryTaskId = -1
+var mProductId = null
 var mProductName = null
 var mConfigPreset = null
 
 func initialize(widget_factory_task_id, config_preset = null):
 	var properties = rcos.get_task_properties(widget_factory_task_id)
 	mWidgetFactoryTaskId = widget_factory_task_id
+	mProductId = properties.product_id
 	mProductName = properties.product_name
 	mConfigPreset = config_preset
 	set_text(mProductName)
@@ -32,6 +34,12 @@ func initialize(widget_factory_task_id, config_preset = null):
 
 func get_widget_factory_task_id():
 	return mWidgetFactoryTaskId
+
+func get_product_id():
+	return mProductId
+
+func get_product_name():
+	return mProductName
 
 func get_config_preset():
 	return mConfigPreset

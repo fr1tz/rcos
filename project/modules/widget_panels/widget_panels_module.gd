@@ -15,21 +15,26 @@
 
 extends Node
 
-onready var mMainGuiTaskNode = get_node("main_gui_task")
-onready var mWidgetPanelTaskNodes = get_node("widget_panel_tasks")
+const CONFIG_DIR = "user://etc/widget_panels"
+
+onready var mMainWindow = get_node("main_window")
+onready var mWidgetPanelWindows = get_node("widget_panel_windows")
 
 func _ready():
-	get_node("main_gui_task").show()
-	get_node("main_gui_task").get_gui().initialize(self)
+	var dir = Directory.new()
+	if !dir.dir_exists(CONFIG_DIR):
+		dir.make_dir_recursive(CONFIG_DIR)
+	mMainWindow.initialize(self)
+	mMainWindow.show()
+	mMainWindow.content.load_config_file()
 
-func show_widget_panel(id, label):
-	var panel_task = rlib.instance_scene("res://modules/widget_panels/widget_panel/widget_panel_task.tscn")
-	mWidgetPanelTaskNodes.add_child(panel_task)
-	panel_task.initialize(id, label, mMainGuiTaskNode.get_task_id())
+func create_widget_panel_window(widget_panel_id):
+	var panel_window = rlib.instance_scene("res://modules/widget_panels/panel_window/widget_panel_window.tscn")
+	mWidgetPanelWindows.add_child(panel_window)
+	panel_window.initialize(self, widget_panel_id, mMainWindow.get_task_id())
+	return panel_window
 
-func hide_widget_panel(id):
-	var panel_task_name = "widget_panel_"+str(id)+"_task"
-	if mWidgetPanelTaskNodes.has_node(panel_task_name):
-		var panel_task_node = mWidgetPanelTaskNodes.get_node(panel_task_name)
-		mWidgetPanelTaskNodes.remove_child(panel_task_node)
-		panel_task_node.free()
+func destroy_widget_panel_window(panel_window):
+	if panel_window.get_parent() == mWidgetPanelWindows:
+		mWidgetPanelWindows.remove_child(panel_window)
+		panel_window.free()

@@ -24,6 +24,7 @@ func _on_item_selected(item, task_id):
 	emit_signal("item_selected", item)
 
 func update_available_widgets(widget_factory_tasks):
+	var isquare = Vector2(rcos.get_isquare_size(), rcos.get_isquare_size())
 	for item in mWidgetFactoryList.get_children():
 		mWidgetFactoryList.remove_child(item)
 		item.free()
@@ -35,10 +36,12 @@ func update_available_widgets(widget_factory_tasks):
 			for preset in properties.config_presets:
 				var item = rlib.instance_scene("res://modules/widget_panels/widget_factories_panel/widget_factory_item.tscn")
 				item.initialize(task_id, preset)
+				item.set_custom_minimum_size(isquare)
 				item.connect("pressed", self, "_on_item_selected", [item, task_id])
 				mWidgetFactoryList.add_child(item)
 		else:
 			var item = rlib.instance_scene("res://modules/widget_panels/widget_factories_panel/widget_factory_item.tscn")
 			item.initialize(task_id)
+			item.set_custom_minimum_size(isquare)
 			item.connect("pressed", self, "_on_item_selected", [item, task_id])
 			mWidgetFactoryList.add_child(item)

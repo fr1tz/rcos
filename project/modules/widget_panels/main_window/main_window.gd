@@ -1,4 +1,4 @@
-# Copyright © 2018 Michael Goldener <mg@wasted.ch>
+# Copyright © 2017, 2018 Michael Goldener <mg@wasted.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,29 +15,33 @@
 
 extends Node
 
-var gui = null
+onready var content = get_node("canvas").get_child(0)
 
+var mModule = null
 var mTaskId = -1
 
-func _ready():
-	gui = get_node("canvas/widget_panel_gui")
-
 func _exit_tree():
-	rcos.remove_task(mTaskId)
+	hide()
 
-func initialize(panel_id, panel_label, parent_task_id):
-	set_name("widget_panel_"+str(panel_id)+"_task")
+func show():
+	if mTaskId != -1:
+		return
 	var task_properties = {
-		"name": panel_label,
+		"name": "Widget Panels",
 		"icon": get_node("icon").get_texture(),
-		"icon_label": str(panel_id),
 		"canvas": get_node("canvas"),
-		"ops": {
-			"kill": funcref(gui, "kill"),
-			"go_back": funcref(gui, "go_back")
-		}
 	}
-	mTaskId = rcos.add_task(task_properties, parent_task_id)
-	var io_ports_path_prefix = "rcos/"+panel_label.to_lower().replace(" ", "_")
-	gui.init(panel_id, mTaskId, io_ports_path_prefix+"/")
-	gui._load_from_file()
+	mTaskId = rcos.add_task(task_properties)
+
+func hide():
+	if mTaskId == -1:
+		return
+	rcos.remove_task(mTaskId)
+	mTaskId = -1
+
+func get_task_id():
+	return mTaskId
+
+func initialize(module):
+	mModule = module
+	content.initialize(module, self)

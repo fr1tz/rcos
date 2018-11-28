@@ -20,6 +20,8 @@ script/script = ExtResource( 1 )
 
 [node name="scroller_container" parent="." instance=ExtResource( 2 )]
 
+clip_content = true
+
 [node name="widget_factory_list" type="VBoxContainer" parent="scroller_container"]
 
 anchor/right = 1

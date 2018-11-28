@@ -13,41 +13,70 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends TextureFrame
-
-const GRID_SIZE = 40
+extends Control
 
 var mActive = false
 var mPaintedRect = null
-var mClickPos = Vector2(0, 0)
+var mClickGridPos = [0, 0]
+var mPaintedGridRect = [0, 0, 0, 0]
+var mColumns = []
+var mRows = []
 
 func _init():
 	add_user_signal("finished")
 
-func _ready():
-	pass
+func _get_grid_pos(pos):
+	var spacing_x = mColumns[1]
+	var spacing_y = mRows[1]
+	var x = pos.x - fmod(pos.x, spacing_x)
+	var y = pos.y - fmod(pos.y, spacing_y)
+	var column_index = 0
+	if x > 0:
+		column_index = int(x/spacing_x)
+	var row_index = 0
+	if y > 0:
+		row_index = int(y/spacing_y)
+	return [column_index, row_index]
 
 func _input_event(event):
+	if mColumns.size() < 2 || mRows.size() < 2:
+		return
 	if event.type == InputEvent.MOUSE_BUTTON:
 		mActive = event.pressed
 		if mActive:
-			mClickPos = event.pos
+			mClickGridPos = _get_grid_pos(event.pos)
 		else:
 			emit_signal("finished")
 	elif mActive && event.type == InputEvent.MOUSE_MOTION:
-		var p2 = event.pos 
-		var x1 = min(mClickPos.x, p2.x)
-		var y1 = min(mClickPos.y, p2.y)
-		var x2 = max(mClickPos.x, p2.x)
-		var y2 = max(mClickPos.y, p2.y)
-		x1 -= fmod(x1, GRID_SIZE)
-		x2 += GRID_SIZE - fmod(x2, GRID_SIZE)
-		y1 -= fmod(y1, GRID_SIZE)
-		y2 += GRID_SIZE - fmod(y2, GRID_SIZE)
+		var p2 = _get_grid_pos(event.pos)
+		var column1 = min(mClickGridPos[0], p2[0])
+		var column2 = max(mClickGridPos[0], p2[0]) 
+		var row1 = min(mClickGridPos[1], p2[1])
+		var row2 = max(mClickGridPos[1], p2[1])
+		mPaintedGridRect = [column1, row1, column2, row2]
+		column2 += 1
+		if column2 > mColumns.size() - 1:
+			column2 = mColumns.size() - 1
+		row2 += 1
+		if row2 > mRows.size() - 1:
+			row2 = mRows.size() - 1
+		var x1 = mColumns[column1]
+		var x2 = mColumns[column2]
+		var y1 = mRows[row1]
+		var y2 = mRows[row2]
 		mPaintedRect = Rect2(Vector2(x1, y1), Vector2(x2-x1, y2-y1))
 	update()
 
 func _draw():
+	if mColumns.size() < 2 || mRows.size() < 2:
+		return
+	var color = Color(1, 1, 1)
+	var width = get_size().x
+	var height = get_size().y
+	for x in mColumns:
+		draw_line(Vector2(x, 0), Vector2(x, height), color)
+	for y in mRows:
+		draw_line(Vector2(0, y), Vector2(width, y), color)
 	if mPaintedRect == null:
 		return
 	var rect = mPaintedRect
@@ -69,3 +98,11 @@ func clear_painted_rect():
 
 func get_painted_rect():
 	return mPaintedRect
+
+func get_painted_grid_rect():
+	return mPaintedGridRect
+
+func set_grid(columns, rows):
+	mColumns = columns
+	mRows = rows
+	update()

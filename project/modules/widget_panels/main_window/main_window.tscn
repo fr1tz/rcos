@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=1]
 
-[ext_resource path="res://modules/widget_panels/main_gui/main_gui_task.gd" type="Script" id=1]
+[ext_resource path="res://modules/widget_panels/main_window/main_window.gd" type="Script" id=1]
 [ext_resource path="res://modules/widget_panels/graphics/icons/widget_panels.png" type="Texture" id=2]
 [ext_resource path="res://rcos_core/lib/canvas.tscn" type="PackedScene" id=3]
-[ext_resource path="res://modules/widget_panels/main_gui/widget_panels_main_gui.tscn" type="PackedScene" id=4]
+[ext_resource path="res://modules/widget_panels/main_window/main_gui.tscn" type="PackedScene" id=4]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -18,7 +18,7 @@ border_size = 0
 border_blend = true
 draw_bg = true
 
-[node name="main_gui_task" type="Node"]
+[node name="main_window" type="Node"]
 
 script/script = ExtResource( 1 )
 
@@ -40,7 +40,7 @@ stretch_mode = 0
 rect = Rect2( 0, 0, 200, 400 )
 min_size = Vector2( 200, 400 )
 
-[node name="widget_panels_main_gui" parent="canvas" instance=ExtResource( 4 )]
+[node name="main_gui" parent="canvas" instance=ExtResource( 4 )]
 
 custom_styles/panel = SubResource( 1 )
 

@@ -1,24 +1,11 @@
-[gd_scene load_steps=7 format=1]
+[gd_scene load_steps=6 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://modules/widget_panels/main_gui/widget_panels_main_gui.gd" type="Script" id=2]
+[ext_resource path="res://modules/widget_panels/main_window/main_gui.gd" type="Script" id=2]
 [ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=3]
 [ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=4]
 
-[sub_resource type="StyleBoxFlat" id=1]
-
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
-bg_color = Color( 0.199219, 0.199219, 0.199219, 1 )
-light_color = Color( 0.8, 0.8, 0.8, 1 )
-dark_color = Color( 0.8, 0.8, 0.8, 1 )
-border_size = 0
-border_blend = true
-draw_bg = true
-
-[sub_resource type="GDScript" id=2]
+[sub_resource type="GDScript" id=1]
 
 script/source = "extends VBoxContainer
 
@@ -35,7 +22,7 @@ func _input_event(event):
 	prints(get_name(), \"_input_event\", event)
 	"
 
-[node name="widget_panels_main_gui" type="Panel"]
+[node name="main_gui" type="Panel"]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -48,14 +35,9 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
-custom_styles/panel = SubResource( 1 )
 script/script = ExtResource( 2 )
 
-[node name="items_container" parent="." instance=ExtResource( 3 )]
-
-margin/top = 40.0
-
-[node name="items" type="VBoxContainer" parent="items_container"]
+[node name="vsplit" type="VBoxContainer" parent="."]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -69,23 +51,22 @@ margin/right = 0.0
 margin/bottom = 0.0
 custom_constants/separation = 0
 alignment = 0
-script/script = SubResource( 2 )
 
-[node name="scroller_input_area" parent="items_container" instance=ExtResource( 4 )]
+[node name="buttons" type="HBoxContainer" parent="vsplit"]
 
-[node name="buttons" type="Panel" parent="."]
-
-anchor/right = 1
+rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 0.0
+margin/right = 240.0
 margin/bottom = 40.0
+custom_constants/separation = 0
+alignment = 0
 
-[node name="new" type="Button" parent="buttons"]
+[node name="new" type="Button" parent="vsplit/buttons"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -93,7 +74,7 @@ size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 40.0
+margin/right = 30.0
 margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
@@ -101,52 +82,87 @@ shortcut = null
 text = "New"
 flat = false
 
-[node name="rename" type="Button" parent="buttons"]
+[node name="rename" type="Button" parent="vsplit/buttons"]
 
+visibility/visible = false
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = -50.0
-margin/top = -50.0
-margin/right = -10.0
-margin/bottom = -10.0
+margin/left = 30.0
+margin/top = 0.0
+margin/right = 77.0
+margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
 text = "Rename"
 flat = false
 
-[node name="toggle" type="Button" parent="buttons"]
+[node name="toggle" type="Button" parent="vsplit/buttons"]
 
+visibility/visible = false
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = -90.0
-margin/top = -50.0
-margin/right = -50.0
-margin/bottom = -10.0
+margin/left = 30.0
+margin/top = 0.0
+margin/right = 70.0
+margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
 text = "Toggle"
 flat = false
 
-[node name="remove" type="Button" parent="buttons"]
+[node name="remove" type="Button" parent="vsplit/buttons"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 40.0
+margin/left = 30.0
 margin/top = 0.0
-margin/right = 80.0
+margin/right = 76.0
 margin/bottom = 40.0
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
 text = "Remove"
 flat = false
+
+[node name="items_panel" type="Panel" parent="vsplit"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 3
+margin/left = 0.0
+margin/top = 40.0
+margin/right = 240.0
+margin/bottom = 400.0
+
+[node name="items_container" parent="vsplit/items_panel" instance=ExtResource( 3 )]
+
+clip_content = true
+
+[node name="items" type="VBoxContainer" parent="vsplit/items_panel/items_container"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_constants/separation = 0
+alignment = 0
+script/script = SubResource( 1 )
+
+[node name="scroller_input_area" parent="vsplit/items_panel/items_container" instance=ExtResource( 4 )]
 
 

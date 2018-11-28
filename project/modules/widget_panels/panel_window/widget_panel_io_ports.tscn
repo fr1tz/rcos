@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://modules/widget_panels/widget_panel/widget_panel_io_ports.gd" type="Script" id=1]
+[ext_resource path="res://modules/widget_panels/panel_window/widget_panel_io_ports.gd" type="Script" id=1]
 
 [node name="widget_panel_io_ports" type="Node"]
 
