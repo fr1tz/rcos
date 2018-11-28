@@ -1,8 +1,0 @@
-widget_settings.png / widget_settings.xcf are based on:
-
-'Settings Icon'
-Author Name: Kameleon
-Author URL: http://www.kameleon.pics
-License Name: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
-License URL: https://creativecommons.org/publicdomain/zero/1.0/
-Obtained from: https://www.brandeps.com/icon/S/Settings-04
