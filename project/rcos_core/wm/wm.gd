@@ -72,6 +72,9 @@ func _desktop_resized():
 #		root_canvas.resize(root_canvas_size)
 
 func _canvas_input(event):
+	if event.type == InputEvent.KEY:
+		if event.scancode == KEY_F11 && event.pressed:
+			OS.set_window_fullscreen(!OS.is_window_fullscreen())
 	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
 	var touch = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON)
 	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)
@@ -121,7 +124,6 @@ func show_task(task_id):
 	mActiveTaskId = task_id
 	var canvas = properties.canvas
 	var fullscreen = false
-	print(mDesktop.get_rect().size)
 	var frame_rect = Rect2(Vector2(0, 0), mDesktop.get_rect().size)
 	if properties.has("fullscreen") && properties.fullscreen:
 		fullscreen = true
