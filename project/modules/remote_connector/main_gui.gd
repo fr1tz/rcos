@@ -17,11 +17,12 @@ extends Panel
 
 onready var mInterfaceWidgetContainers = get_node("vsplit/content/interfaces_panel/interfaces_scroller/interfaces_list")
 onready var mInfoWidget = get_node("vsplit/content/info_panel/info_widget")
-onready var mButtons = get_node("vsplit/button_bar/buttons")
-onready var mOpenConnectionButton = mButtons.get_node("open_connection")
+onready var mButtons = get_node("vsplit/buttons")
+onready var mAddRemoteButton = mButtons.get_node("add_remote")
 onready var mScanButton = mButtons.get_node("scan")
 onready var mScanProgress = mButtons.get_node("scan_progress")
 onready var mCancelScanButton = mButtons.get_node("cancel_scan_button")
+onready var mAddRemoteDialog = get_node("dialogs/add_remote_dialog")
 onready var mOpenConnectionDialog = get_node("dialogs/open_connection_dialog")
 onready var mIdentifyDeviceDialog = get_node("dialogs/identify_device_dialog")
 onready var mDeviceEditorDialog = get_node("dialogs/device_editor_dialog")
@@ -29,13 +30,18 @@ onready var mDeviceEditorDialog = get_node("dialogs/device_editor_dialog")
 var mHostInfoService = null
 var mNetworkScannerService = null
 var mSelectedInterfaceWidget = null
-var mServices = []
+var mServices = {}
 
 func _ready():
-	connect("resized", self, "_resized")
+	var isquare_size = rcos.get_isquare_size()
+	mButtons.get_child(0).set_custom_minimum_size(Vector2(isquare_size, isquare_size))
+	mButtons.get_child(1).set_custom_minimum_size(Vector2(isquare_size, isquare_size))
+	mButtons.get_child(2).set_custom_minimum_size(Vector2(3*isquare_size, isquare_size))
+	mButtons.get_child(3).set_custom_minimum_size(Vector2(isquare_size, isquare_size))
+	mButtons.set_custom_minimum_size(Vector2(isquare_size, isquare_size))
 	get_viewport().connect("display", self, "_on_displayed")
 	get_viewport().connect("conceal", self, "_on_concealed")
-	mOpenConnectionButton.connect("pressed", mOpenConnectionDialog, "set_hidden", [false])
+	mAddRemoteButton.connect("pressed", self, "show_dialog", ["add_remote_dialog"])
 	if rcos.has_node("services/host_info_service"):
 		mHostInfoService = rcos.get_node("services/host_info_service")
 		#mHostInfoService.connect("host_info_changed", self, "_host_info_changed")
@@ -51,21 +57,19 @@ func _ready():
 		mScanButton.set_hidden(true)
 	mScanProgress.set_hidden(true)
 	mCancelScanButton.set_hidden(true)
+	mAddRemoteDialog.initialize(self)
 	mOpenConnectionDialog.initialize(self)
 	mIdentifyDeviceDialog.initialize(self, mDeviceEditorDialog)
 	mDeviceEditorDialog.initialize(self)
-	_resized()
+	_load_favorites()
 
-func _resized():
-	var isquare_size = rcos.get_isquare_size()
-	mButtons.get_child(0).set_custom_minimum_size(Vector2(isquare_size, isquare_size))
-	mButtons.get_child(1).set_custom_minimum_size(Vector2(isquare_size, isquare_size))
-	mButtons.get_child(2).set_custom_minimum_size(Vector2(2*isquare_size, isquare_size))
-	mButtons.get_child(3).set_custom_minimum_size(Vector2(isquare_size, isquare_size))
-	get_node("vsplit").set_split_offset(isquare_size)
+func _load_favorites():
+	pass
 
 func _scan_started():
-	mServices = []
+	for key in mServices.keys():
+		if !mServices[key].has("favorite") || mServices[key].favorite == false:
+			mServices.erase(key)
 	for c in mInterfaceWidgetContainers.get_children():
 		mInterfaceWidgetContainers.remove_child(c)
 		c.free()
@@ -80,7 +84,15 @@ func _scan_finished():
 	mCancelScanButton.set_hidden(true)
 
 func _service_discovered(service_info):
-	mServices.push_back(service_info)
+	if !service_info.has("url"):
+		return
+	if mServices.has(service_info.url):
+		var service = mServices[service_info.url]
+		for p in ["icon", "name", "desc"]:
+			if service_info.has(p):
+				service[p] = service_info[p]
+	else:
+		mServices[service_info.url] = service_info
 	_add_service(service_info)
 
 func _add_service(service_info):
@@ -95,7 +107,7 @@ func _update_services():
 	for c in mInterfaceWidgetContainers.get_children():
 		mInterfaceWidgetContainers.remove_child(c)
 		c.free()
-	for service_info in mServices:
+	for service_info in mServices.values():
 		_add_service(service_info)
 
 func _show_tab(idx):
@@ -169,3 +181,7 @@ func show_dialog(dialog_name):
 	dialogs.set_hidden(false)
 	for dialog in dialogs.get_children():
 		dialog.set_hidden(dialog.get_name() != dialog_name)
+
+func add_favorite(service_info):
+	pass
+	

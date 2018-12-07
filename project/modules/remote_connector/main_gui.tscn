@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=1]
+[gd_scene load_steps=17 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/remote_connector/main_gui.gd" type="Script" id=2]
@@ -9,8 +9,9 @@
 [ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=7]
 [ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=8]
 [ext_resource path="res://modules/remote_connector/open_connection_dialog.tscn" type="PackedScene" id=9]
-[ext_resource path="res://modules/remote_connector/identify_device_dialog.tscn" type="PackedScene" id=10]
-[ext_resource path="res://modules/remote_connector/device_editor_dialog.tscn" type="PackedScene" id=11]
+[ext_resource path="res://modules/remote_connector/add_remote_dialog.tscn" type="PackedScene" id=10]
+[ext_resource path="res://modules/remote_connector/identify_device_dialog.tscn" type="PackedScene" id=11]
+[ext_resource path="res://modules/remote_connector/device_editor_dialog.tscn" type="PackedScene" id=12]
 
 [sub_resource type="DynamicFont" id=1]
 
@@ -75,7 +76,7 @@ margin/right = 0.0
 margin/bottom = 0.0
 script/script = ExtResource( 2 )
 
-[node name="vsplit" type="VSplitContainer" parent="."]
+[node name="vsplit" type="VBoxContainer" parent="."]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -87,38 +88,25 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
-split/offset = 80
-split/collapsed = false
-split/dragger_visibility = 2
+custom_constants/separation = 0
+alignment = 0
 
-[node name="button_bar" type="Control" parent="vsplit"]
+[node name="buttons" type="HBoxContainer" parent="vsplit"]
 
 editor/display_folded = true
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 240.0
-margin/bottom = 80.0
-
-[node name="buttons" type="HBoxContainer" parent="vsplit/button_bar"]
-
-anchor/right = 1
-anchor/bottom = 1
+rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = -400.0
-margin/bottom = 0.0
+margin/right = 400.0
+margin/bottom = 80.0
 custom_constants/separation = 0
 alignment = 0
 
-[node name="open_connection" type="Button" parent="vsplit/button_bar/buttons"]
+[node name="add_remote" type="Button" parent="vsplit/buttons"]
 
 rect/min_size = Vector2( 80, 80 )
 focus/ignore_mouse = false
@@ -136,7 +124,7 @@ shortcut = null
 text = ""
 flat = false
 
-[node name="scan" type="Button" parent="vsplit/button_bar/buttons"]
+[node name="scan" type="Button" parent="vsplit/buttons"]
 
 rect/min_size = Vector2( 80, 80 )
 focus/ignore_mouse = false
@@ -154,7 +142,7 @@ shortcut = null
 text = ""
 flat = false
 
-[node name="scan_progress" type="Panel" parent="vsplit/button_bar/buttons"]
+[node name="scan_progress" type="Panel" parent="vsplit/buttons"]
 
 rect/min_size = Vector2( 160, 40 )
 focus/ignore_mouse = false
@@ -166,7 +154,7 @@ margin/top = 0.0
 margin/right = 320.0
 margin/bottom = 80.0
 
-[node name="CenterContainer" type="CenterContainer" parent="vsplit/button_bar/buttons/scan_progress"]
+[node name="CenterContainer" type="CenterContainer" parent="vsplit/buttons/scan_progress"]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -180,7 +168,7 @@ margin/right = 0.0
 margin/bottom = 0.0
 use_top_left = false
 
-[node name="scan_progress" type="ReferenceFrame" parent="vsplit/button_bar/buttons/scan_progress/CenterContainer"]
+[node name="scan_progress" type="ReferenceFrame" parent="vsplit/buttons/scan_progress/CenterContainer"]
 
 rect/min_size = Vector2( 120, 40 )
 focus/ignore_mouse = false
@@ -193,7 +181,7 @@ margin/right = 140.0
 margin/bottom = 60.0
 script/script = SubResource( 2 )
 
-[node name="spinner" type="TextureFrame" parent="vsplit/button_bar/buttons/scan_progress/CenterContainer/scan_progress"]
+[node name="spinner" type="TextureFrame" parent="vsplit/buttons/scan_progress/CenterContainer/scan_progress"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -206,12 +194,12 @@ margin/bottom = 40.0
 texture = ExtResource( 4 )
 stretch_mode = 0
 
-[node name="icon" type="Sprite" parent="vsplit/button_bar/buttons/scan_progress/CenterContainer/scan_progress/spinner"]
+[node name="icon" type="Sprite" parent="vsplit/buttons/scan_progress/CenterContainer/scan_progress/spinner"]
 
 transform/pos = Vector2( 20, 20 )
 texture = ExtResource( 5 )
 
-[node name="label" type="Label" parent="vsplit/button_bar/buttons/scan_progress/CenterContainer/scan_progress"]
+[node name="label" type="Label" parent="vsplit/buttons/scan_progress/CenterContainer/scan_progress"]
 
 focus/ignore_mouse = true
 focus/stop_mouse = true
@@ -227,7 +215,7 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="cancel_scan_button" type="Button" parent="vsplit/button_bar/buttons"]
+[node name="cancel_scan_button" type="Button" parent="vsplit/buttons"]
 
 rect/min_size = Vector2( 80, 80 )
 focus/ignore_mouse = false
@@ -247,13 +235,14 @@ flat = false
 
 [node name="content" type="Control" parent="vsplit"]
 
+editor/display_folded = true
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
-size_flags/vertical = 2
+size_flags/vertical = 3
 margin/left = 0.0
 margin/top = 80.0
-margin/right = 240.0
+margin/right = 400.0
 margin/bottom = 400.0
 
 [node name="interfaces_panel" type="Panel" parent="vsplit/content"]
@@ -354,15 +343,27 @@ margin/bottom = 0.0
 
 [node name="open_connection_dialog" parent="dialogs" instance=ExtResource( 9 )]
 
-[node name="identify_device_dialog" parent="dialogs" instance=ExtResource( 10 )]
+visibility/visible = false
 
+[node name="add_remote_dialog" parent="dialogs" instance=ExtResource( 10 )]
+
+visibility/visible = false
 anchor/right = 1
 anchor/bottom = 1
 margin/right = 0.0
 margin/bottom = 0.0
 
-[node name="device_editor_dialog" parent="dialogs" instance=ExtResource( 11 )]
+[node name="identify_device_dialog" parent="dialogs" instance=ExtResource( 11 )]
 
+visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="device_editor_dialog" parent="dialogs" instance=ExtResource( 12 )]
+
+visibility/visible = false
 anchor/right = 1
 anchor/bottom = 1
 margin/right = 0.0
