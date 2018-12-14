@@ -13,26 +13,35 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 extends Node
 
-const CONFIG_DIR = "user://etc/remote_connector"
+onready var content = get_node("canvas").get_child(0)
 
-onready var mMainWindow = get_node("main_window")
-
-var mMainGui = null
+var mModule = null
 var mTaskId = -1
 
-func _ready():
-	var dir = Directory.new()
-	if !dir.dir_exists(CONFIG_DIR):
-		dir.make_dir_recursive(CONFIG_DIR)
-	mMainWindow.initialize(self)
-	mMainWindow.show()
+func _exit_tree():
+	hide()
 
-func request_focus():
-	if mTaskId >= 0:
-		var task_properties = {
-			"wants_focus": true
-		}
-		rcos.change_task(mTaskId, task_properties)
+func show():
+	if mTaskId != -1:
+		return
+	var task_properties = {
+		"name": "Remote Connector",
+		"icon": get_node("icon").get_texture(),
+		"canvas": get_node("canvas"),
+	}
+	mTaskId = rcos.add_task(task_properties)
+
+func hide():
+	if mTaskId == -1:
+		return
+	rcos.remove_task(mTaskId)
+	mTaskId = -1
+
+func get_task_id():
+	return mTaskId
+
+func initialize(module):
+	mModule = module
+	content.initialize(module, self)

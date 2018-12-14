@@ -1,0 +1,142 @@
+[gd_scene load_steps=4 format=1]
+
+[ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://modules/remote_connector/add_remote_dialog.gd" type="Script" id=2]
+[ext_resource path="res://rcos_core/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=3]
+
+[node name="add_remote_dialog" type="ColorFrame"]
+
+visibility/self_opacity = 0.9
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = ExtResource( 1 )
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 200.0
+margin/bottom = 400.0
+color = Color( 0, 0, 0, 1 )
+script/script = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="."]
+
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 0.05
+margin/top = 0.25
+margin/right = 0.95
+margin/bottom = 0.2925
+custom_fonts/font = ExtResource( 3 )
+text = "Name:"
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="service_name_edit" type="LineEdit" parent="."]
+
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.05
+margin/top = 0.3
+margin/right = 0.95
+margin/bottom = 0.4
+placeholder/alpha = 0.6
+focus_mode = 2
+caret/caret_blink = false
+caret/caret_blink_speed = 0.65
+
+[node name="Label1" type="Label" parent="."]
+
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 0.05
+margin/top = 0.425
+margin/right = 0.95
+margin/bottom = 0.475
+custom_fonts/font = ExtResource( 3 )
+text = "URL:"
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="service_url_edit" type="LineEdit" parent="."]
+
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.05
+margin/top = 0.475
+margin/right = 0.95
+margin/bottom = 0.575
+placeholder/alpha = 0.6
+focus_mode = 2
+caret/caret_blink = false
+caret/caret_blink_speed = 0.65
+
+[node name="cancel_button" type="Button" parent="."]
+
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.05
+margin/top = 0.875
+margin/right = 0.5
+margin/bottom = 0.975
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Cancel"
+flat = false
+
+[node name="save_button" type="Button" parent="."]
+
+anchor/left = 2
+anchor/top = 2
+anchor/right = 2
+anchor/bottom = 2
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.5
+margin/top = 0.875
+margin/right = 0.95
+margin/bottom = 0.975
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = "Save"
+flat = false
+
+

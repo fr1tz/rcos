@@ -23,24 +23,24 @@ func _init():
 	add_user_signal("edit_button_pressed")
 
 func _ready():
-	mHostLabel = get_node("vbox/header/hbox/label/label")
+	mHostLabel = get_node("vbox/header/hbox/label")
 	mEditButton = get_node("vbox/header/hbox/buttons/edit_button")
 	mInterfaceWidgets = get_node("vbox/MarginContainer/interface_widgets")
 	mHostLabel.set_text(get_name())
 	mEditButton.connect("pressed", self, "emit_signal", ["edit_button_pressed"])
 	var isquare_size = rcos.get_isquare_size()
+	var isquare = Vector2(isquare_size, isquare_size)
 	get_node("vbox/header").set_custom_minimum_size(Vector2(0, isquare_size))
-	get_node("vbox/MarginContainer").set("custom_constants/margin_left", isquare_size)
+	get_node("vbox/MarginContainer").set("custom_constants/margin_left", isquare_size/2)
+	get_node("vbox/header/hbox/icon_frame").set_custom_minimum_size(isquare)
+	get_node("vbox/header/hbox/label").set_custom_minimum_size(isquare)
+	get_node("vbox/header/hbox/buttons").set_custom_minimum_size(isquare)
 
 func add_interface_widget():
 	var interface_widget = rlib.instance_scene("res://modules/remote_connector/interface_widget.tscn")
 	mInterfaceWidgets.add_child(interface_widget)
 	var isquare_size = rcos.get_isquare_size()
-	var isquare = Vector2(isquare_size, isquare_size)
 	interface_widget.set_custom_minimum_size(Vector2(0, isquare_size))
-	get_node("vbox/header/hbox/indent").set_custom_minimum_size(Vector2(isquare_size/4, isquare_size))
-	get_node("vbox/header/hbox/label").set_custom_minimum_size(isquare)
-	get_node("vbox/header/hbox/buttons").set_custom_minimum_size(isquare)
 	return interface_widget
 
 func get_host_label():
@@ -50,7 +50,7 @@ func set_host_label(name):
 	mHostLabel.set_text(name)
 
 func set_host_icon(tex):
-	get_node("vbox/header/hbox/label/icon").set_texture(tex)
+	get_node("vbox/header/hbox/icon_frame/icon").set_texture(tex)
 #	if tex.get_path().ends_with("device_generic.png"):
 #		get_node("vbox/header/frame").set_hidden(true)
 #	else:
@@ -61,5 +61,5 @@ func set_host_color(color):
 #	stylebox.set_bg_color(color)
 #	add_style_override("panel", stylebox)
 	get_node("bg_color_frame").set_frame_color(color)
-	get_node("vbox/header/hbox/label/frame").set_modulate(color)
 	get_node("vbox/header/frame/frame_color").set_frame_color(color)
+	get_node("vbox/header/hbox/icon_frame").set_modulate(color)

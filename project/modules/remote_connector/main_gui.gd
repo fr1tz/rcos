@@ -15,9 +15,9 @@
 
 extends Panel
 
-onready var mInterfaceWidgetContainers = get_node("vsplit/content/interfaces_panel/interfaces_scroller/interfaces_list")
-onready var mInfoWidget = get_node("vsplit/content/info_panel/info_widget")
-onready var mButtons = get_node("vsplit/buttons")
+onready var mInterfaceWidgetContainers = get_node("vbox/content/interfaces_panel/interfaces_scroller/interfaces_list")
+onready var mInfoWidget = get_node("vbox/content/info_panel/info_widget")
+onready var mButtons = get_node("vbox/buttons")
 onready var mAddRemoteButton = mButtons.get_node("add_remote")
 onready var mScanButton = mButtons.get_node("scan")
 onready var mScanProgress = mButtons.get_node("scan_progress")
@@ -27,6 +27,9 @@ onready var mOpenConnectionDialog = get_node("dialogs/open_connection_dialog")
 onready var mIdentifyDeviceDialog = get_node("dialogs/identify_device_dialog")
 onready var mDeviceEditorDialog = get_node("dialogs/device_editor_dialog")
 
+var mModule = null
+var mWindow = null
+var mFavoritesFilePath = null
 var mHostInfoService = null
 var mNetworkScannerService = null
 var mSelectedInterfaceWidget = null
@@ -61,18 +64,12 @@ func _ready():
 	mOpenConnectionDialog.initialize(self)
 	mIdentifyDeviceDialog.initialize(self, mDeviceEditorDialog)
 	mDeviceEditorDialog.initialize(self)
-	_load_favorites()
-
-func _load_favorites():
-	pass
 
 func _scan_started():
 	for key in mServices.keys():
 		if !mServices[key].has("favorite") || mServices[key].favorite == false:
 			mServices.erase(key)
-	for c in mInterfaceWidgetContainers.get_children():
-		mInterfaceWidgetContainers.remove_child(c)
-		c.free()
+	_update_services()
 	mSelectedInterfaceWidget = null
 	mScanButton.set_hidden(true)
 	mScanProgress.set_hidden(false)
@@ -91,16 +88,10 @@ func _service_discovered(service_info):
 		for p in ["icon", "name", "desc"]:
 			if service_info.has(p):
 				service[p] = service_info[p]
+		service.interface_widget.update()
 	else:
 		mServices[service_info.url] = service_info
-	_add_service(service_info)
-
-func _add_service(service_info):
-	var interface_widget = add_interface_widget(service_info.host)
-	interface_widget.set_url(service_info.url)
-	interface_widget.set_icon(service_info.icon)
-	interface_widget.set_text(service_info.name)
-	interface_widget.set_desc(service_info.desc)
+		add_interface_widget(service_info)
 
 func _update_services():
 	mSelectedInterfaceWidget = null
@@ -108,7 +99,7 @@ func _update_services():
 		mInterfaceWidgetContainers.remove_child(c)
 		c.free()
 	for service_info in mServices.values():
-		_add_service(service_info)
+		add_interface_widget(service_info)
 
 func _show_tab(idx):
 	get_node("tabs").set_current_tab(idx)
@@ -144,7 +135,8 @@ func _edit_button_pressed(interface_container):
 		mDeviceEditorDialog.load_host_info(host_info)
 		show_dialog("device_editor_dialog")
 
-func add_interface_widget(host_addr):
+func add_interface_widget(service_info):
+	var host_addr = service_info.host
 	var host_info = null
 	if mHostInfoService != null:
 		host_info = mHostInfoService.get_host_info_from_address(host_addr)
@@ -167,7 +159,9 @@ func add_interface_widget(host_addr):
 			interface_container.set_host_icon(host_icon)
 			interface_container.set_host_color(host_color)
 	var interface_widget = interface_container.add_interface_widget()
+	interface_widget.initialize(self, service_info)
 	interface_widget.connect("selected", self, "_interface_widget_selected", [interface_widget])
+	service_info["interface_widget"] = interface_widget
 	return interface_widget
 
 func show_desc(interface_widget):
@@ -182,6 +176,51 @@ func show_dialog(dialog_name):
 	for dialog in dialogs.get_children():
 		dialog.set_hidden(dialog.get_name() != dialog_name)
 
-func add_favorite(service_info):
-	pass
-	
+func load_favorites():
+	var file = File.new()
+	if file.open(mFavoritesFilePath, File.READ) != OK:
+		return
+	var text = file.get_buffer(file.get_len()).get_string_from_utf8()
+	file.close()
+	var dict = {}
+	if dict.parse_json(text) != OK:
+		return
+	if dict.version == 0:
+		for fav in dict.favorites:
+			var service_info = {
+				"host": fav.host,
+				"name": fav.name,
+				"desc": fav.desc,
+				"icon": load(fav.icon),
+				"url": fav.url,
+				"favorite": true
+			}
+			mServices[fav.url] = service_info
+
+func save_favorites():
+	var file = File.new()
+	if file.open(mFavoritesFilePath, File.WRITE) != OK:
+		return
+	var favorites = []
+	for service_info in mServices.values():
+		if service_info.has("favorite") && service_info.favorite == true:
+			var fav = {
+				"host": service_info.host,
+				"name": service_info.name,
+				"desc": service_info.desc,
+				"icon": service_info.icon.get_path(),
+				"url": service_info.url,
+			}
+			favorites.push_back(fav)
+	var dict = {
+		"version": 0,
+		"favorites": favorites
+	}
+	file.store_buffer(dict.to_json().to_utf8())
+	file.close()
+
+func initialize(module, window):
+	mModule = module
+	mWindow = window
+	mFavoritesFilePath = mModule.CONFIG_DIR+"/favorites.json"
+	load_favorites()

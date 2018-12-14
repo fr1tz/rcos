@@ -1,4 +1,4 @@
-# Copyright © 2017, 2018 Michael Goldener <mg@wasted.ch>
+# Copyright © 2018 Michael Goldener <mg@wasted.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,26 +13,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+extends ColorFrame
 
-extends Node
-
-const CONFIG_DIR = "user://etc/remote_connector"
-
-onready var mMainWindow = get_node("main_window")
+onready var mCancelButton = get_node("cancel_button")
+onready var mSaveButton = get_node("save_button")
 
 var mMainGui = null
-var mTaskId = -1
 
 func _ready():
-	var dir = Directory.new()
-	if !dir.dir_exists(CONFIG_DIR):
-		dir.make_dir_recursive(CONFIG_DIR)
-	mMainWindow.initialize(self)
-	mMainWindow.show()
+	mCancelButton.connect("pressed", self, "_cancel")
+	mSaveButton.connect("pressed", self, "_save")
 
-func request_focus():
-	if mTaskId >= 0:
-		var task_properties = {
-			"wants_focus": true
-		}
-		rcos.change_task(mTaskId, task_properties)
+func _cancel():
+	mMainGui.hide_dialogs()
+
+func _save():
+	if !rcos.has_node("services/host_info_service"):
+		return
+
+func initialize(main_gui):
+	mMainGui = main_gui
