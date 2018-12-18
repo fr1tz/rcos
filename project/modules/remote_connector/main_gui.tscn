@@ -9,7 +9,7 @@
 [ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=7]
 [ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=8]
 [ext_resource path="res://modules/remote_connector/open_connection_dialog.tscn" type="PackedScene" id=9]
-[ext_resource path="res://modules/remote_connector/add_remote_dialog.tscn" type="PackedScene" id=10]
+[ext_resource path="res://modules/remote_connector/add_favorite_dialog.tscn" type="PackedScene" id=10]
 [ext_resource path="res://modules/remote_connector/identify_device_dialog.tscn" type="PackedScene" id=11]
 [ext_resource path="res://modules/remote_connector/device_editor_dialog.tscn" type="PackedScene" id=12]
 
@@ -345,7 +345,7 @@ margin/bottom = 0.0
 
 visibility/visible = false
 
-[node name="add_remote_dialog" parent="dialogs" instance=ExtResource( 10 )]
+[node name="add_favorite_dialog" parent="dialogs" instance=ExtResource( 10 )]
 
 visibility/visible = false
 anchor/right = 1

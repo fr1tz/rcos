@@ -24,20 +24,29 @@ func _exit_tree():
 	hide()
 
 func show():
-	if mTaskId != -1:
-		return
-	var task_properties = {
-		"name": "Remote Connector",
-		"icon": get_node("icon").get_texture(),
-		"canvas": get_node("canvas"),
-	}
-	mTaskId = rcos.add_task(task_properties)
+	if mTaskId >= 0:
+		request_focus()
+	else:
+		var task_properties = {
+			"name": "Remote Connector",
+			"icon": get_node("icon").get_texture(),
+			"canvas": get_node("canvas"),
+		}
+		mTaskId = rcos.add_task(task_properties)
 
 func hide():
 	if mTaskId == -1:
 		return
 	rcos.remove_task(mTaskId)
 	mTaskId = -1
+
+func request_focus():
+	if mTaskId == -1:
+		return
+	var task_properties = {
+		"wants_focus": true
+	}
+	rcos.change_task(mTaskId, task_properties)
 
 func get_task_id():
 	return mTaskId

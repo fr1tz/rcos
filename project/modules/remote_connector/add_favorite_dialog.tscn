@@ -1,10 +1,10 @@
 [gd_scene load_steps=4 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://modules/remote_connector/add_remote_dialog.gd" type="Script" id=2]
+[ext_resource path="res://modules/remote_connector/add_favorite_dialog.gd" type="Script" id=2]
 [ext_resource path="res://rcos_core/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=3]
 
-[node name="add_remote_dialog" type="ColorFrame"]
+[node name="add_favorite_dialog" type="ColorFrame"]
 
 visibility/self_opacity = 0.9
 focus/ignore_mouse = false
@@ -19,7 +19,7 @@ margin/bottom = 400.0
 color = Color( 0, 0, 0, 1 )
 script/script = ExtResource( 2 )
 
-[node name="Label" type="Label" parent="."]
+[node name="service_name_label" type="Label" parent="."]
 
 anchor/left = 2
 anchor/top = 2
@@ -59,7 +59,7 @@ focus_mode = 2
 caret/caret_blink = false
 caret/caret_blink_speed = 0.65
 
-[node name="Label1" type="Label" parent="."]
+[node name="service_url_label" type="Label" parent="."]
 
 anchor/left = 2
 anchor/top = 2

@@ -15,6 +15,7 @@
 
 extends Button
 
+var mUrlHandlerService = null
 var mMainGui = null
 var mServiceInfo = null
 
@@ -44,16 +45,30 @@ func _update_fav_button():
 		icon.set_modulate(Color(1, 1, 1))
 
 func activate():
-	rcos.open(mServiceInfo.url)
+	rcos.get_node("services/url_handler_service").open_url(mServiceInfo.url)
 
 func get_desc():
-	return mServiceInfo.desc
+	if mServiceInfo.has("desc"):
+		return mServiceInfo.desc
+	else:
+		return ""
 
 func update():
-	get_node("hbox/icon").set_texture(mServiceInfo.icon)
 	get_node("hbox/label").set_text(mServiceInfo.name)
+	var icon = null
+	if mServiceInfo.has("icon"):
+		icon = mServiceInfo.icon
+	else:
+		var scheme = mUrlHandlerService.get_scheme_from_url(mServiceInfo.url)
+		var dir = Directory.new()
+		if dir.file_exists("res://icons/services/32/"+scheme+".png"):
+			icon = load("res://icons/services/32/"+scheme+".png")
+		else:
+			icon = load("res://data_router/icons/32/question_mark.png")
+	get_node("hbox/icon").set_texture(icon)
 
 func initialize(main_gui, service_info):
+	mUrlHandlerService = rcos.get_node("services/url_handler_service")
 	mMainGui = main_gui
 	mServiceInfo = service_info
 	if !mServiceInfo.has("favorite"):

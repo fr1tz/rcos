@@ -22,7 +22,7 @@ onready var mAddRemoteButton = mButtons.get_node("add_remote")
 onready var mScanButton = mButtons.get_node("scan")
 onready var mScanProgress = mButtons.get_node("scan_progress")
 onready var mCancelScanButton = mButtons.get_node("cancel_scan_button")
-onready var mAddRemoteDialog = get_node("dialogs/add_remote_dialog")
+onready var mAddFavoriteDialog = get_node("dialogs/add_favorite_dialog")
 onready var mOpenConnectionDialog = get_node("dialogs/open_connection_dialog")
 onready var mIdentifyDeviceDialog = get_node("dialogs/identify_device_dialog")
 onready var mDeviceEditorDialog = get_node("dialogs/device_editor_dialog")
@@ -30,6 +30,7 @@ onready var mDeviceEditorDialog = get_node("dialogs/device_editor_dialog")
 var mModule = null
 var mWindow = null
 var mFavoritesFilePath = null
+var mUrlHandlerService = null
 var mHostInfoService = null
 var mNetworkScannerService = null
 var mSelectedInterfaceWidget = null
@@ -44,14 +45,15 @@ func _ready():
 	mButtons.set_custom_minimum_size(Vector2(isquare_size, isquare_size))
 	get_viewport().connect("display", self, "_on_displayed")
 	get_viewport().connect("conceal", self, "_on_concealed")
-	mAddRemoteButton.connect("pressed", self, "show_dialog", ["add_remote_dialog"])
+	mAddRemoteButton.connect("pressed", self, "show_dialog", ["add_favorite_dialog"])
+	if rcos.has_node("services/url_handler_service"):
+		mUrlHandlerService = rcos.get_node("services/url_handler_service")
 	if rcos.has_node("services/host_info_service"):
 		mHostInfoService = rcos.get_node("services/host_info_service")
-		#mHostInfoService.connect("host_info_changed", self, "_host_info_changed")
 	if rcos.has_node("services/network_scanner_service"):
 		mNetworkScannerService = rcos.get_node("services/network_scanner_service")
 		mNetworkScannerService.connect("scan_started", self, "_scan_started")
-		mNetworkScannerService.connect("service_discovered", self, "_service_discovered")
+		mNetworkScannerService.connect("service_discovered", self, "add_service")
 		mNetworkScannerService.connect("scan_finished", self, "_scan_finished")
 		mScanButton.connect("pressed", mNetworkScannerService, "start_scan")
 		mCancelScanButton.connect("pressed", mNetworkScannerService, "stop_scan")
@@ -60,7 +62,7 @@ func _ready():
 		mScanButton.set_hidden(true)
 	mScanProgress.set_hidden(true)
 	mCancelScanButton.set_hidden(true)
-	mAddRemoteDialog.initialize(self)
+	mAddFavoriteDialog.initialize(self)
 	mOpenConnectionDialog.initialize(self)
 	mIdentifyDeviceDialog.initialize(self, mDeviceEditorDialog)
 	mDeviceEditorDialog.initialize(self)
@@ -79,19 +81,6 @@ func _scan_finished():
 	mScanButton.set_hidden(false)
 	mScanProgress.set_hidden(true)
 	mCancelScanButton.set_hidden(true)
-
-func _service_discovered(service_info):
-	if !service_info.has("url"):
-		return
-	if mServices.has(service_info.url):
-		var service = mServices[service_info.url]
-		for p in ["icon", "name", "desc"]:
-			if service_info.has(p):
-				service[p] = service_info[p]
-		service.interface_widget.update()
-	else:
-		mServices[service_info.url] = service_info
-		add_interface_widget(service_info)
 
 func _update_services():
 	mSelectedInterfaceWidget = null
@@ -136,10 +125,8 @@ func _edit_button_pressed(interface_container):
 		show_dialog("device_editor_dialog")
 
 func add_interface_widget(service_info):
-	var host_addr = service_info.host
-	var host_info = null
-	if mHostInfoService != null:
-		host_info = mHostInfoService.get_host_info_from_address(host_addr)
+	var host_addr = mUrlHandlerService.get_host_from_url(service_info.url)
+	var host_info = mHostInfoService.get_host_info_from_address(host_addr)
 	var host_label = host_addr
 	if host_info != null:
 		host_label = host_info.get_host_name()
@@ -188,13 +175,12 @@ func load_favorites():
 	if dict.version == 0:
 		for fav in dict.favorites:
 			var service_info = {
-				"host": fav.host,
 				"name": fav.name,
-				"desc": fav.desc,
-				"icon": load(fav.icon),
 				"url": fav.url,
 				"favorite": true
 			}
+			if fav.has("desc"):
+				service_info["desc"] = fav.desc
 			mServices[fav.url] = service_info
 
 func save_favorites():
@@ -205,12 +191,11 @@ func save_favorites():
 	for service_info in mServices.values():
 		if service_info.has("favorite") && service_info.favorite == true:
 			var fav = {
-				"host": service_info.host,
 				"name": service_info.name,
-				"desc": service_info.desc,
-				"icon": service_info.icon.get_path(),
-				"url": service_info.url,
+				"url": service_info.url
 			}
+			if service_info.has("desc"):
+				fav["desc"] = service_info.desc
 			favorites.push_back(fav)
 	var dict = {
 		"version": 0,
@@ -218,6 +203,19 @@ func save_favorites():
 	}
 	file.store_buffer(dict.to_json().to_utf8())
 	file.close()
+
+func add_service(service_info):
+	if !service_info.has("url") || !service_info.has("name"):
+		return
+	if mServices.has(service_info.url):
+		var service = mServices[service_info.url]
+		for p in ["icon", "name", "desc"]:
+			if service_info.has(p):
+				service[p] = service_info[p]
+		service.interface_widget.update()
+	else:
+		mServices[service_info.url] = service_info
+		add_interface_widget(service_info)
 
 func initialize(module, window):
 	mModule = module

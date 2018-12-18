@@ -15,21 +15,24 @@
 
 extends ColorFrame
 
-onready var mCancelButton = get_node("cancel_button")
-onready var mSaveButton = get_node("save_button")
-
 var mMainGui = null
 
 func _ready():
-	mCancelButton.connect("pressed", self, "_cancel")
-	mSaveButton.connect("pressed", self, "_save")
+	get_node("cancel_button").connect("pressed", self, "_cancel")
+	get_node("save_button").connect("pressed", self, "_save")
 
 func _cancel():
 	mMainGui.hide_dialogs()
 
 func _save():
-	if !rcos.has_node("services/host_info_service"):
-		return
+	var service_info = {
+		"name": get_node("service_name_edit").get_text(),
+		"url": get_node("service_url_edit").get_text(),
+		"favorite": true
+	}
+	mMainGui.add_service(service_info)
+	mMainGui.save_favorites()
+	mMainGui.hide_dialogs()
 
 func initialize(main_gui):
 	mMainGui = main_gui
