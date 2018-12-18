@@ -15,12 +15,14 @@
 
 extends Node
 
-func _ready():
-	var open_func = funcref(self, "open")
-	var scheme = "vjoy"
-	var desc = "Open using vJoyCtrl"
-	var icon = load("res://modules/vjoyctrl/graphics/icon.png")
-	rcos.register_url_handler(open_func, scheme, desc, icon)
+func get_scheme():
+	return "vjoy"
+
+func get_desc():
+	return "Open using vJoyCtrl"
+
+func get_icon():
+	return load("res://modules/vjoyctrl/graphics/icon.png")
 
 func open(url):
 	rcos.log_debug(self, ["open():", url])
