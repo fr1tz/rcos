@@ -15,12 +15,14 @@
 
 extends Node
 
-func _ready():
-	var open_func = funcref(self, "open")
-	var scheme = "rfb"
-	var desc = "Open using RFB client"
-	var icon = load("res://modules/quack_vnc/graphics/icon.png")
-	rcos.register_url_handler(open_func, scheme, desc, icon)
+func get_scheme():
+	return "rfb"
+
+func get_desc():
+	return "Open using Quack VNC"
+
+func get_icon():
+	return load("res://modules/quack_vnc/graphics/icon.png")
 
 func open(url):
 	rcos.log_debug(self, ["open():", url])
