@@ -1,9 +1,14 @@
-[gd_scene load_steps=2 format=1]
+[gd_scene load_steps=3 format=1]
 
 [ext_resource path="res://rcos_core/services/url_handler_service/url_handler_service.gd" type="Script" id=1]
+[ext_resource path="res://rcos_core/services/url_handler_service/url_handler_service_io_ports.tscn" type="PackedScene" id=2]
 
 [node name="url_handler_service" type="Node"]
 
 script/script = ExtResource( 1 )
+
+[node name="io_ports" parent="." instance=ExtResource( 2 )]
+
+[node name="url_handlers" type="Node" parent="."]
 
 

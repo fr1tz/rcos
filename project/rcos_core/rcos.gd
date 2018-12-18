@@ -37,7 +37,6 @@ var mInfoFiles = {}
 var mModuleInfo = {}
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
-var mURLHandlers = []
 var mTaskNodes = {} # Task ID -> Task Node
 var mISquareSize = 40
 
@@ -139,19 +138,9 @@ func _init_routine(print_init_msg_func, args = null):
 	data_router.set_node_icon("localhost/x11", load("res://data_router/icons/32/x11.png"), 32)
 	data_router.set_node_icon("localhost/android", load("res://data_router/icons/32/android.png"), 32)
 	data_router.set_node_icon("localhost/windows", load("res://data_router/icons/32/windows_os.png"), 32)
-	# Create I/O ports...
-	print_init_msg_func.call_func("* Creating output port: /rcos/open(url)...")
 	yield()
-	var port_path_prefix = "rcos/"
-	var port = data_router.add_input_port(port_path_prefix+"/open(url)")
-	port.set_meta("data_type", "string")
-	port.set_meta("icon32", load("res://data_router/icons/32/open.png"))
-	mInputPorts["open(url)"] = port
-	for port in mInputPorts.values():
-		port.connect("data_changed", self, "_on_input_data_changed", [port])
-	print_init_msg_func.call_func(" DONE\n")
-	yield()
-	print_init_msg_func.call_func("* Starting services...\n")
+	# Start core services...
+	print_init_msg_func.call_func("* Starting core services...\n")
 	var services = {
 		"URL Handler service": "res://rcos_core/services/url_handler_service/url_handler_service.tscn",
 		"Host Info service": "res://rcos_core/services/host_info_service/host_info_service.tscn",
@@ -197,11 +186,6 @@ func _init_routine(print_init_msg_func, args = null):
 	emit_signal("init_finished")
 	OS.set_target_fps(30)
 	return null
-
-func _on_input_data_changed(old_data, new_data, port):
-	if port.get_name() == "open(url)":
-		if new_data != null:
-			open(str(new_data))
 
 func _add_log_entry(source_node, level, content):
 	emit_signal("new_log_entry3", source_node, level, content)
@@ -371,39 +355,6 @@ func add_service(service_node):
 		return false
 	services_node.add_child(service_node)
 	return true
-
-func register_url_handler(open_func, scheme, desc, icon):
-	for url_handler in mURLHandlers:
-		if url_handler.open_func == open_func:
-			return false
-	var url_handler = {
-		"open_func": open_func,
-		"scheme": scheme,
-		"desc": desc,
-		"icon": icon
-	}
-	mURLHandlers.push_back(url_handler)
-	emit_signal("url_handler_added", url_handler)
-	return true
-
-func unregister_url_handler(open_func):
-	for url_handler in mURLHandlers:
-		if url_handler.open_func == open_func:
-			emit_signal("url_handler_removed", url_handler)
-			mURLHandlers.erase(url_handler)
-			return true
-	return true
-
-func open(url):
-	var scheme = url
-	var n = url.find(":")
-	if n >= 1:
-		scheme = url.left(n)
-	for url_handler in mURLHandlers:
-		if url_handler.scheme == scheme:
-			url_handler.open_func.call_func(url)
-			return true
-	return false
 
 func initialize(print_init_msg_func, args = null):
 	return _init_routine(print_init_msg_func, args)

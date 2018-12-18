@@ -13,11 +13,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-func _ready():
-	for path in find_url_handlers():
-		add_url_handler(path)
+onready var mIOPorts = get_node("io_ports")
+onready var mUrlHandlers = get_node("url_handlers")
 
-func find_url_handlers():
+func _ready():
+	mIOPorts.initialize(self)
+	for path in _find_url_handlers():
+		var url_handler = rlib.instance_scene(path)
+		if url_handler == null:
+			continue
+		mUrlHandlers.add_child(url_handler)
+
+func _find_url_handlers():
 	var paths = []
 	var info_files = rcos.get_info_files()
 	for filename in info_files.keys():
@@ -28,8 +35,39 @@ func find_url_handlers():
 		paths.push_back(path)
 	return paths
 
-func add_url_handler(scene_path):
-	var url_handler = rlib.instance_scene(scene_path)
-	if url_handler == null:
+func get_scheme_from_url(url):
+	var scheme = url
+	var n = url.find(":")
+	if n >= 1:
+		scheme = url.left(n)
+	return scheme
+
+func get_host_from_url(url):
+	var tokens = url.split("/", false)
+	if tokens.size() < 2:
 		return
-	add_child(url_handler)
+	var authority = tokens[1]
+	tokens = authority.split(":", false)
+	var host = tokens[0]
+	return host
+
+func get_url_handlers(url):
+	var scheme = get_scheme_from_url(url)
+	var handlers = []
+	for handler in mUrlHandlers.get_children():
+		if handler.get_scheme() == scheme:
+			handlers.push_back(handler)
+	return handlers
+
+func get_default_url_handler(url):
+	var scheme = get_scheme_from_url(url)
+	for handler in mUrlHandlers.get_children():
+		if handler.get_scheme() == scheme:
+			return handler
+	return null
+
+func open_url(url):
+	var scheme = get_scheme_from_url(url)
+	for handler in mUrlHandlers.get_children():
+		if handler.get_scheme() == scheme:
+			handler.open(url)
