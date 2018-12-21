@@ -51,7 +51,7 @@ func is_connected():
 	return mConnections.size() > 0
 
 func get_port_path():
-	return data_router.get_node("output_ports").get_path_to(self)
+	return str(data_router.get_node("output_ports").get_path_to(self))
 
 func access_data():
 	emit_signal("data_access")
