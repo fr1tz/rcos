@@ -1,8 +1,8 @@
-[gd_scene load_steps=12 format=1]
+[gd_scene load_steps=20 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/io_ports_connector/connection_item.gd" type="Script" id=2]
-[ext_resource path="res://rcos_core/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://modules/remote_connector/graphics/icon.fav0.png" type="Texture" id=3]
 [ext_resource path="res://modules/io_ports_connector/graphics/existing_output_port.png" type="Texture" id=4]
 [ext_resource path="res://modules/io_ports_connector/graphics/missing_output_port.png" type="Texture" id=5]
 [ext_resource path="res://modules/io_ports_connector/graphics/existing_input_port.png" type="Texture" id=6]
@@ -10,15 +10,59 @@
 [ext_resource path="res://modules/io_ports_connector/graphics/active_connection.png" type="Texture" id=8]
 [ext_resource path="res://modules/io_ports_connector/graphics/inactive_connection.png" type="Texture" id=9]
 [ext_resource path="res://modules/io_ports_connector/graphics/disabled_connection.png" type="Texture" id=10]
+[ext_resource path="res://rcos_core/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=11]
+[ext_resource path="res://rcos_core/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=12]
+
+[sub_resource type="StyleBoxEmpty" id=3]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=4]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=5]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=6]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
 
 [sub_resource type="DynamicFont" id=1]
 
 font/size = 14
 font/use_mipmaps = false
 font/use_filter = false
-font/font = ExtResource( 3 )
+font/font = ExtResource( 11 )
 
-[node name="connection_item" type="Button"]
+[sub_resource type="DynamicFont" id=8]
+
+font/size = 16
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 12 )
+
+[node name="connection_item" type="PanelContainer"]
 
 rect/min_size = Vector2( 200, 40 )
 focus/ignore_mouse = false
@@ -28,69 +72,58 @@ size_flags/vertical = 2
 theme/theme = ExtResource( 1 )
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 200.0
-margin/bottom = 40.0
-toggle_mode = true
-enabled_focus_mode = 2
-shortcut = null
-flat = false
+margin/right = 260.0
+margin/bottom = 44.0
 script/script = ExtResource( 2 )
 
-[node name="output_port_path_label" type="Label" parent="."]
+[node name="hbox" type="HBoxContainer" parent="."]
 
-anchor/top = 3
-anchor/bottom = 3
-focus/ignore_mouse = true
+focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 21.0
-margin/top = 19.0
-margin/right = 198.0
-margin/bottom = -2.0
-custom_fonts/font = SubResource( 1 )
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
+size_flags/vertical = 2
+margin/left = 2.0
+margin/top = 2.0
+margin/right = 258.0
+margin/bottom = 42.0
+custom_constants/separation = 1
+alignment = 0
 
-[node name="input_port_path_label" type="Label" parent="."]
+[node name="disabled_segment" type="ReferenceFrame" parent="hbox"]
 
-anchor/top = 3
-anchor/bottom = 3
-focus/ignore_mouse = true
-focus/stop_mouse = false
-size_flags/horizontal = 2
-size_flags/vertical = 0
-margin/left = 21.0
-margin/top = 0.0
-margin/right = 198.0
-margin/bottom = -21.0
-custom_fonts/font = SubResource( 1 )
-valign = 1
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-
-[node name="output_port_icon" type="ReferenceFrame" parent="."]
-
-editor/display_folded = true
-anchor/top = 3
-anchor/bottom = 3
+rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
-margin/top = 20.0
-margin/right = 20.0
-margin/bottom = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
 
-[node name="existing" type="TextureFrame" parent="output_port_icon"]
+[node name="toggle_button" type="Button" parent="hbox/disabled_segment"]
 
 anchor/right = 1
 anchor/bottom = 1
-focus/ignore_mouse = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 2.0
+margin/top = 2.0
+margin/right = 2.0
+margin/bottom = 2.0
+toggle_mode = true
+enabled_focus_mode = 2
+shortcut = null
+flat = false
+
+[node name="icon" type="TextureFrame" parent="hbox/disabled_segment"]
+
+visibility/visible = false
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
@@ -98,10 +131,82 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 0.0
 margin/bottom = 0.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+
+[node name="button" type="Button" parent="hbox/disabled_segment"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_styles/hover = SubResource( 3 )
+custom_styles/pressed = SubResource( 4 )
+custom_styles/focus = SubResource( 5 )
+custom_styles/disabled = SubResource( 6 )
+custom_styles/normal = SubResource( 7 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+flat = false
+
+[node name="icon_segment" type="CenterContainer" parent="hbox"]
+
+rect/min_size = Vector2( 20, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 41.0
+margin/top = 0.0
+margin/right = 61.0
+margin/bottom = 40.0
+use_top_left = false
+
+[node name="icon" type="Control" parent="hbox/icon_segment"]
+
+rect/min_size = Vector2( 20, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
+
+[node name="output_port_icon" type="ReferenceFrame" parent="hbox/icon_segment/icon"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
+
+[node name="existing" type="TextureFrame" parent="hbox/icon_segment/icon/output_port_icon"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
 texture = ExtResource( 4 )
 stretch_mode = 0
 
-[node name="missing" type="TextureFrame" parent="output_port_icon"]
+[node name="missing" type="TextureFrame" parent="hbox/icon_segment/icon/output_port_icon"]
 
 anchor/right = 1
 anchor/bottom = 1
@@ -116,54 +221,9 @@ margin/bottom = 0.0
 texture = ExtResource( 5 )
 stretch_mode = 0
 
-[node name="input_port_icon" type="ReferenceFrame" parent="."]
+[node name="input_port_icon" type="ReferenceFrame" parent="hbox/icon_segment/icon"]
 
 editor/display_folded = true
-anchor/top = 3
-anchor/bottom = 3
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 20.0
-margin/bottom = -20.0
-
-[node name="existing" type="TextureFrame" parent="input_port_icon"]
-
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-texture = ExtResource( 6 )
-stretch_mode = 0
-
-[node name="missing" type="TextureFrame" parent="input_port_icon"]
-
-anchor/right = 1
-anchor/bottom = 1
-focus/ignore_mouse = true
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 0.0
-margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
-texture = ExtResource( 7 )
-stretch_mode = 0
-
-[node name="connection_icon" type="ReferenceFrame" parent="."]
-
-anchor/top = 3
-anchor/bottom = 3
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
@@ -171,51 +231,177 @@ size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 20.0
 margin/right = 20.0
-margin/bottom = -20.0
+margin/bottom = 40.0
 
-[node name="active" type="TextureFrame" parent="connection_icon"]
+[node name="existing" type="TextureFrame" parent="hbox/icon_segment/icon/input_port_icon"]
 
-anchor/right = 1
-anchor/bottom = 1
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
+texture = ExtResource( 6 )
+stretch_mode = 0
+
+[node name="missing" type="TextureFrame" parent="hbox/icon_segment/icon/input_port_icon"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
+texture = ExtResource( 7 )
+stretch_mode = 0
+
+[node name="connection_icon" type="ReferenceFrame" parent="hbox/icon_segment/icon"]
+
+editor/display_folded = true
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
+
+[node name="active" type="TextureFrame" parent="hbox/icon_segment/icon/connection_icon"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
 texture = ExtResource( 8 )
 stretch_mode = 0
 
-[node name="inactive" type="TextureFrame" parent="connection_icon"]
+[node name="inactive" type="TextureFrame" parent="hbox/icon_segment/icon/connection_icon"]
 
-anchor/right = 1
-anchor/bottom = 1
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
 texture = ExtResource( 9 )
 stretch_mode = 0
 
-[node name="disabled" type="TextureFrame" parent="connection_icon"]
+[node name="disabled" type="TextureFrame" parent="hbox/icon_segment/icon/connection_icon"]
 
-anchor/right = 1
-anchor/bottom = 1
 focus/ignore_mouse = true
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
+margin/right = 20.0
+margin/bottom = 40.0
 texture = ExtResource( 10 )
 stretch_mode = 0
+
+[node name="labels_segment" type="ReferenceFrame" parent="hbox"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 3
+size_flags/vertical = 2
+margin/left = 62.0
+margin/top = 0.0
+margin/right = 215.0
+margin/bottom = 40.0
+
+[node name="vbox" type="VBoxContainer" parent="hbox/labels_segment"]
+
+anchor/top = 3
+anchor/right = 1
+anchor/bottom = 3
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 20.0
+margin/right = 0.0
+margin/bottom = -20.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="output_port" type="Label" parent="hbox/labels_segment/vbox"]
+
+rect/min_size = Vector2( 0, 20 )
+focus/ignore_mouse = true
+focus/stop_mouse = false
+size_flags/horizontal = 3
+size_flags/vertical = 0
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 153.0
+margin/bottom = 20.0
+custom_fonts/font = SubResource( 1 )
+text = "OUTPUT_PORT_PATH"
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="input_port" type="Label" parent="hbox/labels_segment/vbox"]
+
+rect/min_size = Vector2( 0, 20 )
+focus/ignore_mouse = true
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 0.0
+margin/top = 20.0
+margin/right = 153.0
+margin/bottom = 40.0
+custom_fonts/font = SubResource( 1 )
+text = "INPUT_PORT_PATH"
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="remove_segment" type="ReferenceFrame" parent="hbox"]
+
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 216.0
+margin/top = 0.0
+margin/right = 256.0
+margin/bottom = 40.0
+
+[node name="button" type="Button" parent="hbox/remove_segment"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 2.0
+margin/top = 2.0
+margin/right = 2.0
+margin/bottom = 2.0
+custom_fonts/font = SubResource( 8 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
 
 

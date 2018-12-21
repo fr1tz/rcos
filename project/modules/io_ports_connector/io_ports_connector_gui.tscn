@@ -1,10 +1,12 @@
-[gd_scene load_steps=8 format=1]
+[gd_scene load_steps=11 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/io_ports_connector/io_ports_connector_gui.gd" type="Script" id=2]
-[ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=3]
-[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=4]
-[ext_resource path="res://rcos_core/lib/node_selector.tscn" type="PackedScene" id=5]
+[ext_resource path="res://rcos_core/lib/menu_bar.tscn" type="PackedScene" id=3]
+[ext_resource path="res://rcos_core/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=4]
+[ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=5]
+[ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=6]
+[ext_resource path="res://rcos_core/lib/node_selector.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxFlat" id=1]
 
@@ -18,6 +20,13 @@ dark_color = Color( 0.8, 0.8, 0.8, 1 )
 border_size = 0
 border_blend = true
 draw_bg = true
+
+[sub_resource type="DynamicFont" id=3]
+
+font/size = 16
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 4 )
 
 [sub_resource type="GDScript" id=2]
 
@@ -67,9 +76,12 @@ margin/bottom = 0.0
 custom_constants/separation = 0
 alignment = 0
 
-[node name="buttons" type="HBoxContainer" parent="vsplit"]
+[node name="menu_bar" parent="vsplit" instance=ExtResource( 3 )]
 
-editor/display_folded = true
+margin/bottom = 82.0
+
+[node name="buttons" type="HBoxContainer" parent="vsplit/menu_bar"]
+
 rect/min_size = Vector2( 40, 40 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -78,89 +90,52 @@ size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
 margin/right = 240.0
-margin/bottom = 40.0
+margin/bottom = 80.0
 custom_constants/separation = 0
 alignment = 0
 
-[node name="add_connection_button" type="Button" parent="vsplit/buttons"]
+[node name="add_connection_button" type="Button" parent="vsplit/menu_bar/buttons"]
 
+rect/min_size = Vector2( 80, 80 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 26.0
-margin/bottom = 40.0
+margin/right = 80.0
+margin/bottom = 80.0
+custom_fonts/font = SubResource( 3 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
-text = "Add"
+text = ""
 flat = false
 
-[node name="toggle_connection_button" type="Button" parent="vsplit/buttons"]
+[node name="items_panel" type="PanelContainer" parent="vsplit"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 26.0
-margin/top = 0.0
-margin/right = 66.0
-margin/bottom = 40.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "Toggle"
-flat = false
+size_flags/horizontal = 3
+size_flags/vertical = 3
+margin/left = 0.0
+margin/top = 82.0
+margin/right = 240.0
+margin/bottom = 400.0
 
-[node name="remove_connection_button" type="Button" parent="vsplit/buttons"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 66.0
-margin/top = 0.0
-margin/right = 112.0
-margin/bottom = 40.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "Remove"
-flat = false
-
-[node name="save_button" type="Button" parent="vsplit/buttons"]
-
-focus/ignore_mouse = false
-focus/stop_mouse = true
-size_flags/horizontal = 2
-size_flags/vertical = 2
-margin/left = 112.0
-margin/top = 0.0
-margin/right = 143.0
-margin/bottom = 40.0
-toggle_mode = false
-enabled_focus_mode = 2
-shortcut = null
-text = "Save"
-flat = false
-
-[node name="items_container" parent="vsplit" instance=ExtResource( 3 )]
+[node name="scroller" parent="vsplit/items_panel" instance=ExtResource( 5 )]
 
 anchor/right = 0
 anchor/bottom = 0
-size_flags/horizontal = 3
-size_flags/vertical = 3
-margin/top = 40.0
-margin/right = 240.0
-margin/bottom = 400.0
+margin/left = 2.0
+margin/top = 2.0
+margin/right = 238.0
+margin/bottom = 316.0
 clip_content = true
 
-[node name="items" type="VBoxContainer" parent="vsplit/items_container"]
+[node name="items" type="VBoxContainer" parent="vsplit/items_panel/scroller"]
 
 anchor/right = 1
-anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
@@ -173,9 +148,13 @@ custom_constants/separation = 0
 alignment = 0
 script/script = SubResource( 2 )
 
-[node name="scroller_input_area" parent="vsplit/items_container" instance=ExtResource( 4 )]
+[node name="scroller_input_area" parent="vsplit/items_panel/scroller" instance=ExtResource( 6 )]
 
-[node name="output_port_selector" parent="." instance=ExtResource( 5 )]
+visibility/visible = false
+anchor/right = 0
+anchor/bottom = 0
+
+[node name="output_port_selector" parent="." instance=ExtResource( 7 )]
 
 editor/display_folded = true
 visibility/visible = false
@@ -185,15 +164,7 @@ margin/right = 0.0
 margin/bottom = 0.0
 root_path = NodePath("/root/data_router/output_ports")
 
-[node name="items_scroller" parent="output_port_selector"]
-
-clip_content = true
-
-[node name="scroller" parent="output_port_selector/current_node_path"]
-
-clip_content = true
-
-[node name="input_port_selector" parent="." instance=ExtResource( 5 )]
+[node name="input_port_selector" parent="." instance=ExtResource( 7 )]
 
 visibility/visible = false
 anchor/right = 1
