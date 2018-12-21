@@ -55,7 +55,7 @@ func _add_input_ports(prefix):
 func _input_port_data_changed(old_data, new_data, port):
 	if port.get_name() == "open(url)":
 		if new_data != null:
-			open_url(str(new_data))
+			mUrlHandlerService.open_url(str(new_data))
 
 func initialize(url_handler_service):
 	mUrlHandlerService = url_handler_service
