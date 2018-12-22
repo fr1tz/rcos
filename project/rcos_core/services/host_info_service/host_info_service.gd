@@ -85,9 +85,11 @@ func get_host_info_from_hostname(host_name):
 	return null
 
 func get_host_info_from_address(host_addr):
-	if IP.get_local_addresses().has(host_addr):
+	if host_addr == "localhost" || IP.get_local_addresses().has(host_addr):
 		return mHosts.get_node("localhost")
 	for host in mHosts.get_children():
+		if host.get_host_name() == host_addr:
+			return host
 		if host.has_address(host_addr):
 			return host
 	return null
