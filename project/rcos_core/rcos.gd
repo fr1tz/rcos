@@ -52,31 +52,23 @@ func _init():
 	add_user_signal("task_removed")
 	add_user_signal("new_log_entry3")
 
-func _init_routine(print_init_msg_func, args = null):
-	print_init_msg_func.call_func("*** BEGIN RC/OS INIT ***\n")
+func _init_routine(handle_init_msg_func, args = null):
+	var printf = handle_init_msg_func
+	printf.call_func("*** BEGIN RC/OS INIT ***\n"); yield()
 	var root_canvas_script = load("res://rcos_core/root_canvas.gd")
 	get_node("/root").set_script(root_canvas_script)
-	yield()
-	print_init_msg_func.call_func("* Querying host model name...")
-	yield()
+	printf.call_func("* Querying host model name..."); yield()
 	var model_name = OS.get_model_name()
-	print_init_msg_func.call_func(" '" + model_name + "'\n")
-	yield()
-	print_init_msg_func.call_func("* Querying host OS name...")
-	yield()
+	printf.call_func(" '" + model_name + "'\n"); yield()
+	printf.call_func("* Querying host OS name..."); yield()
 	var os_name = OS.get_name()
-	print_init_msg_func.call_func(" '" + os_name + "'\n")
-	yield()
-	print_init_msg_func.call_func("* Querying screen size...")
-	yield()
+	printf.call_func(" '" + os_name + "'\n"); yield()
+	printf.call_func("* Querying screen size..."); yield()
 	var res = OS.get_screen_size()
-	print_init_msg_func.call_func(" " + str(res) + "\n")
-	yield()
-	print_init_msg_func.call_func("* Querying screen DPI...")
-	yield()
+	printf.call_func(" " + str(res) + "\n"); yield()
+	printf.call_func("* Querying screen DPI..."); yield()
 	var dpi = OS.get_screen_dpi()
-	print_init_msg_func.call_func(" " + str(dpi) + "\n")
-	yield()
+	printf.call_func(" " + str(dpi) + "\n"); yield()
 	if model_name == "GenericDevice":
 		mISquareSize = 40 
 	else:
@@ -90,26 +82,20 @@ func _init_routine(print_init_msg_func, args = null):
 		OS.get_process_ID(),
 		OS.get_unix_time()
 	], "-") + "/"
-	print_init_msg_func.call_func("* Temp directory is " + mTmpDirPath + "\n")
-	yield()
-	print_init_msg_func.call_func("* Building info file database...\n")
-	yield()
+	printf.call_func("* Temp directory is " + mTmpDirPath + "\n"); yield()
+	printf.call_func("* Building info file database...\n"); yield()
 	var info_file_paths = rlib.find_files("res://", "*.info")
-	print_init_msg_func.call_func("* Found " + str(info_file_paths.size()) + " info files.\n")
-	yield()
+	printf.call_func("* Found " + str(info_file_paths.size()) + " info files.\n"); yield()
 	for filename in info_file_paths:
-		print_init_msg_func.call_func("* Processing " + filename)
-		yield()
+		printf.call_func("* Processing " + filename); yield()
 		var config_file = ConfigFile.new()
 		var err = config_file.load(filename)
 		if err != OK:
-			print_init_msg_func.call_func(" ERROR: " + str(err)) + "\n"
+			printf.call_func(" ERROR: " + str(err) + "\n"); yield()
 		else:
 			mInfoFiles[filename] = config_file
-			print_init_msg_func.call_func(" OK\n")
-		yield()
-	print_init_msg_func.call_func("* Building module database...\n")
-	yield()
+			printf.call_func(" OK\n"); yield()
+	printf.call_func("* Building module database...\n"); yield()
 	for filename in mInfoFiles.keys():
 		var config_file = mInfoFiles[filename]
 		if !config_file.has_section("module"):
@@ -127,10 +113,11 @@ func _init_routine(print_init_msg_func, args = null):
 			"path": path
 		}
 		mModuleInfo[module.name] = module
-		print_init_msg_func.call_func("* Found module: " + module.name + "\n")
-		yield()
+		printf.call_func("* Found module: " + module.name + "\n"); yield()
+	# Initialize data router...
+	printf.call_func("* Initializing data router"); yield()
+	data_router.initialize("user://etc/data_router")
 	data_router.set_node_icon("rcos", load("res://data_router/icons/32/rcos.png"), 32)
-	# Select icon for localhost node
 	if model_name == "GenericDevice":
 		data_router.set_node_icon("localhost", load("res://data_router/icons/32/generic_device.png"), 32)
 	else:
@@ -138,9 +125,9 @@ func _init_routine(print_init_msg_func, args = null):
 	data_router.set_node_icon("localhost/x11", load("res://data_router/icons/32/x11.png"), 32)
 	data_router.set_node_icon("localhost/android", load("res://data_router/icons/32/android.png"), 32)
 	data_router.set_node_icon("localhost/windows", load("res://data_router/icons/32/windows_os.png"), 32)
-	yield()
+	printf.call_func(" DONE\n"); yield()
 	# Start core services...
-	print_init_msg_func.call_func("* Starting core services...\n")
+	printf.call_func("* Starting core services...\n"); yield()
 	var services = {
 		"URL Handler service": "res://rcos_core/services/url_handler_service/url_handler_service.tscn",
 		"Host Info service": "res://rcos_core/services/host_info_service/host_info_service.tscn",
@@ -148,41 +135,37 @@ func _init_routine(print_init_msg_func, args = null):
 		"Widgets service": "res://rcos_core/services/widgets_service/widgets_service.tscn"
 	}
 	for service_name in services.keys():
-		print_init_msg_func.call_func("* Starting " + service_name + "...")
-		yield()
+		printf.call_func("* Starting " + service_name + "..."); yield()
 		var scene_path = services[service_name]
 		var service_packed = load(scene_path)
 		if service_packed == null:
-			print_init_msg_func.call_func(" FAILED\n")
-			print_init_msg_func.call_func("*** INIT FAILED: UNABLE TO LOAD " + service_name.to_upper() + "\n")
+			printf.call_func(" FAILED\n"); yield()
+			printf.call_func("*** INIT FAILED: UNABLE TO LOAD " + service_name.to_upper() + "\n"); yield()
 			return null
 		var service = service_packed.instance()
 		if service == null:
-			print_init_msg_func.call_func(" FAILED\n")
-			print_init_msg_func.call_func("*** INIT FAILED: UNABLE TO INSTANCE " + service_name.to_upper() + "\n")
+			printf.call_func(" FAILED\n"); yield()
+			printf.call_func("*** INIT FAILED: UNABLE TO INSTANCE " + service_name.to_upper() + "\n"); yield()
 			return null
 		if !add_service(service):
-			print_init_msg_func.call_func(" FAILED\n")
-			print_init_msg_func.call_func("*** INIT FAILED: UNABLE TO ADD " + service_name.to_upper() + "\n")
+			printf.call_func(" FAILED\n"); yield()
+			printf.call_func("*** INIT FAILED: UNABLE TO ADD " + service_name.to_upper() + "\n"); yield()
 			return null
-		print_init_msg_func.call_func(" DONE\n")
-		yield()
-	print_init_msg_func.call_func("* Loading Window Manager...")
-	yield()
+		printf.call_func(" DONE\n"); yield()
+	printf.call_func("* Loading Window Manager..."); yield()
 	var wm_packed = load("res://rcos_core/wm/wm.tscn")
 	if wm_packed == null:
-		print_init_msg_func.call_func(" FAILED\n")
-		print_init_msg_func.call_func(" *** INIT FAILED: UNABLE TO LOAD WINDOW MANAGER")
+		printf.call_func(" FAILED\n"); yield()
+		printf.call_func(" *** INIT FAILED: UNABLE TO LOAD WINDOW MANAGER"); yield()
 		return null
 	var wm = wm_packed.instance()
 	if wm_packed == null:
-		print_init_msg_func.call_func(" FAILED\n")
-		print_init_msg_func.call_func(" *** INIT FAILED: UNABLE TO INSTANCE WINDOW MANAGER")
+		printf.call_func(" FAILED\n"); yield()
+		printf.call_func(" *** INIT FAILED: UNABLE TO INSTANCE WINDOW MANAGER"); yield()
 		return null
 	get_node("gui/window_manager").add_child(wm)
-	print_init_msg_func.call_func(" DONE\n")
-	yield()
-	print_init_msg_func.call_func("*** RC/OS INIT FINISHED ***\n")
+	printf.call_func(" DONE\n"); yield()
+	printf.call_func("*** RC/OS INIT FINISHED ***\n"); yield()
 	emit_signal("init_finished")
 	OS.set_target_fps(30)
 	return null
@@ -356,5 +339,5 @@ func add_service(service_node):
 	services_node.add_child(service_node)
 	return true
 
-func initialize(print_init_msg_func, args = null):
-	return _init_routine(print_init_msg_func, args)
+func initialize(handle_init_msg_func, args = null):
+	return _init_routine(handle_init_msg_func, args)
