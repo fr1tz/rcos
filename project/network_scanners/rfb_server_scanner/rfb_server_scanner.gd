@@ -50,7 +50,6 @@ func _scan_routine():
 func _scan_host(addr):
 	var host_scanner = mPackedHostScanner.instance()
 	get_node("hosts").add_child(host_scanner)
-	host_scanner.set_name(addr)
 	host_scanner.connect("service_discovered", self, "_service_discovered")
 	host_scanner.scan_host(addr)
 
