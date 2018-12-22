@@ -224,7 +224,7 @@ func _remove_connection(output_port_path, input_port_path):
 	mConnectionsByInputPortPath[input_port_path].erase(connection)
 	mConnectionsByID.erase(connection_id)
 	mConnections.remove_child(connection)
-	connection.qeue_free()
+	connection.queue_free()
 	_save_connections()
 
 func _set_connection_disabled(output_port_path, input_port_path, disabled):
