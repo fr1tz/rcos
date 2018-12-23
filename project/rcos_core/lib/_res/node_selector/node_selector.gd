@@ -94,7 +94,9 @@ func _refresh():
 			label += " >"
 			item.connect("pressed", self, "_set_current_node", [n])
 		item.set_text(label)
-		var icon = n.get_meta("icon32")
+		var icon = null
+		if n.has_meta("icon32"):
+			icon = n.get_meta("icon32")
 		if icon == null:
 			if mCurrentNode == mRootNode && mHostInfoService:
 				var hostname = n.get_name()
