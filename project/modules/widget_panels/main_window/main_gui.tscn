@@ -1,26 +1,9 @@
-[gd_scene load_steps=6 format=1]
+[gd_scene load_steps=5 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/widget_panels/main_window/main_gui.gd" type="Script" id=2]
 [ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=3]
 [ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=4]
-
-[sub_resource type="GDScript" id=1]
-
-script/source = "extends VBoxContainer
-
-# class member variables go here, for example:
-# var a = 2
-# var b = \"textvar\"
-
-func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
-
-func _input_event(event):
-	prints(get_name(), \"_input_event\", event)
-	"
 
 [node name="main_gui" type="Panel"]
 
@@ -161,7 +144,6 @@ margin/right = 0.0
 margin/bottom = 0.0
 custom_constants/separation = 0
 alignment = 0
-script/script = SubResource( 1 )
 
 [node name="scroller_input_area" parent="vsplit/items_panel/items_container" instance=ExtResource( 4 )]
 
