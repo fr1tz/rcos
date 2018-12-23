@@ -26,8 +26,16 @@ var mNextInputEventId = 0
 var mInputs = Array()
 
 func _init():
+	add_user_signal("predelete")
 	add_user_signal("display")
 	add_user_signal("conceal")
+
+func _notification(what):
+	if what == NOTIFICATION_PREDELETE:
+		emit_signal("predelete")
+		for display in mDisplays:
+			display.show_canvas(null)
+		mDisplays.clear()
 
 func _ready():
 	add_to_group("canvas_group")
