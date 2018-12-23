@@ -276,20 +276,22 @@ func remove_port(port_node):
 			break
 	if port_type == PORT_TYPE_INPUT:
 		emit_signal("input_port_removed", port_path)
-		var connections = mConnectionsByInputPortPath[port_path]
-		for connection in connections:
-			connection.mInputPortNode = null
-			if connection.is_established():
-				connection.mOutputPortNode.remove_connection(connection.mInputPortNode)
-				emit_signal("connection_changed", connection)
+		if mConnectionsByInputPortPath.has(port_path):
+			var connections = mConnectionsByInputPortPath[port_path]
+			for connection in connections:
+				connection.mInputPortNode = null
+				if connection.is_established():
+					connection.mOutputPortNode.remove_connection(connection.mInputPortNode)
+					emit_signal("connection_changed", connection)
 	elif port_type == PORT_TYPE_OUTPUT:
 		emit_signal("output_port_removed", port_path)
-		var connections = mConnectionsByOutputPortPath[port_path]
-		for connection in connections:
-			connection.mOutputPortNode = null
-			if connection.is_established():
-				connection.mOutputPortNode.remove_connection(connection.mInputPortNode)
-				emit_signal("connection_changed", connection)
+		if mConnectionsByOutputPortPath.has(port_path):
+			var connections = mConnectionsByOutputPortPath[port_path]
+			for connection in connections:
+				connection.mOutputPortNode = null
+				if connection.is_established():
+					connection.mOutputPortNode.remove_connection(connection.mInputPortNode)
+					emit_signal("connection_changed", connection)
 
 func get_input_port(port_path):
 	if mInputPorts.has_node(port_path):
