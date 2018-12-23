@@ -58,14 +58,15 @@ func _canvas_input(event):
 	var canvas_pos = win_pos*scale + region_rect.pos
 	var fpos = canvas_pos
 	var down = null
+	#prints(win_rect.pos, win_pos, canvas_pos)
 	if touch:
 		down = event.pressed
 	mCanvas.update_input(index, fpos, down)
 
 func _draw():
 	var rect = Rect2(Vector2(0, 0), get_rect().size)
-	draw_rect(rect, Color(1, 0, 1, 1))
 	if mCanvas == null:
+		draw_rect(rect, Color(1, 0, 1, 1))
 		return
 	var texture = mCanvas.get_render_target_texture()
 	var src_rect = _get_canvas_region()
