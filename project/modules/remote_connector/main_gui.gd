@@ -167,10 +167,14 @@ func load_favorites():
 	var file = File.new()
 	if file.open(mFavoritesFilePath, File.READ) != OK:
 		return
-	var text = file.get_buffer(file.get_len()).get_string_from_utf8()
+	var text = file.get_as_text()
 	file.close()
 	var dict = {}
 	if dict.parse_json(text) != OK:
+		return
+	if !dict.has("version"):
+		return
+	if !dict.has("favorites"):
 		return
 	if dict.version == 0:
 		for fav in dict.favorites:
