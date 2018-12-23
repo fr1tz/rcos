@@ -17,24 +17,26 @@ extends ColorFrame
 
 onready var mInitMessages = get_node("PanelContainer/init_messages")
 
-var mInitRoutine = null
+var mRoutines = []
 
 func _ready():
+	set_process(true)
 	var color = Globals.get("application/boot_bg_color")
 	set_frame_color(color)
 	get_node("PanelContainer/background").set_frame_color(color)
 	mInitMessages.set_text("")
 	mInitMessages.set_scroll_active(false)
 	mInitMessages.set_scroll_follow(true)
-	mInitRoutine = _init_routine()
-	set_process(true)
+	rcos.connect("init_finished", self, "_spawn_modules")
+	_init_rcos()
 
 func _print_init_msg(text):
 	mInitMessages.add_text(text)
 
 func _process(delta):
-	if mInitRoutine != null:
-		mInitRoutine = mInitRoutine.resume()
+	for i in range(0, mRoutines.size()):
+		if mRoutines[i] != null:
+			mRoutines[i] = mRoutines[i].resume()
 
 func _spawn_module(module_name):
 	_print_init_msg("* Spawning module " + module_name + "...")
@@ -46,12 +48,16 @@ func _spawn_module(module_name):
 	_print_init_msg(" DONE\n")
 	return module
 
-func _init_routine():
+func _init_rcos():
 	var print_init_msg_func = funcref(self, "_print_init_msg")
 	var rcos_init_routine = rcos.initialize(print_init_msg_func)
-	while rcos_init_routine != null:
-		rcos_init_routine = rcos_init_routine.resume()
-		yield()
+	mRoutines.push_back(rcos_init_routine)
+	
+func _spawn_modules():
+	var spawn_modules_routine = _spawn_modules_routine()
+	mRoutines.push_back(spawn_modules_routine)
+
+func _spawn_modules_routine():
 	var module_names = [
 		"host_clipboard_io_ports",
 		"host_sensors_io_ports",
