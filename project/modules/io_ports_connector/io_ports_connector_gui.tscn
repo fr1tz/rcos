@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=1]
+[gd_scene load_steps=10 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/io_ports_connector/io_ports_connector_gui.gd" type="Script" id=2]
@@ -21,29 +21,12 @@ border_size = 0
 border_blend = true
 draw_bg = true
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="DynamicFont" id=2]
 
 font/size = 16
 font/use_mipmaps = false
 font/use_filter = false
 font/font = ExtResource( 4 )
-
-[sub_resource type="GDScript" id=2]
-
-script/source = "extends VBoxContainer
-
-# class member variables go here, for example:
-# var a = 2
-# var b = \"textvar\"
-
-func _ready():
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
-
-func _input_event(event):
-	prints(get_name(), \"_input_event\", event)
-	"
 
 [node name="io_ports_connector_gui" type="Panel"]
 
@@ -105,7 +88,7 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 80.0
 margin/bottom = 80.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 2 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -146,7 +129,6 @@ margin/right = 0.0
 margin/bottom = 0.0
 custom_constants/separation = 0
 alignment = 0
-script/script = SubResource( 2 )
 
 [node name="scroller_input_area" parent="vsplit/items_panel/scroller" instance=ExtResource( 6 )]
 
