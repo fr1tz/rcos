@@ -145,13 +145,8 @@ func send_data(data):
 	if mStream.get_status() == StreamPeerTCP.STATUS_CONNECTED:
 		_send_data()
 
-func set_mode(mode):
-	if mode == "heavy":
-		mPollTimer.set_wait_time(0.03)
-		mSendDataTimer.set_wait_time(0.05)
-	else:
-		mPollTimer.set_wait_time(1)
-		mSendDataTimer.set_wait_time(1)
+func set_poll_interval(interval):
+	mPollTimer.set_wait_time(interval)
 
 func disconnect_from_server():
 	if mStream != null:

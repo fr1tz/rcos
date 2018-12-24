@@ -69,6 +69,8 @@ func _process_data(data):
 		var version = str(major_version)+"."+str(minor_version)
 		#dbg#prints("mAddress, mPort, server version", mTestResult)
 		_submit_test_result(version)
+		_die()
+		return 12
 		var reply = "RFB 999.999\n".to_ascii()
 		mTcpConnection.send_data(reply)
 		#dbg#prints("mAddress, mPort, sent reply")
@@ -125,7 +127,8 @@ func test(address, port):
 	mAddress = address
 	mPort = port
 	#_dbg("starting test")
-	if !mTcpConnection.connect_to_server(mAddress, mPort, funcref(self, "_process_data"), 5):
+	mTcpConnection.set_poll_interval(3)
+	if !mTcpConnection.connect_to_server(mAddress, mPort, funcref(self, "_process_data"), 10):
 		_die()
 		return
 	get_node("death_timer").start()
