@@ -15,17 +15,17 @@
 
 extends Node
 
-var mPackedRfbServerTester = null
+var mPackedRfbPortTester = null
 
 func _init():
 	add_user_signal("service_discovered")
 
 func _ready():
-	mPackedRfbServerTester = load("res://network_scanners/rfb_server_scanner/rfb_server_tester.tscn")
+	mPackedRfbPortTester = load("res://network_scanners/rfb_server_scanner/rfb_port_tester.tscn")
 
-func _test_finished(result, server_tester):
-	var host = server_tester.get_address()
-	var port = server_tester.get_port()
+func _test_finished(result, port_tester):
+	var host = port_tester.get_address()
+	var port = port_tester.get_port()
 	if result != null:
 		var url = "rfb://"+host+":"+str(port-5900)
 		var name = "RFB Server :"+str(port-5900)
@@ -42,14 +42,14 @@ func _test_finished(result, server_tester):
 	if port > 5910:
 		queue_free()
 		return
-	var server_tester = mPackedRfbServerTester.instance()
-	add_child(server_tester)
-	server_tester.connect("test_finished", self, "_test_finished", [server_tester])
-	server_tester.test(host, port)
+	var port_tester = mPackedRfbPortTester.instance()
+	add_child(port_tester)
+	port_tester.connect("test_finished", self, "_test_finished", [port_tester])
+	port_tester.test(host, port)
 
 func scan_host(addr):
-	set_name("host_scanner [addr "+addr+"]")
-	var server_tester = mPackedRfbServerTester.instance()
-	add_child(server_tester)
-	server_tester.connect("test_finished", self, "_test_finished", [server_tester])
-	server_tester.test(addr, 5900)
+	set_name("host_scanner ["+addr+"]")
+	var port_tester = mPackedRfbPortTester.instance()
+	add_child(port_tester)
+	port_tester.connect("test_finished", self, "_test_finished", [port_tester])
+	port_tester.test(addr, 5900)

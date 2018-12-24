@@ -18,53 +18,63 @@ extends Node
 var mAddress = ""
 var mPort = -1
 var mTcpConnection = null
-var mServerVersion = null
-var mTestFinished = false
+var mTestResult = null
+var mTestResultSubmitted = false
 
 func _init():
 	add_user_signal("test_finished")
 
 func _ready():
-	get_node("abort_test_timer").connect("timeout", self, "_die")
+	get_node("death_timer").connect("timeout", self, "_die")
 	mTcpConnection = get_node("tcp_connection")
 	mTcpConnection.connect("connection_state_changed", self, "_connection_state_changed")
 
+func _submit_test_result(result):
+	mTestResult = result
+	emit_signal("test_finished", mTestResult)
+	mTestResultSubmitted = true
+
+func _dbg(a1=null,a2=null,a3=null,a4=null,a5=null,a6=null,a7=null,a8=null,a9=null):
+	prints("rfb_port_tester", mAddress, mPort, a1, a2, a3, a4, a5, a6, a7, a8, a9)
+
 func _die():
-	if !mTestFinished:
-		emit_signal("test_finished", mServerVersion)
+	#_dbg("_die()")
+	get_node("death_timer").stop()
+	if !mTestResultSubmitted:
+		_submit_test_result(null)
 	queue_free()
 
 func _connection_state_changed(new_state, old_state, reason):
 	#dbg#var old_state_string = mTcpConnection.get_cs_string(old_state)
 	#dbg#var new_state_string = mTcpConnection.get_cs_string(new_state)
-	#dbg#var reason_string = mTcpConnection.get_cs_string(reason)
-	#dbg#prints(old_state_string, "->", new_state_string, ":", reason_string)
+	#dbg#var reason_string = mTcpConnection.get_rsn_string(reason)
+	#dbg#prints(mAddress, mPort, old_state_string, "->", new_state_string, ":", reason_string)
 	if new_state == mTcpConnection.CS_DISCONNECTED:
 		_die()
 
 func _process_data(data):
-	#dbg#prints("have", data.size(), "bytes")
-	if mServerVersion == null && data.size() >= 12:
+	#dbg#prints(mAddress, mPort, "have", data.size(), "bytes")
+	if mTestResult == null && data.size() >= 12:
 		var msg = data.get_string_from_ascii()
 		var words = msg.split(" ", false)
 		if words.size() != 2 || words[0] != "RFB":
-			emit_signal("test_finished", null)
+			_die()
 			return
 		var version_tuple = words[1].split(".", false)
 		if version_tuple.size() != 2:
-			emit_signal("test_finished", null)
+			_die()
 			return
 		var major_version = int(version_tuple[0])
 		var minor_version = int(version_tuple[1])
-		mServerVersion = str(major_version)+"."+str(minor_version)
-		#dbg#prints("server version", mServerVersion)
-		emit_signal("test_finished", mServerVersion)
+		var version = str(major_version)+"."+str(minor_version)
+		#dbg#prints("mAddress, mPort, server version", mTestResult)
+		_submit_test_result(version)
 		var reply = "RFB 999.999\n".to_ascii()
 		mTcpConnection.send_data(reply)
-		#dbg#prints("sent reply")
+		#dbg#prints("mAddress, mPort, sent reply")
 		return 12
 	else:
-		if mServerVersion == "3.3":
+		if mTestResult == "3.3":
 			if data.size() < 4:
 				return 0
 			var buf = StreamPeerBuffer.new()
@@ -72,14 +82,14 @@ func _process_data(data):
 			buf.set_data_array(data)
 			buf.seek(0)
 			var security_type = buf.get_u32()
-			#dbg#prints("security_type:", security_type)
+			#dbg#prints(mAddress, mPort, "security_type:", security_type)
 			if security_type == 0: # Error
 				var reason_length = buf.get_u32()
-				#dbg#prints("reson_length", reason_length)
+				#dbg#prints(mAddress, mPort, "reson_length", reason_length)
 				var reason = buf.get_utf8_string(reason_length)
-				#dbg#prints("reason:", reason)
+				#dbg#prints(mAddress, mPort, "reason:", reason)
 				var msg_length = buf.get_pos()
-				#dbg#prints("msg_length:", msg_length)
+				#dbg#prints(mAddress, mPort, "msg_length:", msg_length)
 				_die()
 				return msg_length
 		else:
@@ -90,16 +100,16 @@ func _process_data(data):
 			buf.set_data_array(data)
 			buf.seek(0)
 			var num_security_types = buf.get_u8()
-			#dbg#prints("num_security_types:", num_security_types)
+			#dbg#prints(mAddress, mPort, "num_security_types:", num_security_types)
 			if num_security_types == 0:
 				var reason_length = buf.get_u32()
-				#dbg#prints("reson_length", reason_length)
+				#dbg#prints(mAddress, mPort, "reson_length", reason_length)
 				if buf.get_available_bytes() < reason_length:
 					return 0
 				var reason = buf.get_utf8_string(reason_length)
-				#dbg#prints("reason:", reason)
+				#dbg#prints(mAddress, mPort, "reason:", reason)
 				var msg_length = buf.get_pos()
-				#dbg#prints("msg_length:", msg_length)
+				#dbg#prints(mAddress, mPort, "msg_length:", msg_length)
 				_die()
 				return msg_length
 	return 0
@@ -111,10 +121,11 @@ func get_port():
 	return mPort
 
 func test(address, port):
-	set_name("rfb_server_tester [port "+str(port)+"]")
+	set_name("rfb_port_tester ["+str(port)+"]")
 	mAddress = address
 	mPort = port
-	if !mTcpConnection.connect_to_server(mAddress, mPort, funcref(self, "_process_data"), 3):
-		queue_free()
+	#_dbg("starting test")
+	if !mTcpConnection.connect_to_server(mAddress, mPort, funcref(self, "_process_data"), 5):
+		_die()
 		return
-	get_node("abort_test_timer").start()
+	get_node("death_timer").start()

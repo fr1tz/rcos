@@ -18,14 +18,14 @@ autostart = false
 [node name="poll" type="Timer" parent="timers"]
 
 process_mode = 1
-wait_time = 0.03
+wait_time = 1.0
 one_shot = false
 autostart = false
 
 [node name="send_data" type="Timer" parent="timers"]
 
 process_mode = 1
-wait_time = 0.05
+wait_time = 1.0
 one_shot = false
 autostart = false
 

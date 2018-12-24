@@ -31,7 +31,7 @@ func _ready():
 	mScanRoutine.start()
 
 func _scan_routine():
-	_scan_host("127.0.0.1")
+	_add_host_scanner("127.0.0.1")
 	yield()
 	var networks = []
 	for addr in IP.get_local_addresses():
@@ -43,13 +43,13 @@ func _scan_routine():
 				networks.push_back(network)
 	for network in networks:
 		for i in range(1, 255):
-			_scan_host(network+str(i))
+			_add_host_scanner(network+str(i))
 			yield()
 	return null
 
-func _scan_host(addr):
+func _add_host_scanner(addr):
 	var host_scanner = mPackedHostScanner.instance()
-	get_node("hosts").add_child(host_scanner)
+	get_node("host_scanners").add_child(host_scanner)
 	host_scanner.connect("service_discovered", self, "_service_discovered")
 	host_scanner.scan_host(addr)
 

@@ -23,7 +23,7 @@ const RSN_OTHER_ERROR = 0
 const RSN_READ_ERROR = 1
 const RSN_USER_REQUEST = 2
 const RSN_CONNECT_TIMED_OUT = 3
-const RSN_CONNECTION_REFUSED = 4
+const RSN_CONNECT_FAILED = 4
 const RSN_CONNECTION_ACCEPTED = 5
 const RSN_CONNECTION_LOST = 6
 
@@ -89,7 +89,7 @@ func _poll():
 			mStream.disconnect()
 	elif status != StreamPeerTCP.STATUS_CONNECTING:
 		if mConnectionState == CS_CONNECTING:
-			_set_connection_state(CS_DISCONNECTED, RSN_CONNECTION_REFUSED)
+			_set_connection_state(CS_DISCONNECTED, RSN_CONNECT_FAILED)
 		elif mConnectionState == CS_CONNECTED:
 			_set_connection_state(CS_DISCONNECTED, RSN_CONNECTION_LOST)
 
@@ -128,8 +128,8 @@ func get_rsn_string(cs):
 		return "requested by user"
 	elif cs == RSN_CONNECT_TIMED_OUT:
 		return "connection-attempt timed out"
-	elif cs == RSN_CONNECTION_REFUSED:
-		return "remote host refused connection"
+	elif cs == RSN_CONNECT_FAILED:
+		return "connection-attempt failed"
 	elif cs == RSN_CONNECTION_ACCEPTED:
 		return "remote host accepted connection"
 	elif cs == RSN_CONNECTION_LOST:
@@ -144,6 +144,14 @@ func send_data(data):
 	mSendBuffer.append_array(data)
 	if mStream.get_status() == StreamPeerTCP.STATUS_CONNECTED:
 		_send_data()
+
+func set_mode(mode):
+	if mode == "heavy":
+		mPollTimer.set_wait_time(0.03)
+		mSendDataTimer.set_wait_time(0.05)
+	else:
+		mPollTimer.set_wait_time(1)
+		mSendDataTimer.set_wait_time(1)
 
 func disconnect_from_server():
 	if mStream != null:
