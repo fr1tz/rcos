@@ -17,19 +17,17 @@ extends Node
 
 var mObject = null
 var mMethodName = null
+var mArgs = null
 var mType = 0
 var mState = null
+var mStart = false
 
 func start(args = []):
 	if mState != null:
 		return false
-	mState = mObject.callv(mMethodName, args)
-	if mState == null:
-		return false
-	if typeof(mState) != TYPE_OBJECT:
-		return false
-	if !mState.is_type("GDFunctionState"):
-		return false
+	mArgs = args
+	mState == null
+	mStart = true
 	coroutines.mRunningCoroutines.push_back(self)
 	return true
 

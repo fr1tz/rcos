@@ -18,6 +18,7 @@ extends Node
 var mPackedCoroutine = preload("res://coroutines/coroutine.tscn")
 
 var mRunningCoroutines = []
+var mQueuedCoroutines = []
 
 func _ready():
 	set_process(true)
@@ -26,11 +27,17 @@ func _process(delta):
 	var frame = get_tree().get_frame()
 	var n = mRunningCoroutines.size()-1
 	while n >= 0:
+		var r
 		var coroutine = mRunningCoroutines[n]
-		var r = coroutine.mState.resume()
+		if coroutine.mState == null:
+			coroutine.mState = coroutine.mObject.callv(coroutine.mMethodName, coroutine.mArgs)
+			r = coroutine.mState
+		else:
+			r = coroutine.mState.resume()
 		if r == null || !(typeof(r) == TYPE_OBJECT && r.is_type("GDFunctionState")):
 			mRunningCoroutines.remove(n)
-		coroutine.mState = r
+		else:
+			coroutine.mState = r
 		n -= 1
 
 func create(object, method_name, type = 0):
