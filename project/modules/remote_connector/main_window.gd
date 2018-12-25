@@ -44,7 +44,7 @@ func request_focus():
 	if mTaskId == -1:
 		return
 	var task_properties = {
-		"wants_focus": true
+		"/focus_window": null
 	}
 	rcos.change_task(mTaskId, task_properties)
 

@@ -226,3 +226,4 @@ func initialize(module, window):
 	mWindow = window
 	mFavoritesFilePath = mModule.CONFIG_DIR+"/favorites.json"
 	load_favorites()
+	_update_services()

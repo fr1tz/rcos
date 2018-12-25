@@ -25,7 +25,8 @@ stretch_mode = 0
 [node name="canvas" parent="." instance=ExtResource( 3 )]
 
 rect = Rect2( 0, 0, 200, 400 )
-min_size = Vector2( 200, 400 )
+min_size_isquares = Vector2( 5, 3 )
+default_size_isquares = Vector2( 5, 5 )
 
 [node name="main_gui" parent="canvas" instance=ExtResource( 4 )]
 

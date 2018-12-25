@@ -43,6 +43,7 @@ func _update_fav_button():
 		icon.set_modulate(Color(1, 1, 0))
 	else:
 		icon.set_modulate(Color(1, 1, 1))
+	get_node("hbox/favorite_box/toggle_button").set_pressed(mServiceInfo.favorite)
 
 func activate():
 	rcos.get_node("services/url_handler_service").open_url(mServiceInfo.url)
