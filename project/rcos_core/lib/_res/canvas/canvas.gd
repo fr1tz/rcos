@@ -16,7 +16,8 @@
 extends Viewport
 
 export(bool) var debug = false
-export(Vector2) var min_size = Vector2(0, 0)
+export(Vector2) var min_size_isquares = Vector2(0, 0)
+export(Vector2) var default_size_isquares = Vector2(5, 5)
 export(bool) var resizable = true
 
 const NUM_INPUTS = 8
@@ -26,11 +27,10 @@ var mNextInputEventId = 0
 var mInputs = Array()
 
 func _init():
-	add_user_signal("predelete")
 	add_user_signal("display")
 	add_user_signal("conceal")
 
-func _exit_tree(what):
+func _exit_tree():
 	for display in mDisplays:
 		display.show_canvas(null)
 	mDisplays.clear()
@@ -191,6 +191,9 @@ func is_displayed():
 func resize(size):
 	if !resizable:
 		return
-	size.x = max(min_size.x, size.x)
-	size.y = max(min_size.y, size.y)
+	var isquare_size = rcos_gui.get_isquare_size()
+	var min_size_x = min_size_isquares.x * isquare_size
+	var min_size_y = min_size_isquares.y * isquare_size
+	size.x = max(min_size_x, size.x)
+	size.y = max(min_size_y, size.y)
 	set_rect(Rect2(Vector2(0, 0), size))

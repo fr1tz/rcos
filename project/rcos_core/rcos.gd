@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends ReferenceFrame
+extends Node
 
-onready var gui = get_node("gui")
+onready var gui = rcos_gui # Deprecated
 
 const COROUTINE_TYPE_NET_INPUT = 1
 const COROUTINE_TYPE_NET_OUTPUT = 2
@@ -37,8 +37,8 @@ var mInfoFiles = {}
 var mModuleInfo = {}
 var mNextAvailableModuleId = 1
 var mNextAvailableTaskId = 1
-var mTaskNodes = {} # Task ID -> Task Node
-var mISquareSize = 40
+var mTaskNodesByTaskId = {} # Task ID -> Task Node
+var mTaskNodesByCanvas = {} # Task canvas -> Task Node
 
 func _init():
 	add_user_signal("init_finished")
@@ -52,11 +52,18 @@ func _init():
 	add_user_signal("task_removed")
 	add_user_signal("new_log_entry3")
 
-func _init_routine(handle_init_msg_func, args = null):
+func _init_routine(handle_init_msg_func, args = {}):
 	var printf = handle_init_msg_func
 	printf.call_func("*** BEGIN RC/OS INIT ***\n"); yield()
+	OS.set_window_title(Globals.get("application/name") + " " + Globals.get("rcos/version_string"))
+	printf.call_func("* Initializing root canvas..."); yield()
 	var root_canvas_script = load("res://rcos_core/root_canvas.gd")
+	if root_canvas_script == null:
+		printf.call_func(" *** INIT FAILED: UNABLE TO LOAD res://rcos_core/root_canvas.gd"); yield()
+		return null
 	get_node("/root").set_script(root_canvas_script)
+	get_node("/root").initialize()
+	printf.call_func(" DONE\n"); yield()
 	printf.call_func("* Querying host model name..."); yield()
 	var model_name = OS.get_model_name()
 	printf.call_func(" '" + model_name + "'\n"); yield()
@@ -69,12 +76,6 @@ func _init_routine(handle_init_msg_func, args = null):
 	printf.call_func("* Querying screen DPI..."); yield()
 	var dpi = OS.get_screen_dpi()
 	printf.call_func(" " + str(dpi) + "\n"); yield()
-	if model_name == "GenericDevice":
-		mISquareSize = 40 
-	else:
-		mISquareSize = dpi/4
-	if mISquareSize < 40:
-		mISquareSize = 40
 	#get_tree().set_auto_accept_quit(false)
 	#OS.set_low_processor_usage_mode(true)	
 	mTmpDirPath = rlib.join_array([
@@ -152,22 +153,41 @@ func _init_routine(handle_init_msg_func, args = null):
 			printf.call_func("*** INIT FAILED: UNABLE TO ADD " + service_name.to_upper() + "\n"); yield()
 			return null
 		printf.call_func(" DONE\n"); yield()
-	printf.call_func("* Loading Window Manager..."); yield()
-	var wm_packed = load("res://rcos_core/wm/wm.tscn")
-	if wm_packed == null:
+	# Initialize GUI...
+	printf.call_func("* Initializing GUI..."); yield()
+	var isquare_size
+	if model_name == "GenericDevice":
+		isquare_size = 40 
+	else:
+		isquare_size = dpi/4
+	if isquare_size < 40:
+		isquare_size = 40
+	rcos_gui.set_isquare_size(isquare_size)
+	# Load ZEM (or a user-specified replacement)
+	var zem_path = "res://rcos_core/zem_gui/zem.tscn"
+	if args.has("zem_path"):
+		zem_path = args.zem_path
+	var zem_packed = load(zem_path)
+	if zem_packed == null:
 		printf.call_func(" FAILED\n"); yield()
-		printf.call_func(" *** INIT FAILED: UNABLE TO LOAD WINDOW MANAGER"); yield()
+		printf.call_func(" *** INIT FAILED: UNABLE TO LOAD "+zem_path); yield()
 		return null
-	var wm = wm_packed.instance()
-	if wm_packed == null:
+	var zem = zem_packed.instance()
+	if zem == null:
 		printf.call_func(" FAILED\n"); yield()
-		printf.call_func(" *** INIT FAILED: UNABLE TO INSTANCE WINDOW MANAGER"); yield()
+		printf.call_func(" *** INIT FAILED: UNABLE TO INSTANCE "+zem_path); yield()
 		return null
-	get_node("gui/window_manager").add_child(wm)
+	rcos_gui.add_child(zem)
+	rcos_gui.move_child(zem, 0)
 	printf.call_func(" DONE\n"); yield()
 	printf.call_func("*** RC/OS INIT FINISHED ***\n"); yield()
 	emit_signal("init_finished")
-	OS.set_target_fps(30)
+	if model_name == "GenericDevice":
+		set_default_target_fps(60)
+		set_max_target_fps(120)
+	else:
+		set_default_target_fps(30)
+		set_max_target_fps(60)
 	return null
 
 func _add_log_entry(source_node, level, content):
@@ -211,8 +231,11 @@ func log_error(source_node, content):
 	#prints("error", source_node, content)
 	_add_log_entry(source_node, "error", content)
 
-func is_canvas_visible(canvas):
-	var visible = false
+func set_default_target_fps(fps):
+	get_node("/root").__set_default_target_fps(fps)
+
+func set_max_target_fps(fps):
+	get_node("/root").__set_max_target_fps(fps)
 
 func enable_canvas_input(node):
 	var group = "_canvas_input"+str(node.get_viewport().get_instance_ID())
@@ -225,8 +248,9 @@ func disable_canvas_input(node):
 func get_info_files():
 	return mInfoFiles
 
-func get_isquare_size():
-	return mISquareSize
+# Deprecated: Use rcos_gui.get_isquare_size() instead
+func get_isquare_size(): 
+	return rcos_gui.get_isquare_size()
 
 func get_module_info():
 	return mModuleInfo
@@ -243,52 +267,58 @@ func get_tmp_dir():
 func add_task(properties, parent_task_id = -1):
 	var parent_node = get_node("tasks")
 	if parent_task_id >= 0:
-		if !mTaskNodes.has(parent_task_id):
+		if !mTaskNodesByTaskId.has(parent_task_id):
 			return -1
-		parent_node = mTaskNodes[parent_task_id]
+		parent_node = mTaskNodesByTaskId[parent_task_id]
 	var task_id = mNextAvailableTaskId
 	mNextAvailableTaskId += 1
 	var task_node = rlib.instance_scene("res://rcos_core/task.tscn")
 	task_node.set_name(str(task_id)) 
 	task_node.properties = properties
 	parent_node.add_child(task_node)
-	mTaskNodes[task_id] = task_node
+	mTaskNodesByTaskId[task_id] = task_node
+	if properties.has("canvas") && properties.canvas != null:
+		mTaskNodesByCanvas[properties.canvas] = task_node
 	emit_signal("task_added", task_node)
 	emit_signal("task_list_changed")
 	return task_id
 
 func change_task(task_id, properties):
-	if !mTaskNodes.has(task_id):
+	if !mTaskNodesByTaskId.has(task_id):
 		return false
-	var task_node = mTaskNodes[task_id]
-	for key in properties.keys():
-		task_node.properties[key] = properties[key]
-	emit_signal("task_changed", task_node)
-	emit_signal("task_list_changed")
+	var task_node = mTaskNodesByTaskId[task_id]
+	task_node.change_properties(properties)
 	return true
 
 func remove_task(task_id):
-	if !mTaskNodes.has(task_id):
+	if !mTaskNodesByTaskId.has(task_id):
 		return true
-	var task_node = mTaskNodes[task_id]
+	var task_node = mTaskNodesByTaskId[task_id]
 	emit_signal("task_removed", task_node)
-	mTaskNodes.erase(task_id)
+	mTaskNodesByTaskId.erase(task_id)
+	if task_node.properties.has("canvas") && task_node.properties.canvas != null:
+		mTaskNodesByCanvas.erase(task_node.properties.canvas)
 	task_node.get_parent().remove_child(task_node)
 	task_node.free()
 	emit_signal("task_list_changed")
 	return true
 
 func get_task_properties(task_id):
-	if !mTaskNodes.has(task_id):
+	if !mTaskNodesByTaskId.has(task_id):
 		return null
 	var properties = {}
-	var task_node = mTaskNodes[task_id]
+	var task_node = mTaskNodesByTaskId[task_id]
 	for key in task_node.properties.keys():
 		properties[key] = task_node.properties[key]
 	return properties
 
+func get_task_from_canvas(canvas):
+	if mTaskNodesByCanvas.has(canvas):
+		return mTaskNodesByCanvas[canvas]
+	return null
+
 func get_task_list():
-	return mTaskNodes
+	return mTaskNodesByTaskId
 
 func listen(object, port_type):
 	if !mNextPort.has(port_type):
@@ -339,5 +369,5 @@ func add_service(service_node):
 	services_node.add_child(service_node)
 	return true
 
-func initialize(handle_init_msg_func, args = null):
+func initialize(handle_init_msg_func, args = {}):
 	return _init_routine(handle_init_msg_func, args)

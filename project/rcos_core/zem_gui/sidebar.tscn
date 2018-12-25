@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=1]
 
-[ext_resource path="res://rcos_core/wm/graphics/taskbar_border.png" type="Texture" id=1]
+[ext_resource path="res://rcos_core/zem_gui/graphics/taskbar_border.png" type="Texture" id=1]
 
 [node name="sidebar" type="ColorFrame"]
 

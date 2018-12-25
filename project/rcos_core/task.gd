@@ -17,6 +17,9 @@ extends Node
 
 var properties = {}
 
+func _init():
+	add_user_signal("properties_changed")
+
 func get_id():
 	return int(get_name())
 
@@ -25,3 +28,9 @@ func get_parent_task_id():
 	if parent_task == rcos.get_node("tasks"):
 		return 0
 	return parent_task.get_id()
+
+func change_properties(new_properties):
+	for key in new_properties.keys():
+		properties[key] = new_properties[key]
+	emit_signal("properties_changed", new_properties)
+	rcos.emit_signal("task_changed", self)

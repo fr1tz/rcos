@@ -34,7 +34,6 @@ func _ready():
 		var path = config_file.get_value("network_scanner", "path", filename.basename()+".tscn")
 		if !mScanners.has(path):
 			mScanners.push_back(path)
-	mScanRoutine = coroutines.create(self, "_scan_routine")
 	get_node("abort_scan_timer").connect("timeout", self, "stop_scan")
 
 func _service_discovered(info):
@@ -59,6 +58,8 @@ func _scan_routine():
 			get_node("scanners").remove_child(scanner)
 			scanner.free()
 			yield()
+	coroutines.destroy(mScanRoutine)
+	mScanRoutine = null
 	return null
 
 func add_scanner(scene_path):
@@ -70,7 +71,8 @@ func remove_scanner(scene_path):
 
 func start_scan():
 	mPerformScan = true
-	if !mScanRoutine.is_running():
+	if mScanRoutine == null:
+		mScanRoutine = coroutines.create(self, "_scan_routine")
 		mScanRoutine.start()
 
 func stop_scan():

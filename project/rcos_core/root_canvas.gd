@@ -15,20 +15,20 @@
 
 extends Viewport
 
-const DEFAULT_TARGET_FPS = 30
-const MAX_TARGET_FPS = 120
-
-var mScreenTouches = {}
-var mNumScreenTouches = 0
-var mLastInputEventId = 0
-
-func _ready():
-	add_to_group("canvas_group")
-	set_process_input(true)
+var _default_target_fps = 30
+var _max_target_fps = 120
+var _screen_touches = {}
+var _num_screen_touches = 0
+var _last_input_event_id = 0
 
 func _input(event):
-	mLastInputEventId = event.ID
-	if event.type == InputEvent.MOUSE_BUTTON && event.button_index > 1:
+	_last_input_event_id = event.ID
+	if event.type == InputEvent.KEY:
+		if event.scancode == KEY_F11 && event.pressed:
+			OS.set_window_fullscreen(!OS.is_window_fullscreen())
+			return
+		if  rcos_gui.__ActiveCanvas != null:
+			rcos_gui.__ActiveCanvas.send_key_event(event)
 		return
 	var touchscreen = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.SCREEN_DRAG)
 	var touch = (event.type == InputEvent.SCREEN_TOUCH || event.type == InputEvent.MOUSE_BUTTON)
@@ -39,30 +39,48 @@ func _input(event):
 	var from_user = event.device >= 0
 	if from_user:
 		if drag:
-			mScreenTouches[index] = event.pos
+			_screen_touches[index] = event.pos
 		elif touch:
 			if event.pressed:
-				mScreenTouches[index] = event.pos
-				mNumScreenTouches += 1
+				_screen_touches[index] = event.pos
+				_num_screen_touches += 1
 			else:
-				mScreenTouches.erase(index)
-				mNumScreenTouches -= 1
-			#prints("root_canvas:", event, "->", mNumScreenTouches)
-			if mNumScreenTouches > 0:
-				OS.set_target_fps(MAX_TARGET_FPS)
+				_screen_touches.erase(index)
+				_num_screen_touches -= 1
+			#prints("root_canvas:", event, "->", _num_screen_touches)
+			if _num_screen_touches > 0:
+				OS.set_target_fps(_max_target_fps)
 			else:
-				OS.set_target_fps(DEFAULT_TARGET_FPS)
+				OS.set_target_fps(_default_target_fps)
 	var group = "_canvas_input"+str(get_instance_ID())
 	if get_tree().has_group(group):
 		get_tree().call_group(1|2|8, group, "_canvas_input", event)
 
+func __set_default_target_fps(fps):
+	_default_target_fps = fps
+	if _num_screen_touches > 0:
+		OS.set_target_fps(_max_target_fps)
+	else:
+		OS.set_target_fps(_default_target_fps)
+
+func __set_max_target_fps(fps):
+	_max_target_fps = fps
+	if _num_screen_touches > 0:
+		OS.set_target_fps(_max_target_fps)
+	else:
+		OS.set_target_fps(_default_target_fps)
+
 func get_next_input_event_id():
-	return mLastInputEventId + 1
+	return _last_input_event_id + 1
 
 func is_displayed():
 	return true
 
 func get_screen_touch_pos(index):
-	if mScreenTouches.has(index):
-		return mScreenTouches[index]
+	if _screen_touches.has(index):
+		return _screen_touches[index]
 	return null
+
+func initialize():
+	add_to_group("canvas_group")
+	set_process_input(true)

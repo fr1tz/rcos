@@ -1,0 +1,349 @@
+[gd_scene load_steps=19 format=1]
+
+[ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
+[ext_resource path="res://rcos_core/zem_gui/wm2/decorated_window.gd" type="Script" id=2]
+[ext_resource path="res://data_router/icons/32/host_icon_frame.png" type="Texture" id=3]
+[ext_resource path="res://rcos_core/fonts/teko/Teko-Bold.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://rcos_core/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=5]
+[ext_resource path="res://rcos_core/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=6]
+[ext_resource path="res://rcos_core/lib/window.tscn" type="PackedScene" id=7]
+
+[sub_resource type="DynamicFont" id=11]
+
+font/size = 16
+extra_spacing/char = 1
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 4 )
+
+[sub_resource type="StyleBoxEmpty" id=1]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxFlat" id=2]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+bg_color = Color( 1, 1, 1, 0.570706 )
+light_color = Color( 0.8, 0.8, 0.8, 1 )
+dark_color = Color( 0.8, 0.8, 0.8, 1 )
+border_size = 0
+border_blend = true
+draw_bg = true
+
+[sub_resource type="StyleBoxEmpty" id=3]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=4]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=5]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="DynamicFont" id=6]
+
+font/size = 16
+extra_spacing/top = -5
+extra_spacing/bottom = -5
+extra_spacing/char = -5
+extra_spacing/space = -5
+font/use_mipmaps = false
+font/use_filter = false
+font/font = ExtResource( 6 )
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=8]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=9]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=10]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[node name="decorated_window" type="ColorFrame"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+theme/theme = ExtResource( 1 )
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 437.0
+margin/bottom = 262.0
+color = Color( 1, 1, 1, 1 )
+script/script = ExtResource( 2 )
+
+[node name="Panel" type="Panel" parent="."]
+
+visibility/blend_mode = 3
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="margins" type="MarginContainer" parent="."]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_constants/margin_right = 3
+custom_constants/margin_top = 3
+custom_constants/margin_left = 3
+custom_constants/margin_bottom = 3
+
+[node name="vbox" type="VBoxContainer" parent="margins"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 3
+margin/left = 3.0
+margin/top = 3.0
+margin/right = 434.0
+margin/bottom = 259.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="titlebar" type="ColorFrame" parent="margins/vbox"]
+
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 431.0
+margin/bottom = 40.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="hbox" type="HBoxContainer" parent="margins/vbox/titlebar"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_constants/separation = 0
+alignment = 0
+
+[node name="icon_box" type="Control" parent="margins/vbox/titlebar/hbox"]
+
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 40.0
+margin/bottom = 40.0
+
+[node name="frame" type="TextureFrame" parent="margins/vbox/titlebar/hbox/icon_box"]
+
+anchor/right = 1
+anchor/bottom = 1
+rect/min_size = Vector2( 32, 32 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 1.0
+margin/top = 1.0
+margin/right = 1.0
+margin/bottom = 1.0
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 0
+
+[node name="icon" type="TextureFrame" parent="margins/vbox/titlebar/hbox/icon_box"]
+
+anchor/right = 1
+anchor/bottom = 1
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+stretch_mode = 4
+
+[node name="label" type="Label" parent="margins/vbox/titlebar/hbox/icon_box"]
+
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 0.0
+margin/top = 3.0
+margin/right = 0.0
+margin/bottom = 0.0
+custom_fonts/font = SubResource( 11 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = 1
+custom_constants/shadow_offset_y = 1
+custom_constants/shadow_as_outline = 1
+align = 1
+valign = 1
+clip_text = true
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="title_label" type="Label" parent="margins/vbox/titlebar/hbox"]
+
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 3
+size_flags/vertical = 0
+margin/left = 40.0
+margin/top = 11.0
+margin/right = 311.0
+margin/bottom = 28.0
+custom_fonts/font = ExtResource( 5 )
+text = "WINDOW_TITLE"
+valign = 1
+clip_text = true
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="reshape_button" type="Button" parent="margins/vbox/titlebar/hbox"]
+
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 311.0
+margin/top = 0.0
+margin/right = 351.0
+margin/bottom = 40.0
+custom_styles/hover = SubResource( 1 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 3 )
+custom_styles/disabled = SubResource( 4 )
+custom_styles/normal = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
+
+[node name="resize_button" type="Button" parent="margins/vbox/titlebar/hbox"]
+
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 351.0
+margin/top = 0.0
+margin/right = 391.0
+margin/bottom = 40.0
+custom_styles/hover = SubResource( 1 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 3 )
+custom_styles/disabled = SubResource( 4 )
+custom_styles/normal = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
+
+[node name="hide_button" type="Button" parent="margins/vbox/titlebar/hbox"]
+
+rect/min_size = Vector2( 40, 40 )
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 391.0
+margin/top = 0.0
+margin/right = 431.0
+margin/bottom = 40.0
+custom_styles/hover = SubResource( 7 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 8 )
+custom_styles/disabled = SubResource( 9 )
+custom_styles/normal = SubResource( 10 )
+custom_fonts/font = SubResource( 6 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+text = ""
+flat = false
+
+[node name="canvas_display" parent="margins/vbox" instance=ExtResource( 7 )]
+
+size_flags/horizontal = 3
+size_flags/vertical = 3
+margin/top = 40.0
+margin/right = 431.0
+margin/bottom = 256.0
+request_canvas_input = false
+
+

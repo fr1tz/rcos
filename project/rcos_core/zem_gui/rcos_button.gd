@@ -18,12 +18,11 @@ extends Button
 var mRot = 0
 
 func _ready():
-	return
 	set_process(true)
 
 func _process(delta):
 	mRot -= 0.1
-	update()
+	get_node("Control/part2").set_rot(mRot)
 
 func _draw():
 	return

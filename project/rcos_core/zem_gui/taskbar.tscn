@@ -1,9 +1,23 @@
 [gd_scene load_steps=14 format=1]
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
-[ext_resource path="res://rcos_core/wm/taskbar.gd" type="Script" id=2]
+[ext_resource path="res://rcos_core/zem_gui/taskbar.gd" type="Script" id=2]
 [ext_resource path="res://rcos_core/lib/scroller_container.tscn" type="PackedScene" id=3]
 [ext_resource path="res://rcos_core/lib/scroller_input_area.tscn" type="PackedScene" id=4]
+
+[sub_resource type="StyleBoxEmpty" id=1]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=2]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
 
 [sub_resource type="StyleBoxEmpty" id=3]
 
@@ -47,38 +61,24 @@ content_margin/right = -1.0
 content_margin/top = -1.0
 content_margin/bottom = -1.0
 
-[sub_resource type="StyleBoxEmpty" id=9]
-
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
-
-[sub_resource type="StyleBoxEmpty" id=10]
-
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
-
-[sub_resource type="Theme" id=11]
+[sub_resource type="Theme" id=9]
 
 HScrollBar/icons/decrement = null
 HScrollBar/icons/decrement_hilite = null
 HScrollBar/icons/increment = null
 HScrollBar/icons/increment_hilite = null
-HScrollBar/styles/grabber = SubResource( 3 )
-HScrollBar/styles/grabber_hilite = SubResource( 4 )
-HScrollBar/styles/scroll = SubResource( 5 )
-HScrollBar/styles/scroll_focus = SubResource( 6 )
+HScrollBar/styles/grabber = SubResource( 1 )
+HScrollBar/styles/grabber_hilite = SubResource( 2 )
+HScrollBar/styles/scroll = SubResource( 3 )
+HScrollBar/styles/scroll_focus = SubResource( 4 )
 VScrollBar/icons/decrement = null
 VScrollBar/icons/decrement_hilite = null
 VScrollBar/icons/increment = null
 VScrollBar/icons/increment_hilite = null
-VScrollBar/styles/grabber = SubResource( 7 )
-VScrollBar/styles/grabber_hilite = SubResource( 8 )
-VScrollBar/styles/scroll = SubResource( 9 )
-VScrollBar/styles/scroll_focus = SubResource( 10 )
+VScrollBar/styles/grabber = SubResource( 5 )
+VScrollBar/styles/grabber_hilite = SubResource( 6 )
+VScrollBar/styles/scroll = SubResource( 7 )
+VScrollBar/styles/scroll_focus = SubResource( 8 )
 
 [node name="taskbar" type="ReferenceFrame"]
 
@@ -95,7 +95,7 @@ script/script = ExtResource( 2 )
 
 [node name="scroller" parent="." instance=ExtResource( 3 )]
 
-theme/theme = SubResource( 11 )
+theme/theme = SubResource( 9 )
 clip_content = false
 
 [node name="items" type="VBoxContainer" parent="scroller"]

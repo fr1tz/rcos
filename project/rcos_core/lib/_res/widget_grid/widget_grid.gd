@@ -111,7 +111,7 @@ func _canvas_input(event):
 					down = true
 					break
 		else:
-			if rcos.gui.get_dangling_control(index) != null:
+			if rcos_gui.get_dangling_control(index) != null:
 				var containers = get_widget_containers()
 				containers.invert()
 				for c in containers:

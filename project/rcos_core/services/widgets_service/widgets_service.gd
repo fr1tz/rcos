@@ -37,7 +37,7 @@ func _on_task_added(task):
 	mWidgetFactoryTaskIDs.push_back(task.get_id())
 	emit_signal("widget_factory_tasks_changed", mWidgetFactoryTaskIDs)
 
-func _on_task_removed():
+func _on_task_removed(task):
 	return
 
 func get_widget_factory_tasks():

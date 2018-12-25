@@ -17,6 +17,7 @@ extends Control
 
 export(bool) var debug
 export(NodePath) var canvas
+export(bool) var request_canvas_input = true
 
 var mCanvas = null
 var mCanvasRegion = null
@@ -102,7 +103,8 @@ func show_canvas(canvas, region = null):
 		if old_canvas != null:
 			mCanvas.copy_inputs(old_canvas)
 		mCanvas.add_display(self)
-		rcos.enable_canvas_input(self)
+		if request_canvas_input:
+			rcos.enable_canvas_input(self)
 	update()
 	#print(">>>>>>>>>")
 	for canvas in get_tree().get_nodes_in_group("canvas_group"):
