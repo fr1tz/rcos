@@ -77,6 +77,6 @@ func _spawn_modules_routine():
 		modules[module_name] = module
 		yield()
 	modules["remote_connector"].request_focus()
-	rcos.get_node("services/network_scanner_service").start_scan()
+	#rcos.get_node("services/network_scanner_service").start_scan()
 	queue_free()
 	return null
