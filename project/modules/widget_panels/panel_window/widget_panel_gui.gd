@@ -127,8 +127,8 @@ func _on_widget_factory_item_selected(item):
 		var num_rows = int(floor(screen_size.y/isquare_size))
 #		if rows % 2 != 0:
 #			rows += 1
-		prints(screen_size.x, num_columns)
-		prints(screen_size.y, num_rows)
+#		prints(screen_size.x, num_columns)
+#		prints(screen_size.y, num_rows)
 		mWidgetGrid.set_grid(num_columns, num_rows)
 	var product_id = item.get_product_id()
 	var grid_rect = [0, 0, 0, 0]

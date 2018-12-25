@@ -43,9 +43,9 @@ func _create_widget_panel():
 			widget_panel_id += 1
 		else:
 			break
-	var dir = Directory.new()
-	var old_config = mModule.CONFIG_DIR+"/widget_panel_"+str(widget_panel_id)+".conf"
-	dir.remove(old_config)
+#	var dir = Directory.new()
+#	var old_config = mModule.CONFIG_DIR+"/widget_panel_"+str(widget_panel_id)+".conf"
+#	dir.remove(old_config)
 	var widget_panel_label = "Widget Panel "+str(widget_panel_id)
 	_add_widget_panel(widget_panel_id, widget_panel_label)
 	_save()
@@ -90,6 +90,8 @@ func _save():
 			"label": panel_item.get_text(),
 			"disabled": false
 		})
+	if panels.empty():
+		return
 	var file = File.new()
 	if file.open(mConfigFilePath, File.WRITE) != OK:
 		return
