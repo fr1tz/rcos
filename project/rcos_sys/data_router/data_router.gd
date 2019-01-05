@@ -16,27 +16,27 @@
 extends Node
 
 var mIconByNodeName = {
-	"clipboard": load("res://data_router/icons/32/clipboard.png"),
-	"mouse": load("res://data_router/icons/32/mouse.png"),
-	"keyboard": load("res://data_router/icons/32/keyboard.png"),
-	"pointer": load("res://data_router/icons/32/pointer.png"),
-	"button": load("res://data_router/icons/32/button.png"),
-	"buttons": load("res://data_router/icons/32/buttons.png"),
-	"joystick": load("res://data_router/icons/32/joystick.png"),
-	"joysticks": load("res://data_router/icons/32/joysticks.png"),
-	"text": load("res://data_router/icons/32/data_type_string.png"),
-	"pressed": load("res://data_router/icons/32/data_type_bool.png")
+	"clipboard": load("res://rcos_sys/data_router/icons/32/clipboard.png"),
+	"mouse": load("res://rcos_sys/data_router/icons/32/mouse.png"),
+	"keyboard": load("res://rcos_sys/data_router/icons/32/keyboard.png"),
+	"pointer": load("res://rcos_sys/data_router/icons/32/pointer.png"),
+	"button": load("res://rcos_sys/data_router/icons/32/button.png"),
+	"buttons": load("res://rcos_sys/data_router/icons/32/buttons.png"),
+	"joystick": load("res://rcos_sys/data_router/icons/32/joystick.png"),
+	"joysticks": load("res://rcos_sys/data_router/icons/32/joysticks.png"),
+	"text": load("res://rcos_sys/data_router/icons/32/data_type_string.png"),
+	"pressed": load("res://rcos_sys/data_router/icons/32/data_type_bool.png")
 }
 
 var mIconByParentNodeName = {
-	"buttons": load("res://data_router/icons/32/button.png"),
-	"joysticks": load("res://data_router/icons/32/joystick.png")
+	"buttons": load("res://rcos_sys/data_router/icons/32/button.png"),
+	"joysticks": load("res://rcos_sys/data_router/icons/32/joystick.png")
 }
 
 var mIconByPortDataType = {
-	"string": load("res://data_router/icons/32/data_type_string.png"),
-	"bool": load("res://data_router/icons/32/data_type_bool.png"),
-	"image": load("res://data_router/icons/32/data_type_image.png")
+	"string": load("res://rcos_sys/data_router/icons/32/data_type_string.png"),
+	"bool": load("res://rcos_sys/data_router/icons/32/data_type_bool.png"),
+	"image": load("res://rcos_sys/data_router/icons/32/data_type_image.png")
 }
 
 const PORT_TYPE_INPUT = 0
@@ -61,7 +61,7 @@ var mNodeIcons = {}
 var mNodeIconsKeys = []
 
 func _init():
-	mPackedConnection = load("res://data_router/connection.tscn")
+	mPackedConnection = load("res://rcos_sys/data_router/connection.tscn")
 	add_user_signal("input_port_added")
 	add_user_signal("output_port_added")
 	add_user_signal("input_port_removed")
@@ -71,8 +71,8 @@ func _init():
 	add_user_signal("connection_changed")
 
 func _ready():
-	mOutputPorts.set_meta("icon32", load("res://data_router/icons/32/output_port.png"))
-	mInputPorts.set_meta("icon32", load("res://data_router/icons/32/input_port.png"))
+	mOutputPorts.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/output_port.png"))
+	mInputPorts.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/input_port.png"))
 
 func _save_connections():
 	var file = File.new()
@@ -131,10 +131,10 @@ func _add_port(port_path, port_type, initial_data = null):
 		if i == node_names.size() - 1:
 			var new_node = null
 			if port_type == PORT_TYPE_INPUT:
-				new_node = rlib.instance_scene("res://data_router/input_port.tscn")
+				new_node = rlib.instance_scene("res://rcos_sys/data_router/input_port.tscn")
 				new_node.add_to_group("data_router_input_ports")
 			elif port_type == PORT_TYPE_OUTPUT:
-				new_node = rlib.instance_scene("res://data_router/output_port.tscn")
+				new_node = rlib.instance_scene("res://rcos_sys/data_router/output_port.tscn")
 				new_node.add_to_group("data_router_output_ports")
 			new_node.set_name(node_name)
 			new_node.put_data(initial_data)
@@ -257,11 +257,11 @@ func remove_port(port_node):
 	var port_type = null
 	var port_path = null
 	var root_node = null
-	if port_node extends load("res://data_router/input_port.gd"):
+	if port_node extends load("res://rcos_sys/data_router/input_port.gd"):
 		port_type = PORT_TYPE_INPUT
 		port_path = input_node_to_port_path(port_node)
 		root_node = mInputPorts
-	elif port_node extends load("res://data_router/output_port.gd"):
+	elif port_node extends load("res://rcos_sys/data_router/output_port.gd"):
 		port_type = PORT_TYPE_OUTPUT
 		port_path = output_node_to_port_path(port_node)
 		root_node = mOutputPorts
@@ -421,7 +421,7 @@ func get_node_icon(node, icon_size):
 	elif mInputPorts.is_a_parent_of(node):
 		node_path = str(mInputPorts.get_path_to(node))
 	else:
-		return load("res://data_router/icons/32/node.png")
+		return load("res://rcos_sys/data_router/icons/32/node.png")
 	# Has a custom icon been set for this node via data_router.set_node_icon()?
 	if mNodeIcons.has(node_path):
 		if mNodeIcons[node_path].has(icon_size):
@@ -439,7 +439,7 @@ func get_node_icon(node, icon_size):
 		var node_name = node.get_name()
 		if mIconByNodeName.has(node_name):
 			return mIconByNodeName[node_name]
-		return load("res://data_router/icons/32/io_port.png")
+		return load("res://rcos_sys/data_router/icons/32/io_port.png")
 	# Node is not an i/o port.
 	var node_name = node.get_name()
 	if mIconByNodeName.has(node_name):
@@ -448,7 +448,7 @@ func get_node_icon(node, icon_size):
 	if mIconByParentNodeName.has(parent_node_name):
 		return mIconByParentNodeName[parent_node_name]
 	# If all else fails, return default node icon.
-	return load("res://data_router/icons/32/node.png")
+	return load("res://rcos_sys/data_router/icons/32/node.png")
 
 func initialize(config_dir):
 	mConfigDir = config_dir

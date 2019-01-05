@@ -2,7 +2,7 @@
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/remote_connector/interface_widget.gd" type="Script" id=2]
-[ext_resource path="res://data_router/icons/32/question_mark.png" type="Texture" id=3]
+[ext_resource path="res://rcos_sys/data_router/icons/32/question_mark.png" type="Texture" id=3]
 [ext_resource path="res://rcos_core/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=4]
 [ext_resource path="res://modules/remote_connector/graphics/icon.fav0.png" type="Texture" id=5]
 

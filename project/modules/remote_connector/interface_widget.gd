@@ -65,7 +65,7 @@ func update():
 		if dir.file_exists("res://icons/services/32/"+scheme+".png"):
 			icon = load("res://icons/services/32/"+scheme+".png")
 		else:
-			icon = load("res://data_router/icons/32/question_mark.png")
+			icon = load("res://rcos_sys/data_router/icons/32/question_mark.png")
 	get_node("hbox/icon").set_texture(icon)
 
 func initialize(main_gui, service_info):

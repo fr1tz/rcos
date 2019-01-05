@@ -42,7 +42,7 @@ func _ready():
 	mSaveButton.connect("pressed", self, "_save")
 	mIconSelectorDialog.connect("cancel_button_pressed", self, "hide_dialogs")
 	mIconSelectorDialog.connect("icon_selected", self, "_icon_selected")
-	mIconSelectorDialog.add_icons("res://data_router/icons/32", "device_*.png")
+	mIconSelectorDialog.add_icons("res://rcos_sys/data_router/icons/32", "device_*.png")
 	mColorSelectorDialog.connect("cancel_button_pressed", self, "hide_dialogs")
 	mColorSelectorDialog.connect("color_selected", self, "_color_selected")
 
@@ -88,7 +88,7 @@ func initialize(main_gui):
 
 func clear():
 	mHostNameEdit.set_text("Device Name")
-	mIconButton.set_button_icon(load("res://data_router/icons/32/question_mark.png"))
+	mIconButton.set_button_icon(load("res://rcos_sys/data_router/icons/32/question_mark.png"))
 	mColorButton.get_node("color_frame").set_frame_color(Color(1, 1, 1))
 	for c in mAddressesList.get_children():
 		mAddressesList.remove_child(c)

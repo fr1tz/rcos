@@ -43,7 +43,7 @@ func _load_host_info(filename):
 	if icon_path != null:
 		icon = load(icon_path)
 	if icon == null:
-		icon = load("res://data_router/icons/32/question_mark.png")
+		icon = load("res://rcos_sys/data_router/icons/32/question_mark.png")
 	var color = Color(1, 1, 1)
 	var color_html = config_file.get_value(s, "color")
 	if color_html != null:

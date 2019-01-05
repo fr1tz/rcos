@@ -15,7 +15,7 @@
 
 extends Node
 
-var mPackedCoroutine = preload("res://coroutines/coroutine.tscn")
+var mPackedCoroutine = preload("res://rcos_sys/coroutines/coroutine.tscn")
 
 var mRunningCoroutines = []
 var mQueuedCoroutines = []

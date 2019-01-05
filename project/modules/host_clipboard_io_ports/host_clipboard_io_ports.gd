@@ -41,7 +41,7 @@ func _add_io_ports():
 		port.set_meta("port_id", port_id)
 		port.connect("data_changed", self, "_on_input_port_data_changed", [port])
 		mInputPorts[port_id] = port
-	mInputPorts[TEXT].set_meta("icon32", load("res://data_router/icons/32/clipboard.png"))
+	mInputPorts[TEXT].set_meta("icon32", load("res://rcos_sys/data_router/icons/32/clipboard.png"))
 	var output_port_names = {
 		TEXT: "text"
 	}
@@ -54,7 +54,7 @@ func _add_io_ports():
 		port.connect("data_access", self, "_output_port_data_access", [port])
 		port.connect("connections_changed", self, "_output_port_connections_changed", [port])
 		mOutputPorts[port_id] = port
-	mOutputPorts[TEXT].set_meta("icon32", load("res://data_router/icons/32/clipboard.png"))
+	mOutputPorts[TEXT].set_meta("icon32", load("res://rcos_sys/data_router/icons/32/clipboard.png"))
 
 func _remove_io_ports():
 	for port in mOutputPorts.values():

@@ -17,7 +17,7 @@ extends Node
 
 var mHostInfoService = null
 var mHostName = ""
-var mHostIcon = load("res://data_router/icons/32/device_generic.png")
+var mHostIcon = load("res://rcos_sys/data_router/icons/32/device_generic.png")
 var mHostColor = Color(1, 1, 1)
 var mAddresses = []
 var mDirty = false

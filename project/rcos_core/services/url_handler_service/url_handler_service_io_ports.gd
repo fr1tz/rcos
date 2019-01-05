@@ -41,7 +41,7 @@ func _add_output_ports(prefix):
 func _add_input_ports(prefix):
 	mInputPortsMeta["open(url)"] = {
 		"data_type": "string",
-		"icon32": load("res://data_router/icons/32/open.png")
+		"icon32": load("res://rcos_sys/data_router/icons/32/open.png")
 	}
 	for port_path in mInputPortsMeta.keys():
 		var port = data_router.add_input_port(prefix+"/"+port_path)

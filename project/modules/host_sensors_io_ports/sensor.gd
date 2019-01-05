@@ -39,16 +39,16 @@ func _add_io_ports():
 	var icon = null
 	if sensor == ACCELEROMETER:
 		port_path_prefix += "/accelerometer"
-		icon = load("res://data_router/icons/32/accelerometer.png")
+		icon = load("res://rcos_sys/data_router/icons/32/accelerometer.png")
 	elif sensor == GRAVITY:
 		port_path_prefix += "/gravity"
-		icon = load("res://data_router/icons/32/gravity.png")
+		icon = load("res://rcos_sys/data_router/icons/32/gravity.png")
 	elif sensor == GYROSCOPE:
 		port_path_prefix += "/gyroscope"
-		icon = load("res://data_router/icons/32/gyroscope.png")
+		icon = load("res://rcos_sys/data_router/icons/32/gyroscope.png")
 	elif sensor == MAGNETOMETER:
 		port_path_prefix += "/magnetometer"
-		icon = load("res://data_router/icons/32/magnetometer.png")
+		icon = load("res://rcos_sys/data_router/icons/32/magnetometer.png")
 	var output_port_names = ["x", "y", "z"]
 	for port_name in output_port_names:
 		var port_path = port_path_prefix+"/"+port_name

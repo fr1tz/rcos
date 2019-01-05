@@ -57,7 +57,7 @@ func _add_output_ports(prefix):
 		mOutputPorts.push_back(port)
 		mPositionOutputPorts.push_back(port)
 	var pos_node = data_router.get_output_port(prefix+"/pos")
-	pos_node.set_meta("icon32", load("res://data_router/icons/32/pointer.png"))
+	pos_node.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/pointer.png"))
 	# Pointer Speed
 	for port_name in ["x", "y", "xy"]:
 		var port = data_router.add_output_port(prefix+"/speed/"+port_name)
@@ -66,7 +66,7 @@ func _add_output_ports(prefix):
 		mOutputPorts.push_back(port)
 		mSpeedOutputPorts.push_back(port)
 	var speed_node = data_router.get_output_port(prefix+"/speed")
-	speed_node.set_meta("icon32", load("res://data_router/icons/32/speedometer.png"))
+	speed_node.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/speedometer.png"))
 	# Buttons
 	for button_index in range(1, 17):
 		var pressed = Input.is_mouse_button_pressed(button_index)
@@ -74,7 +74,7 @@ func _add_output_ports(prefix):
 		port.set_meta("data_type", "bool")
 		port.set_meta("port_type", PORT_BUTTON)
 		port.set_meta("button_index", button_index)
-		port.set_meta("icon32", load("res://data_router/icons/32/button.png"))
+		port.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/button.png"))
 		mOutputPorts.push_back(port)
 		mButtonOutputPorts.push_back(port)
 	# Captured

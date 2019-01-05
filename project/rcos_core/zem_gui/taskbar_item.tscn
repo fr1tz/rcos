@@ -1,7 +1,7 @@
 [gd_scene load_steps=14 format=1]
 
 [ext_resource path="res://rcos_core/zem_gui/taskbar_item.gd" type="Script" id=1]
-[ext_resource path="res://data_router/icons/32/host_icon_frame.png" type="Texture" id=2]
+[ext_resource path="res://rcos_sys/data_router/icons/32/host_icon_frame.png" type="Texture" id=2]
 [ext_resource path="res://rcos_core/fonts/teko/Teko-Bold.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://rcos_core/fonts/teko/Teko-Regular.ttf" type="DynamicFontData" id=4]
 

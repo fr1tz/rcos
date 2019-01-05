@@ -118,14 +118,14 @@ func _init_routine(handle_init_msg_func, args = {}):
 	# Initialize data router...
 	printf.call_func("* Initializing data router"); yield()
 	data_router.initialize("user://etc/data_router")
-	data_router.set_node_icon("rcos", load("res://data_router/icons/32/rcos.png"), 32)
+	data_router.set_node_icon("rcos", load("res://rcos_sys/data_router/icons/32/rcos.png"), 32)
 	if model_name == "GenericDevice":
-		data_router.set_node_icon("localhost", load("res://data_router/icons/32/generic_device.png"), 32)
+		data_router.set_node_icon("localhost", load("res://rcos_sys/data_router/icons/32/generic_device.png"), 32)
 	else:
-		data_router.set_node_icon("localhost", load("res://data_router/icons/32/smartphone.png"), 32)
-	data_router.set_node_icon("localhost/x11", load("res://data_router/icons/32/x11.png"), 32)
-	data_router.set_node_icon("localhost/android", load("res://data_router/icons/32/android.png"), 32)
-	data_router.set_node_icon("localhost/windows", load("res://data_router/icons/32/windows_os.png"), 32)
+		data_router.set_node_icon("localhost", load("res://rcos_sys/data_router/icons/32/smartphone.png"), 32)
+	data_router.set_node_icon("localhost/x11", load("res://rcos_sys/data_router/icons/32/x11.png"), 32)
+	data_router.set_node_icon("localhost/android", load("res://rcos_sys/data_router/icons/32/android.png"), 32)
+	data_router.set_node_icon("localhost/windows", load("res://rcos_sys/data_router/icons/32/windows_os.png"), 32)
 	printf.call_func(" DONE\n"); yield()
 	# Start core services...
 	printf.call_func("* Starting core services...\n"); yield()

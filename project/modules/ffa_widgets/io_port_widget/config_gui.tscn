@@ -2,7 +2,7 @@
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://modules/ffa_widgets/io_port_widget/config_gui.gd" type="Script" id=2]
-[ext_resource path="res://data_router/icons/32/empty_frame.png" type="Texture" id=3]
+[ext_resource path="res://rcos_sys/data_router/icons/32/empty_frame.png" type="Texture" id=3]
 [ext_resource path="res://modules/ffa_widgets/io_port_widget/graphics/output_port_icon.png" type="Texture" id=4]
 [ext_resource path="res://modules/ffa_widgets/io_port_widget/graphics/input_port_icon.png" type="Texture" id=5]
 

@@ -101,7 +101,7 @@ func _add_output_ports(prefix):
 	mOutputPortsMeta["clipboard/text"] = {
 		"port_class": CLIPBOARD_TEXT,
 		"data_type": "string",
-		"icon32": load("res://data_router/icons/32/clipboard.png")
+		"icon32": load("res://rcos_sys/data_router/icons/32/clipboard.png")
 	}
 	mOutputPortsMeta["framebuffer/image"] = {
 		"port_class": FB_IMAGE,
@@ -144,7 +144,7 @@ func _add_input_ports(prefix):
 	mInputPortsMeta["keyboard/type_text(text)"] = {
 		"port_class": KB_TYPE_TEXT,
 		"data_type": "string",
-		"icon32": load("res://data_router/icons/32/keyboard.png")
+		"icon32": load("res://rcos_sys/data_router/icons/32/keyboard.png")
 	}
 	mInputPortsMeta["keyboard/press_key(x11_keysym)"] = {
 		"port_class": KB_PRESS_KEY,

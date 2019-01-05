@@ -2,7 +2,7 @@
 
 [ext_resource path="res://rcos_core/looks/prototype/theme.tres" type="Theme" id=1]
 [ext_resource path="res://rcos_core/zem_gui/wm2/decorated_window.gd" type="Script" id=2]
-[ext_resource path="res://data_router/icons/32/host_icon_frame.png" type="Texture" id=3]
+[ext_resource path="res://rcos_sys/data_router/icons/32/host_icon_frame.png" type="Texture" id=3]
 [ext_resource path="res://rcos_core/fonts/teko/Teko-Bold.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://rcos_core/fonts/teko/bitmap/teko-regular-16.fnt" type="BitmapFont" id=5]
 [ext_resource path="res://rcos_core/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=6]
