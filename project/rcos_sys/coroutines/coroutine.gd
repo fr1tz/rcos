@@ -28,12 +28,12 @@ func start(args = []):
 	mArgs = args
 	mState == null
 	mStart = true
-	coroutines.mRunningCoroutines.push_back(self)
+	rcos_coroutines.mRunningCoroutines.push_back(self)
 	return true
 
 func stop():
-	if coroutines.mRunningCoroutines.has(self):
-		coroutines.mRunningCoroutines.erase(self)
+	if rcos_coroutines.mRunningCoroutines.has(self):
+		rcos_coroutines.mRunningCoroutines.erase(self)
 
 func is_running():
 	return mState != null

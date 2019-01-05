@@ -24,14 +24,14 @@ func _init():
 	add_user_signal("service_discovered")
 
 func _exit_tree():
-	coroutines.destroy(mReadPacketsRoutine)
+	rcos_coroutines.destroy(mReadPacketsRoutine)
 
 func _ready():
 	if mUDP.listen(44001) != 0:
 		rcos_log.error(self, "Unable to listen on UDP port 44001")
 		queue_free()
 		return
-	mReadPacketsRoutine = coroutines.create(self, "_read_packets_routine", rcos.COROUTINE_TYPE_NET_INPUT)
+	mReadPacketsRoutine = rcos_coroutines.create(self, "_read_packets_routine", rcos.COROUTINE_TYPE_NET_INPUT)
 	mReadPacketsRoutine.start()
 
 func _read_packets_routine():

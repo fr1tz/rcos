@@ -23,7 +23,7 @@ func _init():
 	add_user_signal("scan_finished")
 
 func _exit_tree():
-	coroutines.destroy(mScanRoutine)
+	rcos_coroutines.destroy(mScanRoutine)
 
 func _ready():
 	var info_files = rcos.get_info_files()
@@ -58,7 +58,7 @@ func _scan_routine():
 			get_node("scanners").remove_child(scanner)
 			scanner.free()
 			yield()
-	coroutines.destroy(mScanRoutine)
+	rcos_coroutines.destroy(mScanRoutine)
 	mScanRoutine = null
 	return null
 
@@ -72,7 +72,7 @@ func remove_scanner(scene_path):
 func start_scan():
 	mPerformScan = true
 	if mScanRoutine == null:
-		mScanRoutine = coroutines.create(self, "_scan_routine")
+		mScanRoutine = rcos_coroutines.create(self, "_scan_routine")
 		mScanRoutine.start()
 
 func stop_scan():

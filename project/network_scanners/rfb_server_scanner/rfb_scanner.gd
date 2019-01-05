@@ -23,11 +23,11 @@ func _init():
 	add_user_signal("service_discovered")
 
 func _exit_tree():
-	coroutines.destroy(mScanRoutine)
+	rcos_coroutines.destroy(mScanRoutine)
 
 func _ready():
 	mPackedHostScanner = load("res://network_scanners/rfb_server_scanner/host_scanner.tscn")
-	mScanRoutine = coroutines.create(self, "_scan_routine")
+	mScanRoutine = rcos_coroutines.create(self, "_scan_routine")
 	mScanRoutine.start()
 
 func _scan_routine():
