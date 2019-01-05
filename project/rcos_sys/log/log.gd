@@ -1,4 +1,4 @@
-# Copyright © 2018 Michael Goldener <mg@wasted.ch>
+# Copyright © 2017-2019 Michael Goldener <mg@wasted.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,28 +15,20 @@
 
 extends Node
 
-func get_scheme():
-	return "vjoy"
+func _init():
+	add_user_signal("new_log_entry3")
 
-func get_desc():
-	return "Open using vJoyCtrl"
+func _add_log_entry(source_node, level, content):
+	emit_signal("new_log_entry3", source_node, level, content)
 
-func get_icon():
-	return load("res://modules/vjoyctrl/graphics/icon.png")
+func debug(source_node, content):
+	#prints("debug", source_node, content)
+	_add_log_entry(source_node, "debug", content)
 
-func open(url):
-	rcos_log.debug(self, ["open():", url])
-	if url == "vjoy":
-		rcos.spawn_module("vjoyctrl")
-		return
-	if !url.begins_with("vjoy://"):
-		return
-	var server = url.right(7)
-	var address = "localhost"
-	var port = 6000
-	var sep_pos = server.find(":")
-	if sep_pos != -1:
-		if sep_pos > 0:
-			address = server.left(sep_pos)
-		port = int(server.right(sep_pos+1))
-	rcos.spawn_module("vjoyctrl").connect_to_server(address, port)
+func notice(source_node, content):
+	#prints("notice", source_node, content)
+	_add_log_entry(source_node, "notice", content)
+
+func error(source_node, content):
+	#prints("error", source_node, content)
+	_add_log_entry(source_node, "error", content)

@@ -48,7 +48,7 @@ func _ready():
 	mTaskId = rcos_tasks.add_task(task_properties)
 
 func _process_message(msg):
-	rcos.log_debug(self, ["vjoy_client: _process_message():", msg])
+	rcos_log.debug(self, ["vjoy_client: _process_message():", msg])
 	var type = rlib.hd(msg)
 	var args = rlib.tl(msg)
 	if type == "init":
@@ -99,7 +99,7 @@ func connect_to_server(address, port):
 	mServerAddress = address
 	mServerTcpPort = port
 	if !mConnection.connect_to_server(address, port):
-		rcos.log_error(self, "Failed to initialize connection")
+		rcos_log.error(self, "Failed to initialize connection")
 	gui.get_open_connection_dialog().set_hidden(true)
 
 func kill():

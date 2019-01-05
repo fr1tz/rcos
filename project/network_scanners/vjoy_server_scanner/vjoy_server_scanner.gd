@@ -28,7 +28,7 @@ func _exit_tree():
 
 func _ready():
 	if mUDP.listen(44001) != 0:
-		rcos.log_error(self, "Unable to listen on UDP port 44001")
+		rcos_log.error(self, "Unable to listen on UDP port 44001")
 		queue_free()
 		return
 	mReadPacketsRoutine = coroutines.create(self, "_read_packets_routine", rcos.COROUTINE_TYPE_NET_INPUT)
@@ -54,7 +54,7 @@ func _process_udp_datagram():
 
 func _process_announce(source_address, source_port, announce):
 	#prints("announce: ", announce)
-	rcos.log_debug(self, ["process_announce()", announce])
+	rcos_log.debug(self, ["process_announce()", announce])
 	var words = announce.split(" ", false)
 	if words.size() != 4:
 		return

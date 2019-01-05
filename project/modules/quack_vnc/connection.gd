@@ -163,7 +163,7 @@ func _encode_s32(value):
 
 func _error(msg):
 	mError = msg
-	rcos.log_error(self, msg)
+	rcos_log.error(self, msg)
 
 func _set_connection_state(state):
 	mConnectionState = state
@@ -172,7 +172,7 @@ func _set_connection_state(state):
 func _read_data():
 	var status = mStream.get_status()
 	if status == StreamPeerTCP.STATUS_CONNECTING:
-		rcos.log_debug(self, "connecting")
+		rcos_log.debug(self, "connecting")
 	elif status == StreamPeerTCP.STATUS_CONNECTED:
 		if mConnectionState == CS_CONNECTING:
 			_set_connection_state(CS_RECEIVE_PROTOCOL_VERSION)
@@ -199,7 +199,7 @@ func _send_data():
 	var error = r[0]
 	var nbytes = r[1]
 	if error:
-		rcos.log_debug(self, ["_send_data() ERROR:", error])
+		rcos_log.debug(self, ["_send_data() ERROR:", error])
 		return
 	mSendBuffer.invert()
 	mSendBuffer.resize(mSendBuffer.size()-nbytes)
@@ -210,12 +210,12 @@ func _send_data():
 func _receive_data():
 	if mStream.get_available_bytes() == 0:
 		return
-	#rcos.log_debug(self, ["bytes available:", mStream.get_available_bytes())
+	#rcos_log.debug(self, ["bytes available:", mStream.get_available_bytes())
 	var r = mStream.get_partial_data(mStream.get_available_bytes())
 	var error = r[0]
 	var data = r[1]
 	if error:
-		rcos.log_debug(self, ["_receive_data() ERROR:", error])
+		rcos_log.debug(self, ["_receive_data() ERROR:", error])
 		return
 	mReceiveBuffer.append_array(data)
 
@@ -244,16 +244,16 @@ func _process_receive_buffer():
 	return nbytes
 
 func _process_protocol_version(data):
-	rcos.log_debug(self, "_process_protocol_version()")
+	rcos_log.debug(self, "_process_protocol_version()")
 	var s = ""
 	for i in range(0, data.size()):
 		s += str(data[i]) + " "
-	rcos.log_debug(self, s)
+	rcos_log.debug(self, s)
 	if data.size() < 12:
 		return 0
 	data.resize(12)
 	var msg = data.get_string_from_ascii()
-	rcos.log_debug(self, ["protocol version msg:", msg])
+	rcos_log.debug(self, ["protocol version msg:", msg])
 	var words = msg.split(" ", false)
 	if words.size() != 2 || words[0] != "RFB":
 		return -1
@@ -263,7 +263,7 @@ func _process_protocol_version(data):
 		return -1
 	var major_version = int(version_tuple[0])
 	var minor_version = int(version_tuple[1])
-	rcos.log_debug(self, ["version:", major_version, minor_version])
+	rcos_log.debug(self, ["version:", major_version, minor_version])
 	if major_version != 3 || minor_version > 8:
 		_error("Unsupported protocol version: " \
 			+str(major_version)+"."+str(minor_version))
@@ -283,16 +283,16 @@ func _process_protocol_version(data):
 	return 12
 
 func _process_security_msg(data):
-	rcos.log_debug(self, "_process_security_msg()")
+	rcos_log.debug(self, "_process_security_msg()")
 	var s = ""
 	for i in range(0, data.size()):
 		s += str(data[i]) + " "
-	rcos.log_debug(self, s)
+	rcos_log.debug(self, s)
 	if mProtocolVersion == PROTOCOL_VERSION_3_3:
 		if data.size() < 4:
 			return 0
 		var security_type = data[3]
-		rcos.log_debug(self, ["security_type:", security_type])
+		rcos_log.debug(self, ["security_type:", security_type])
 		if security_type == 0: # Error
 			var reason_length = _decode_u32(data[4], data[5], data[6], data[7])
 			var msg_length = 8 + reason_length
@@ -322,7 +322,7 @@ func _process_security_msg(data):
 		if data.size() < 1:
 			return 0
 		var num_security_types = data[0]
-		rcos.log_debug(self, ["num_security_types:", num_security_types])
+		rcos_log.debug(self, ["num_security_types:", num_security_types])
 		if num_security_types == 0:
 			if data.size() < 5:
 				return 0
@@ -344,7 +344,7 @@ func _process_security_msg(data):
 		var available_security_types = []
 		for i in range(1, msg_length):
 			var security_type = data[i]
-			rcos.log_debug(self, ["available security type:", security_type])
+			rcos_log.debug(self, ["available security type:", security_type])
 			available_security_types.push_back(security_type)
 		var security_type
 		if available_security_types.has(1):
@@ -370,7 +370,7 @@ func _process_security_msg(data):
 		return msg_length
 
 func _process_vnc_auth_challenge(data):
-	rcos.log_debug(self, "_process_vnc_auth_challenge()")
+	rcos_log.debug(self, "_process_vnc_auth_challenge()")
 	if data.size() < 16:
 		return 0
 	var password = mPassword.to_ascii()
@@ -389,11 +389,11 @@ func _process_vnc_auth_challenge(data):
 	return 16
 
 func _process_security_result_msg(data):
-	rcos.log_debug(self, "_process_security_result_msg()")
+	rcos_log.debug(self, "_process_security_result_msg()")
 	var s = ""
 	for i in range(0, data.size()):
 		s += str(data[i]) + " "
-	rcos.log_debug(self, s)
+	rcos_log.debug(self, s)
 	if data.size() < 4:
 		return 0
 	if data[3] == 0: # SUCCESS
@@ -423,7 +423,7 @@ func _process_security_result_msg(data):
 		return -1
 
 func _process_server_init_msg(data):
-	rcos.log_debug(self, "_process_server_init_msg()")
+	rcos_log.debug(self, "_process_server_init_msg()")
 	if data.size() < 24:
 		return 0
 	var name_length= _decode_u32(data[20], data[21], data[22], data[23])
@@ -451,11 +451,11 @@ func _process_server_init_msg(data):
 	mDesktop.fb.set_pixel_format(mPixelFormat)
 	mDesktop.fb.set_size(Vector2(mDesktop.size.x, mDesktop.size.y))
 	mCursor.fb.set_pixel_format(mPixelFormat)
-	rcos.log_debug(self, ["desktop name:", mDesktop.name])
-	rcos.log_debug(self, ["width:", mDesktop.size.x])
-	rcos.log_debug(self, ["height:", mDesktop.size.y])
-	rcos.log_debug(self, ["natural pixel format:", mNaturalPixelFormat])
-	rcos.log_debug(self, ["new pixel format:", mPixelFormat])
+	rcos_log.debug(self, ["desktop name:", mDesktop.name])
+	rcos_log.debug(self, ["width:", mDesktop.size.x])
+	rcos_log.debug(self, ["height:", mDesktop.size.y])
+	rcos_log.debug(self, ["natural pixel format:", mNaturalPixelFormat])
+	rcos_log.debug(self, ["new pixel format:", mPixelFormat])
 	mMovePointerTimer.start()
 	_set_encodings()
 	_change_pixel_format(mPixelFormat)
@@ -477,7 +477,7 @@ func _process_server_msg(data):
 		_error("Colour map currently not implemented")
 		return -1
 	elif data[0] == MSG_TYPE_BELL:
-		rcos.log_debug(self, "got bell msg")
+		rcos_log.debug(self, "got bell msg")
 		emit_signal("bell_msg_received")
 		return 1
 	elif data[0] == MSG_TYPE_SERVER_CUT_TEXT:
@@ -493,7 +493,7 @@ func _process_server_msg(data):
 		text_data.resize(text_data.size()-8)
 		text_data.invert()
 		var text = text_data.get_string_from_ascii()
-		rcos.log_debug(self, "got server_cut_text msg: " + text)
+		rcos_log.debug(self, "got server_cut_text msg: " + text)
 		emit_signal("server_cut_text_msg_received", text)
 		return msg_length
 	return data.size()
@@ -557,7 +557,7 @@ func _process_framebuffer_rect(data):
 	return bytes_consumed
 
 func _set_encodings():
-	rcos.log_debug(self, ["sending set encodings message"])
+	rcos_log.debug(self, ["sending set encodings message"])
 	var msg = RawArray()
 	msg.append(MSG_TYPE_SET_ENCODINGS)
 	msg.append(PADDING_BYTE)
@@ -569,7 +569,7 @@ func _set_encodings():
 
 func _change_pixel_format(new_pixel_format):
 	mPixelFormat = new_pixel_format
-	rcos.log_debug(self, ["sending set pixel format message", new_pixel_format])
+	rcos_log.debug(self, ["sending set pixel format message", new_pixel_format])
 	var msg = RawArray()
 	msg.append(MSG_TYPE_CHANGE_PIXEL_FORMAT)
 	msg.append(PADDING_BYTE)
@@ -592,7 +592,7 @@ func _change_pixel_format(new_pixel_format):
 
 func _send_framebuffer_update_request(pos, size, incremental):
 	#prints("sending framebuffer update request", 0, 0, mDesktop.size.x, mDesktop.size.y)
-	rcos.log_debug(self, ["sending framebuffer update request", 0, 0, mDesktop.size.x, mDesktop.size.y])
+	rcos_log.debug(self, ["sending framebuffer update request", 0, 0, mDesktop.size.x, mDesktop.size.y])
 	var msg = RawArray()
 	msg.append(MSG_TYPE_FRAMEBUFFER_UPDATE_REQUEST)
 	msg.append(incremental)
@@ -617,7 +617,7 @@ func _update_pointer():
 		_send_pointer_event()
 
 func _send_pointer_event():
-	rcos.log_debug(self, ["sending pointer event", mPointer.fpos_x, mPointer.fpos_y, mPointer.button_mask])
+	rcos_log.debug(self, ["sending pointer event", mPointer.fpos_x, mPointer.fpos_y, mPointer.button_mask])
 	var pointer_event_msg = RawArray()
 	pointer_event_msg.append(MSG_TYPE_POINTER_EVENT)
 	pointer_event_msg.append(mPointer.button_mask)
@@ -795,7 +795,7 @@ func set_button_pressed(button_num, val):
 
 func process_key_event(event):
 	var keysym = null
-	rcos.log_debug(self, event)
+	rcos_log.debug(self, event)
 	if event.unicode > 0 && event.unicode < 256:
 		if event.unicode == 10:
 			keysym = mScancode2Keysym.x11keysyms.XK_Return

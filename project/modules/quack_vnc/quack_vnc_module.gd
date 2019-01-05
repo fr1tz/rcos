@@ -77,7 +77,7 @@ func _connection_state_changed(new_state):
 		rcos_tasks.change_task(mTaskId, task_properties)
 
 func connect_to_server(address, port):
-	rcos.log_notice(self, "Opening connection to "+address+":"+str(port))
+	rcos_log.notice(self, "Opening connection to "+address+":"+str(port))
 	mServerAddress = address
 	mServerTcpPort = port
 	if rcos.has_node("services/host_info_service"):

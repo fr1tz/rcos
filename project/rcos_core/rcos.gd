@@ -43,7 +43,6 @@ func _init():
 	add_user_signal("module_removed")
 	add_user_signal("url_handler_added")
 	add_user_signal("url_handler_removed")
-	add_user_signal("new_log_entry3")
 
 func _init_routine(handle_init_msg_func, args = {}):
 	var printf = handle_init_msg_func
@@ -183,9 +182,6 @@ func _init_routine(handle_init_msg_func, args = {}):
 		set_max_target_fps(60)
 	return null
 
-func _add_log_entry(source_node, level, content):
-	emit_signal("new_log_entry3", source_node, level, content)
-
 func _find_modules():
 	var modules = {}
 	var info_files = rlib.find_files("res://", "*.info")
@@ -211,18 +207,6 @@ func _find_modules():
 		}
 		modules[module.name] = module
 	return modules
-
-func log_debug(source_node, content):
-	#prints("debug", source_node, content)
-	_add_log_entry(source_node, "debug", content)
-
-func log_notice(source_node, content):
-	#prints("notice", source_node, content)
-	_add_log_entry(source_node, "notice", content)
-
-func log_error(source_node, content):
-	#prints("error", source_node, content)
-	_add_log_entry(source_node, "error", content)
 
 func set_default_target_fps(fps):
 	get_node("/root").__set_default_target_fps(fps)

@@ -25,7 +25,7 @@ func _ready():
 		"canvas": get_node("canvas"),
 	}
 	mTaskId = rcos_tasks.add_task(task_properties)
-	rcos.connect("new_log_entry3", self, "_on_new_log_entry")
+	rcos_log.connect("new_log_entry3", self, "_on_new_log_entry")
 
 func _on_new_log_entry(source_node, level, content):
 	var source_path = str(source_node.get_path())
@@ -45,7 +45,7 @@ func _on_new_log_entry(source_node, level, content):
 	get_node("canvas/logger_gui/log").add_entry(entry)
 
 func kill():
-	rcos.log_debug(self, ["kill()"])
+	rcos_log.debug(self, ["kill()"])
 	rcos_tasks.remove_task(mTaskId)
 	queue_free()
 

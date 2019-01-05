@@ -25,7 +25,7 @@ func get_icon():
 	return load("res://modules/quack_vnc/graphics/icon.png")
 
 func open(url):
-	rcos.log_debug(self, ["open():", url])
+	rcos_log.debug(self, ["open():", url])
 	if url == "rfb":
 		rcos.spawn_module("rfb_client")
 		return

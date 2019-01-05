@@ -85,13 +85,13 @@ func _fixed_process(delta):
 
 func _on_displayed():
 	#print("_on_displayed")
-	rcos.log_debug(self, "_on_displayed()")
+	rcos_log.debug(self, "_on_displayed()")
 	get_node("network_input_timer").set_wait_time(0.05)
 	#mMainGui.get_node("window").mCanvas.update_worlds()
 
 func _on_concealed():
 	#print("_on_concealed")
-	rcos.log_debug(self, "_on_concealed()")
+	rcos_log.debug(self, "_on_concealed()")
 	get_node("network_input_timer").set_wait_time(0.1)
 
 func _process_network_io():
@@ -171,11 +171,11 @@ func add_log_entry(source_node, level, content):
 		mStatusScreen.add_error()
 	#prints("%", level, source_node, content)
 	if level == "debug":
-		rcos.log_debug(source_node, content)
+		rcos_log.debug(source_node, content)
 	elif level == "notice":
-		rcos.log_notice(source_node, content)
+		rcos_log.notice(source_node, content)
 	elif level == "error":
-		rcos.log_error(source_node, content)
+		rcos_log.error(source_node, content)
 	return ""
 
 func go_back():

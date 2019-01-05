@@ -27,7 +27,7 @@ func _exit_tree():
 
 func _ready():
 	if mUDP.listen(44000) != 0:
-		rcos.log_error(self, "Unable to listen on UDP port 44001")
+		rcos_log.error(self, "Unable to listen on UDP port 44001")
 		queue_free()
 		return
 	mReadPacketsRoutine = coroutines.create(self, "_read_packets_routine", rcos.COROUTINE_TYPE_NET_INPUT)
@@ -67,7 +67,7 @@ func _process_udp_datagram():
 			elif name == "icon:":
 				service_icon = _decode_icon(value)
 				if service_icon == null:
-					rcos.log_error(self, "unable to decode icon")
+					rcos_log.error(self, "unable to decode icon")
 					continue
 				#prints("found icon:", icon)
 		var url = "vrc://"+addr+":"+port

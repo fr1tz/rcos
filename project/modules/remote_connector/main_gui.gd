@@ -95,11 +95,11 @@ func _show_tab(idx):
 	
 func _on_displayed():
 	#print("connector: _on_displayed")
-	rcos.log_debug(self, "_on_displayed()")
+	rcos_log.debug(self, "_on_displayed()")
 
 func _on_concealed():
 	#print("connector: _on_concealed")
-	rcos.log_debug(self, "_on_concealed()")
+	rcos_log.debug(self, "_on_concealed()")
 
 func _interface_widget_selected(interface_widget):
 	if interface_widget == mSelectedInterfaceWidget:

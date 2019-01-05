@@ -30,22 +30,22 @@ func _ready():
 func _process_io():
 	var status = mStream.get_status()
 	if status == StreamPeerTCP.STATUS_CONNECTING:
-		rcos.log_debug(self, "connecting")
+		rcos_log.debug(self, "connecting")
 	elif status == StreamPeerTCP.STATUS_CONNECTED:
 		_receive_data()
 		_process_data()
 	else:
-		rcos.log_error(self, ["error:", status])
+		rcos_log.error(self, ["error:", status])
 
 func _receive_data():
 	if mStream.get_available_bytes() == 0:
 		return
-	#rcos.log_debug(self, ["bytes available:", mStream.get_available_bytes())
+	#rcos_log.debug(self, ["bytes available:", mStream.get_available_bytes())
 	var r = mStream.get_partial_data(mStream.get_available_bytes())
 	var error = r[0]
 	var data = r[1]
 	if error:
-		rcos.log_debug(self, ["_receive_data() ERROR:", error])
+		rcos_log.debug(self, ["_receive_data() ERROR:", error])
 		return
 	mReceiveBuffer.append_array(data)
 
