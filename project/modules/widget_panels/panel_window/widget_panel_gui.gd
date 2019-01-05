@@ -60,7 +60,7 @@ func _ready():
 	mDeleteWidgetButton.connect("pressed", self, "delete_selected_widget")
 	mConfigureWidgetButton.connect("pressed", self, "configure_selected_widget")
 	mWidgetFactoriesPanel.connect("item_selected", self, "_on_widget_factory_item_selected")
-	var widgets_service = rcos.get_node("services/widgets_service")
+	var widgets_service = rcos_services.get_service("widgets_service")
 	update_available_widgets(widgets_service.get_widget_factory_tasks())
 	widgets_service.connect("widget_factory_tasks_changed", self, "update_available_widgets")
 	var isquare = Vector2(rcos.get_isquare_size(), rcos.get_isquare_size())

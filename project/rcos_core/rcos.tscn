@@ -11,6 +11,4 @@ __meta__ = {
 
 [node name="modules" type="Node" parent="."]
 
-[node name="services" type="Node" parent="."]
-
 

@@ -140,7 +140,7 @@ func _init_routine(handle_init_msg_func, args = {}):
 			printf.call_func(" FAILED\n"); yield()
 			printf.call_func("*** INIT FAILED: UNABLE TO INSTANCE " + service_name.to_upper() + "\n"); yield()
 			return null
-		if !add_service(service):
+		if !rcos_services.add_service(service):
 			printf.call_func(" FAILED\n"); yield()
 			printf.call_func("*** INIT FAILED: UNABLE TO ADD " + service_name.to_upper() + "\n"); yield()
 			return null
@@ -281,14 +281,6 @@ func spawn_module(module_name, instance_name = null):
 	emit_signal("module_added", module_node)
 	return module_node
 
-func add_service(service_node):
-	var service_name = service_node.get_name()
-	var services_node = get_node("services")
-	if  services_node.has_node(service_name):
-		log_error(self, "add_service(): Service " + service_name + "already exists")
-		return false
-	services_node.add_child(service_node)
-	return true
 
 func initialize(handle_init_msg_func, args = {}):
 	return _init_routine(handle_init_msg_func, args)
