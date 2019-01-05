@@ -27,7 +27,7 @@ func get_icon():
 func open(url):
 	rcos_log.debug(self, ["open():", url])
 	if url == "rfb":
-		rcos.spawn_module("rfb_client")
+		rcos_modules.spawn_module("rfb_client")
 		return
 	if !url.begins_with("rfb://"):
 		return
@@ -47,4 +47,4 @@ func open(url):
 			port = 5900 + int(server.right(sep_pos+1))
 		elif server != "":
 			address = server
-	rcos.spawn_module("quack_vnc").connect_to_server(address, port)
+	rcos_modules.spawn_module("quack_vnc").connect_to_server(address, port)

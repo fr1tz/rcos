@@ -34,13 +34,9 @@ var mInputPorts = {}
 
 var mTmpDirPath = ""
 var mInfoFiles = {}
-var mModuleInfo = {}
-var mNextAvailableModuleId = 1
 
 func _init():
 	add_user_signal("init_finished")
-	add_user_signal("module_added")
-	add_user_signal("module_removed")
 	add_user_signal("url_handler_added")
 	add_user_signal("url_handler_removed")
 
@@ -89,24 +85,7 @@ func _init_routine(handle_init_msg_func, args = {}):
 			mInfoFiles[filename] = config_file
 			printf.call_func(" OK\n"); yield()
 	printf.call_func("* Building module database...\n"); yield()
-	for filename in mInfoFiles.keys():
-		var config_file = mInfoFiles[filename]
-		if !config_file.has_section("module"):
-			continue
-		var path = config_file.get_value("module", "path", "")
-		if path == "":
-			path = filename.basename()+".tscn"
-		elif path.begins_with("/"):
-			path = "res://" + path.right(1)
-		else:
-			path = filename.get_base_dir() + "/" + path
-		var module = {
-			"name": filename.get_file().basename(),
-			"desc": config_file.get_value("module", "desc", "No description"),
-			"path": path
-		}
-		mModuleInfo[module.name] = module
-		printf.call_func("* Found module: " + module.name + "\n"); yield()
+	rcos_modules.initialize()
 	# Initialize data router...
 	printf.call_func("* Initializing data router"); yield()
 	data_router.initialize("user://etc/data_router")
@@ -182,32 +161,6 @@ func _init_routine(handle_init_msg_func, args = {}):
 		set_max_target_fps(60)
 	return null
 
-func _find_modules():
-	var modules = {}
-	var info_files = rlib.find_files("res://", "*.info")
-	for filename in info_files:
-		var config_file = ConfigFile.new()
-		var err = config_file.load(filename)
-		if err != OK:
-			log_error(self, "Error reading info file " + filename + ": " + str(err))
-			continue
-		if !config_file.has_section("module"):
-			continue
-		var path = config_file.get_value("module", "path", "")
-		if path == "":
-			path = filename.basename()+".tscn"
-		elif path.begins_with("/"):
-			path = "res://" + path.right(1)
-		else:
-			path = filename.get_base_dir() + "/" + path
-		var module = {
-			"name": filename.get_file().basename(),
-			"desc": config_file.get_value("module", "desc", "No description"),
-			"path": path
-		}
-		modules[module.name] = module
-	return modules
-
 func set_default_target_fps(fps):
 	get_node("/root").__set_default_target_fps(fps)
 
@@ -229,15 +182,6 @@ func get_info_files():
 func get_isquare_size(): 
 	return rcos_gui.get_isquare_size()
 
-func get_module_info():
-	return mModuleInfo
-
-func get_modules():
-	var modules = {}
-	for node in get_node("modules").get_children():
-		modules[node.get_name()] = node.get_child(0)
-	return modules
-
 func get_tmp_dir():
 	return mTmpDirPath
 
@@ -253,34 +197,6 @@ func listen(object, port_type):
 			mNextPort[port_type] = port+1
 			return port
 	return -2
-
-func spawn_module(module_name, instance_name = null):
-	if !mModuleInfo.has(module_name):
-		if mModuleInfo.has(module_name+"_module"):
-			module_name = module_name+"_module"
-		else:
-			log_error(self, "spawn_module(): Unknown module: " + module_name)
-			return null
-	var module = mModuleInfo[module_name]
-	if instance_name == null:
-		instance_name = module.name
-	var scene_packed = load(module.path)
-	if scene_packed == null:
-		log_error(self, "spawn_module(): Error loading " + module.path)
-		return null
-	var module_node = scene_packed.instance()
-	if module_node == null:
-		log_error(self, "spawn_module(): Error instancing " + module.path)
-		return null
-	var node = Node.new()
-	node.set_name(str(mNextAvailableModuleId))
-	node.add_child(module_node)
-	module_node.set_name(instance_name)
-	mNextAvailableModuleId += 1
-	get_node("modules").add_child(node)
-	emit_signal("module_added", module_node)
-	return module_node
-
 
 func initialize(handle_init_msg_func, args = {}):
 	return _init_routine(handle_init_msg_func, args)

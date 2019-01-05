@@ -34,7 +34,7 @@ func _ready():
 	gui = get_node("canvas/vjoy_client_gui")
 	gui.get_open_connection_dialog().connect("cancel_button_pressed", self, "kill")
 	gui.get_open_connection_dialog().connect("connect_button_pressed", self, "connect_to_server")
-	var logger = rcos.spawn_module("logger")
+	var logger = rcos_modules.spawn_module("logger")
 	logger.set_filter(str(rcos.get_path_to(self)))
 	get_node("send_update_timer").connect("timeout", self, "send_update")
 	mControllers = get_node("controllers")

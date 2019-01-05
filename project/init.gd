@@ -40,7 +40,7 @@ func _process(delta):
 
 func _spawn_module(module_name):
 	_print_init_msg("* Spawning module " + module_name + "...")
-	var module = rcos.spawn_module(module_name)
+	var module = rcos_modules.spawn_module(module_name)
 	if module == null:
 		_print_init_msg(" FAILED\n")
 		_print_init_msg(" *** INIT FAILED! UNABLE TO SPAWN MODULE " + module_name)

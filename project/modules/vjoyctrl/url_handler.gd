@@ -27,7 +27,7 @@ func get_icon():
 func open(url):
 	rcos_log.debug(self, ["open():", url])
 	if url == "vjoy":
-		rcos.spawn_module("vjoyctrl")
+		rcos_modules.spawn_module("vjoyctrl")
 		return
 	if !url.begins_with("vjoy://"):
 		return
@@ -39,4 +39,4 @@ func open(url):
 		if sep_pos > 0:
 			address = server.left(sep_pos)
 		port = int(server.right(sep_pos+1))
-	rcos.spawn_module("vjoyctrl").connect_to_server(address, port)
+	rcos_modules.spawn_module("vjoyctrl").connect_to_server(address, port)

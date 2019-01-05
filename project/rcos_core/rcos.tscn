@@ -9,6 +9,4 @@ __meta__ = {
 "__editor_plugin_screen__": "2D"
 }
 
-[node name="modules" type="Node" parent="."]
-
 

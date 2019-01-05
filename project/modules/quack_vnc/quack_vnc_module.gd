@@ -26,7 +26,7 @@ var mServerHostname = null
 var mConnection = null
 
 func _ready():
-#	var logger = rcos.spawn_module("logger")
+#	var logger = rcos_modules.spawn_module("logger")
 #	logger.set_filter(str(rcos.get_path_to(self)))
 	var task_properties = {
 		"name": "Quack VNC",
