@@ -144,7 +144,7 @@ anchor/right = 1
 anchor/bottom = 1
 margin/right = 0.0
 margin/bottom = 0.0
-root_path = NodePath("/root/data_router/output_ports")
+root_path = NodePath("/root/rcos_data_router/output_ports")
 
 [node name="input_port_selector" parent="." instance=ExtResource( 7 )]
 
@@ -153,7 +153,7 @@ anchor/right = 1
 anchor/bottom = 1
 margin/right = 0.0
 margin/bottom = 0.0
-root_path = NodePath("/root/data_router/input_ports")
+root_path = NodePath("/root/rcos_data_router/input_ports")
 
 
 [editable path="output_port_selector"]

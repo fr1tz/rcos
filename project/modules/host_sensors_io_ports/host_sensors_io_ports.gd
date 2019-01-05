@@ -18,5 +18,5 @@ extends Node
 func _ready():
 	var os_name = OS.get_name().to_lower().replace(" ", "_")
 	var port_path_prefix = "localhost/sensors"
-	var node = data_router.get_output_port(port_path_prefix)
+	var node = rcos_data_router.get_output_port(port_path_prefix)
 	node.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/sensor.png"))

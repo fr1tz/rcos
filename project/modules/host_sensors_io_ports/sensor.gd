@@ -52,15 +52,15 @@ func _add_io_ports():
 	var output_port_names = ["x", "y", "z"]
 	for port_name in output_port_names:
 		var port_path = port_path_prefix+"/"+port_name
-		var port = data_router.add_output_port(port_path)
+		var port = rcos_data_router.add_output_port(port_path)
 		port.connect("data_access", self, "_output_port_data_access", [port])
 		port.connect("connections_changed", self, "_output_port_connections_changed", [port])
 		mOutputPorts.push_back(port)
-	data_router.get_output_port(port_path_prefix).set_meta("icon32", icon)
+	rcos_data_router.get_output_port(port_path_prefix).set_meta("icon32", icon)
 
 func _remove_io_ports():
 	for port in mOutputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 
 func _update_output_port_data(port):
 	var vec = Vector3(0, 0, 0)

@@ -21,10 +21,10 @@ func _init():
 	add_user_signal("data_changed")
 
 func get_port_type():
-	return data_router.PORT_TYPE_INPUT
+	return rcos_data_router.PORT_TYPE_INPUT
 
 func get_port_path():
-	return str(data_router.get_node("input_ports").get_path_to(self))
+	return str(rcos_data_router.get_node("input_ports").get_path_to(self))
 
 func put_data(data):
 	var old_data = mData

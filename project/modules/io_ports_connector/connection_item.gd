@@ -31,12 +31,12 @@ func _toggle_disabled():
 	var output_path = mConnection.get_output_port_path()
 	var input_path = mConnection.get_input_port_path()
 	var disabled = !mConnection.is_disabled()
-	data_router.set_connection_disabled(output_path, input_path, disabled)
+	rcos_data_router.set_connection_disabled(output_path, input_path, disabled)
 
 func _remove():
 	var output_path = mConnection.get_output_port_path()
 	var input_path = mConnection.get_input_port_path()
-	data_router.remove_connection(output_path, input_path)
+	rcos_data_router.remove_connection(output_path, input_path)
 
 func initialize(connection):
 	mConnection = connection

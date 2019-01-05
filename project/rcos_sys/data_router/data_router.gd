@@ -422,7 +422,7 @@ func get_node_icon(node, icon_size):
 		node_path = str(mInputPorts.get_path_to(node))
 	else:
 		return load("res://rcos_sys/data_router/icons/32/node.png")
-	# Has a custom icon been set for this node via data_router.set_node_icon()?
+	# Has a custom icon been set for this node via rcos_data_router.set_node_icon()?
 	if mNodeIcons.has(node_path):
 		if mNodeIcons[node_path].has(icon_size):
 				return mNodeIcons[node_path][icon_size] 

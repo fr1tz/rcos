@@ -36,18 +36,18 @@ func _add_io_ports():
 
 func _remove_io_ports():
 	for port in mOutputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 	for port in mInputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 
 func _add_input_ports(prefix):
-	mInputPorts.push_back(data_router.add_input_port(prefix+"/text"))
-	mInputPorts.push_back(data_router.add_input_port(prefix+"/append(line)"))
+	mInputPorts.push_back(rcos_data_router.add_input_port(prefix+"/text"))
+	mInputPorts.push_back(rcos_data_router.add_input_port(prefix+"/append(line)"))
 	for port in mInputPorts:
 		port.connect("data_changed", self, "_on_input_port_data_changed", [port])
 
 func _add_output_ports(prefix):
-	mOutputPorts.push_back(data_router.add_output_port(prefix+"/text"))
+	mOutputPorts.push_back(rcos_data_router.add_output_port(prefix+"/text"))
 	mTextEditor.connect("text_changed", self, "_on_text_changed")
 
 func _widget_frame_input(event):

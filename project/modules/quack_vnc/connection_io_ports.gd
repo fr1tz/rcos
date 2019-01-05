@@ -80,17 +80,17 @@ func _add_io_ports():
 	_add_output_ports(prefix)
 	_add_input_ports(prefix)
 	var icon = load("res://modules/quack_vnc/graphics/icon.server.png")
-	var node1 = data_router.get_output_port(prefix)
-	var node2 = data_router.get_input_port(prefix)
+	var node1 = rcos_data_router.get_output_port(prefix)
+	var node2 = rcos_data_router.get_input_port(prefix)
 	for node in [node1, node2]:
 		node.set_meta("icon32", icon)
 		node.set_meta("icon_label", server_id.replace("_", ":"))
 
 func _remove_io_ports():
 	for port in mOutputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 	for port in mInputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 
 func _add_output_ports(prefix):
 	mOutputPortsMeta["bell"] = {
@@ -120,7 +120,7 @@ func _add_output_ports(prefix):
 		"data_type": "vector2"
 	}
 	for port_path in mOutputPortsMeta.keys():
-		var port = data_router.add_output_port(prefix+"/"+port_path, "")
+		var port = rcos_data_router.add_output_port(prefix+"/"+port_path, "")
 		mOutputPortsMeta[port_path]["port"] = port
 		for meta_name in mOutputPortsMeta[port_path].keys():
 			var meta_value = mOutputPortsMeta[port_path][meta_name]
@@ -131,7 +131,7 @@ func _add_output_ports(prefix):
 		"icon32": load("res://modules/quack_vnc/graphics/icon.fb.png")
 	}
 	for node_path in node_meta.keys():
-		var node = data_router.get_output_port(prefix+"/"+node_path)
+		var node = rcos_data_router.get_output_port(prefix+"/"+node_path)
 		for meta_name in node_meta[node_path].keys():
 			var meta_value = node_meta[node_path][meta_name]
 			node.set_meta(meta_name, meta_value)
@@ -245,7 +245,7 @@ func _add_input_ports(prefix):
 			"button_num": i
 		}
 	for port_path in mInputPortsMeta.keys():
-		var port = data_router.add_input_port(prefix+"/"+port_path)
+		var port = rcos_data_router.add_input_port(prefix+"/"+port_path)
 		mInputPortsMeta[port_path]["port"] = port
 		for meta_name in mInputPortsMeta[port_path].keys():
 			var meta_value = mInputPortsMeta[port_path][meta_name]

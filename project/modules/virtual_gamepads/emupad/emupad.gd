@@ -102,7 +102,7 @@ func _ready():
 func _exit_tree():
 	for output_port in mOutputPorts:
 		if output_port != null:
-			data_router.remove_port(output_port)
+			rcos_data_router.remove_port(output_port)
 
 func _create_output_port(port_name):
 	var prefix = get_meta("io_ports_path_prefix")
@@ -110,7 +110,7 @@ func _create_output_port(port_name):
 		return
 	var port_meta = mOutputPortsMeta[port_name]
 	var port_path = prefix+"/"+port_name
-	var port = data_router.add_output_port(port_path)
+	var port = rcos_data_router.add_output_port(port_path)
 	mOutputPorts[port_meta.idx] = port
 	return port
 
@@ -377,7 +377,7 @@ func get_vec():
 func load_emupad_config(emupad_config):
 	for output_port in mOutputPorts:
 		if output_port != null:
-			data_router.remove_port(output_port)
+			rcos_data_router.remove_port(output_port)
 	var port
 	mEmupadConfig = emupad_config
 	button_mode = 0
@@ -397,10 +397,10 @@ func load_emupad_config(emupad_config):
 		for area in ["c", "n", "ne", "e", "se", "s", "sw", "w", "nw"]:
 			_create_output_port("areas/"+area+"/active")
 			_create_output_port("areas/"+area+"/selected")
-			var area_node = data_router.get_output_port(prefix+"/areas/"+area)
+			var area_node = rcos_data_router.get_output_port(prefix+"/areas/"+area)
 			var icon_path = "res://modules/virtual_gamepads/emupad/graphics/icon.dpad.area."+area+".png"
 			area_node.set_meta("icon32", load(icon_path))
-		var areas_node = data_router.get_output_port(prefix+"/areas")
+		var areas_node = rcos_data_router.get_output_port(prefix+"/areas")
 		var icon_path = "res://modules/virtual_gamepads/emupad/graphics/icon.dpad.areas.png"
 		areas_node.set_meta("icon32", load(icon_path))
 	elif mEmupadConfig.emulate == "touchpad":

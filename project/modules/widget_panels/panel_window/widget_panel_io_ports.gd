@@ -28,24 +28,24 @@ func _add_io_ports(prefix):
 	_add_output_ports(prefix)
 	_add_input_ports(prefix)
 	var icon = load("res://modules/widget_panels/graphics/icons/widget_panel.png")
-	var node1 = data_router.get_output_port(prefix)
-	var node2 = data_router.get_input_port(prefix)
+	var node1 = rcos_data_router.get_output_port(prefix)
+	var node2 = rcos_data_router.get_input_port(prefix)
 	for node in [node1, node2]:
 		node.set_meta("icon32", icon)
 		node.set_meta("icon_label", str(mGui.get_widget_panel_id()))
 
 func _remove_io_ports():
 	for port in mOutputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 	for port in mInputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 
 func _add_output_ports(prefix):
 	mOutputPortsMeta["info"] = {
 		#"icon32": load("res://modules/widget_panels/graphics/icons/widget_panel.png"),
 	}
 	for port_path in mOutputPortsMeta.keys():
-		var port = data_router.add_output_port(prefix+"/"+port_path, "")
+		var port = rcos_data_router.add_output_port(prefix+"/"+port_path, "")
 		mOutputPortsMeta[port_path]["port"] = port
 		for meta_name in mOutputPortsMeta[port_path].keys():
 			var meta_value = mOutputPortsMeta[port_path][meta_name]
@@ -57,7 +57,7 @@ func _add_input_ports(prefix):
 		#"icon32": load("res://modules/widget_panels/graphics/icons/widget_panel.png"),
 	}
 	for port_path in mInputPortsMeta.keys():
-		var port = data_router.add_input_port(prefix+"/"+port_path)
+		var port = rcos_data_router.add_input_port(prefix+"/"+port_path)
 		mInputPortsMeta[port_path]["port"] = port
 		for meta_name in mInputPortsMeta[port_path].keys():
 			var meta_value = mInputPortsMeta[port_path][meta_name]

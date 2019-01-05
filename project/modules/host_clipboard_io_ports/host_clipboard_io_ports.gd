@@ -36,7 +36,7 @@ func _add_io_ports():
 	for port_id in input_port_names.keys():
 		var port_name = input_port_names[port_id]
 		var port_path = port_path_prefix+"/"+port_name
-		var port = data_router.add_input_port(port_path)
+		var port = rcos_data_router.add_input_port(port_path)
 		port.set_meta("data_type", "string")
 		port.set_meta("port_id", port_id)
 		port.connect("data_changed", self, "_on_input_port_data_changed", [port])
@@ -48,7 +48,7 @@ func _add_io_ports():
 	for port_id in output_port_names.keys():
 		var port_name = output_port_names[port_id]
 		var port_path = port_path_prefix+"/"+port_name
-		var port = data_router.add_output_port(port_path)
+		var port = rcos_data_router.add_output_port(port_path)
 		port.set_meta("data_type", "string")
 		port.set_meta("port_id", port_id)
 		port.connect("data_access", self, "_output_port_data_access", [port])
@@ -58,9 +58,9 @@ func _add_io_ports():
 
 func _remove_io_ports():
 	for port in mOutputPorts.values():
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 	for port in mInputPorts.values():
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 
 func _fixed_process(delta):
 	if mOutputPorts[TEXT].mData != OS.get_clipboard():

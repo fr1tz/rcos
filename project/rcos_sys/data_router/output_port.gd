@@ -26,7 +26,7 @@ func _ready():
 	pass
 
 func get_port_type():
-	return data_router.PORT_TYPE_OUTPUT
+	return rcos_data_router.PORT_TYPE_OUTPUT
 
 func add_connection(input_node):
 	if mConnections.has(input_node):
@@ -51,7 +51,7 @@ func is_connected():
 	return mConnections.size() > 0
 
 func get_port_path():
-	return str(data_router.get_node("output_ports").get_path_to(self))
+	return str(rcos_data_router.get_node("output_ports").get_path_to(self))
 
 func access_data():
 	emit_signal("data_access")

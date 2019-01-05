@@ -38,7 +38,7 @@ func _add_io_ports():
 
 func add_output_ports(prefix):
 	for axis_index in range(0, 8):
-		var port = data_router.add_output_port(prefix+"/axis"+str(axis_index+1))
+		var port = rcos_data_router.add_output_port(prefix+"/axis"+str(axis_index+1))
 		port.set_meta("port_type", PORT_TYPE_AXIS)
 		port.set_meta("axis_index", axis_index)
 		port.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/axis1.png"))
@@ -46,7 +46,7 @@ func add_output_ports(prefix):
 		port.connect("connections_changed", self, "_output_port_connections_changed", [port])
 		mOutputPorts.push_back(port)
 	for button_index in range(0, 16):
-		var port = data_router.add_output_port(prefix+"/button"+str(button_index+1))
+		var port = rcos_data_router.add_output_port(prefix+"/button"+str(button_index+1))
 		port.set_meta("port_type", PORT_TYPE_BUTTON)
 		port.set_meta("button_index", button_index)
 		port.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/button.png"))
@@ -56,7 +56,7 @@ func add_output_ports(prefix):
 
 func _remove_io_ports():
 	for port in mOutputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 
 func _update_output_port_data(port):
 	if port.get_meta("port_type") == PORT_TYPE_BUTTON:

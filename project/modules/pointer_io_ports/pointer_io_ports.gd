@@ -46,31 +46,31 @@ func _add_io_ports():
 
 func _remove_io_ports():
 	for port in mOutputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 
 func _add_output_ports(prefix):
 	# Pointer Pos
 	for port_name in ["x", "y", "xy"]:
-		var port = data_router.add_output_port(prefix+"/pos/"+port_name)
+		var port = rcos_data_router.add_output_port(prefix+"/pos/"+port_name)
 		port.set_meta("data_type", "float")
 		port.set_meta("port_type", PORT_POS)
 		mOutputPorts.push_back(port)
 		mPositionOutputPorts.push_back(port)
-	var pos_node = data_router.get_output_port(prefix+"/pos")
+	var pos_node = rcos_data_router.get_output_port(prefix+"/pos")
 	pos_node.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/pointer.png"))
 	# Pointer Speed
 	for port_name in ["x", "y", "xy"]:
-		var port = data_router.add_output_port(prefix+"/speed/"+port_name)
+		var port = rcos_data_router.add_output_port(prefix+"/speed/"+port_name)
 		port.set_meta("data_type", "float")
 		port.set_meta("port_type", PORT_SPEED)
 		mOutputPorts.push_back(port)
 		mSpeedOutputPorts.push_back(port)
-	var speed_node = data_router.get_output_port(prefix+"/speed")
+	var speed_node = rcos_data_router.get_output_port(prefix+"/speed")
 	speed_node.set_meta("icon32", load("res://rcos_sys/data_router/icons/32/speedometer.png"))
 	# Buttons
 	for button_index in range(1, 17):
 		var pressed = Input.is_mouse_button_pressed(button_index)
-		var port = data_router.add_output_port(prefix+"/buttons/"+str(button_index), pressed)
+		var port = rcos_data_router.add_output_port(prefix+"/buttons/"+str(button_index), pressed)
 		port.set_meta("data_type", "bool")
 		port.set_meta("port_type", PORT_BUTTON)
 		port.set_meta("button_index", button_index)
@@ -78,7 +78,7 @@ func _add_output_ports(prefix):
 		mOutputPorts.push_back(port)
 		mButtonOutputPorts.push_back(port)
 	# Captured
-	var port = data_router.add_output_port(prefix+"/captured")
+	var port = rcos_data_router.add_output_port(prefix+"/captured")
 	port.set_meta("data_type", "bool")
 	port.set_meta("port_type", PORT_CAPTURED)
 	port.connect("data_access", self, "_output_port_data_access", [port])
@@ -89,7 +89,7 @@ func _add_input_ports(prefix):
 		"data_type": "bool"
 	}
 	for port_path in mInputPortsMeta.keys():
-		var port = data_router.add_input_port(prefix+"/"+port_path)
+		var port = rcos_data_router.add_input_port(prefix+"/"+port_path)
 		for meta_name in mInputPortsMeta[port_path].keys():
 			var meta_value = mInputPortsMeta[port_path][meta_name]
 			port.set_meta(meta_name, meta_value)

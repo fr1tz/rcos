@@ -26,10 +26,10 @@ func _ready():
 	mInputPortSelectorButton.connect("pressed", self, "_select_input_port")
 
 func _select_output_port():
-	_show_port_selector("/root/data_router/output_ports")
+	_show_port_selector("/root/rcos_data_router/output_ports")
 
 func _select_input_port():
-	_show_port_selector("/root/data_router/input_ports")
+	_show_port_selector("/root/rcos_data_router/input_ports")
 
 func _show_port_selector(root_path):
 	mPortSelector = rlib.instance_scene("res://rcos_core/lib/node_selector.tscn")
@@ -49,14 +49,14 @@ func _port_selected(node):
 	_hide_port_selector()
 	var port_type = node.get_port_type()
 	var port_path = node.get_port_path()
-	var icon_path = data_router.get_node_icon(node, 32).get_path()
+	var icon_path = rcos_data_router.get_node_icon(node, 32).get_path()
 	configure(port_type, port_path, icon_path)
 
 func configure(port_type, port_path, icon_path):
 	mPortIcon.set_texture(load(icon_path))
-	get_node("port_type_input").set_hidden(port_type == data_router.PORT_TYPE_OUTPUT)
-	get_node("port_type_output").set_hidden(port_type == data_router.PORT_TYPE_INPUT)
-	if port_type == data_router.PORT_TYPE_INPUT:
+	get_node("port_type_input").set_hidden(port_type == rcos_data_router.PORT_TYPE_OUTPUT)
+	get_node("port_type_output").set_hidden(port_type == rcos_data_router.PORT_TYPE_INPUT)
+	if port_type == rcos_data_router.PORT_TYPE_INPUT:
 		mPortPathLabel.set_text("input_ports/" + port_path)
 	else:
 		mPortPathLabel.set_text("output_ports/" + port_path)

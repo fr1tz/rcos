@@ -57,11 +57,11 @@ func _ready():
 
 func _exit_tree():
 	for port in mOutputPorts.values():
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 	for port in mInputPorts.values():
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 	for port in mButtonInputPorts.values():
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 
 func _data2float(data):
 	if data != null:
@@ -94,7 +94,7 @@ func initialize(vjoy_client, server_hostname, id):
 	mId = id
 	mDirty = false
 	mPortPathsPrefix = server_hostname.to_lower()+"/vjoy_server/vjoy"+str(mId)
-	mOutputPorts["status"] = data_router.add_output_port(mPortPathsPrefix+"/status")
+	mOutputPorts["status"] = rcos_data_router.add_output_port(mPortPathsPrefix+"/status")
 
 func get_id():
 	return mId
@@ -108,13 +108,13 @@ func vjoy_config_changed(prop_name, prop_value):
 			var port_path = mPortPathsPrefix+"/"+axis_name
 			if prop_value == "enabled":
 				if !mInputPorts.has(axis_name):
-					var port = data_router.add_input_port(port_path)
+					var port = rcos_data_router.add_input_port(port_path)
 					port.set_meta("input_port_type", INPUT_PORT_TYPE_AXIS)
 					port.connect("data_changed", self, "_input_port_data_changed", [port])
 					mInputPorts[axis_name] = port
 			else:
 				if mInputPorts.has(axis_name):
-					data_router.remove_port(mInputPorts[axis_name])
+					rcos_data_router.remove_port(mInputPorts[axis_name])
 					mInputPorts.erase(axis_name)
 				mState[axis_name] = 0
 	if prop_name == "num_buttons":
@@ -123,13 +123,13 @@ func vjoy_config_changed(prop_name, prop_value):
 			var port_path = mPortPathsPrefix+"/button"+str(button_idx+1)
 			if button_idx < num_buttons:
 				if !mButtonInputPorts.has(button_idx):
-					var port = data_router.add_input_port(port_path)
+					var port = rcos_data_router.add_input_port(port_path)
 					port.set_meta("input_port_type", INPUT_PORT_TYPE_BUTTON)
 					port.set_meta("button_idx", button_idx)
 					port.connect("data_changed", self, "_input_port_data_changed", [port])
 					mButtonInputPorts[button_idx] = port
 			else:
 				if mButtonInputPorts.has(button_idx):
-					data_router.remove_port(mButtonInputPorts[button_idx])
+					rcos_data_router.remove_port(mButtonInputPorts[button_idx])
 					mButtonInputPorts.erase(button_idx)
 				mState.buttons[button_idx] = false

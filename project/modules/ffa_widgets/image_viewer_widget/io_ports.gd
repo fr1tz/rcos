@@ -35,9 +35,9 @@ func _add_io_ports():
 
 func _remove_io_ports():
 	for port in mOutputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 	for port in mInputPorts:
-		data_router.remove_port(port)
+		rcos_data_router.remove_port(port)
 
 func _add_output_ports(prefix):
 	mOutputPortsMeta["image"] = {
@@ -45,7 +45,7 @@ func _add_output_ports(prefix):
 		"data_type": "image"
 	}
 	for port_path in mOutputPortsMeta.keys():
-		var port = data_router.add_output_port(prefix+"/"+port_path, "")
+		var port = rcos_data_router.add_output_port(prefix+"/"+port_path, "")
 		mOutputPortsMeta[port_path]["port"] = port
 		for meta_name in mOutputPortsMeta[port_path].keys():
 			var meta_value = mOutputPortsMeta[port_path][meta_name]
@@ -58,7 +58,7 @@ func _add_input_ports(prefix):
 		"data_type": "image"
 	}
 	for port_path in mInputPortsMeta.keys():
-		var port = data_router.add_input_port(prefix+"/"+port_path)
+		var port = rcos_data_router.add_input_port(prefix+"/"+port_path)
 		mInputPortsMeta[port_path]["port"] = port
 		for meta_name in mInputPortsMeta[port_path].keys():
 			var meta_value = mInputPortsMeta[port_path][meta_name]

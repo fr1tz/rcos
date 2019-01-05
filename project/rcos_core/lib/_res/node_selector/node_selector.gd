@@ -64,7 +64,7 @@ func _refresh():
 					var color = host_info.get_host_color()
 					item.set_icon_frame_color(color)
 		if icon == null:
-			icon = data_router.get_node_icon(n, 32)
+			icon = rcos_data_router.get_node_icon(n, 32)
 		if icon == null:
 			item.set_text(n.get_name())
 		else:
@@ -106,7 +106,7 @@ func _refresh():
 					var color = host_info.get_host_color()
 					item.set_icon_frame_color(color)
 		if icon == null:
-			icon = data_router.get_node_icon(n, 32)
+			icon = rcos_data_router.get_node_icon(n, 32)
 		item.set_icon(icon)
 		if n.has_meta("icon_label"):
 			item.set_icon_label(n.get_meta("icon_label"))

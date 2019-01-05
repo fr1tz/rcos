@@ -23,11 +23,11 @@ var mSelectedOutputPort = null
 var mSelectedInputPort = null
 
 func _ready():
-	for connection in data_router.get_connections():
+	for connection in rcos_data_router.get_connections():
 		_add_connection_item(connection)
-	data_router.connect("connection_added", self, "_connection_added")
-	data_router.connect("connection_removed", self, "_connection_removed")
-	data_router.connect("connection_changed", self, "_connection_changed")
+	rcos_data_router.connect("connection_added", self, "_connection_added")
+	rcos_data_router.connect("connection_removed", self, "_connection_removed")
+	rcos_data_router.connect("connection_changed", self, "_connection_changed")
 	mMenuBar.get_node("buttons/add_connection_button").connect("pressed", self, "_show_output_port_selector")
 	get_node("output_port_selector").connect("canceled", self, "_show_connections")
 	get_node("output_port_selector").connect("node_selected", self, "_output_port_selected")
@@ -83,4 +83,4 @@ func _input_port_selected(node):
 	get_node("input_port_selector").set_hidden(true)
 	if mSelectedOutputPort == null || mSelectedInputPort == null:
 		return
-	data_router.add_connection(mSelectedOutputPort, mSelectedInputPort)
+	rcos_data_router.add_connection(mSelectedOutputPort, mSelectedInputPort)
