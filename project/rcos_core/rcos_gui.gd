@@ -15,10 +15,19 @@
 
 extends ColorFrame
 
+const SCREEN_INPUT_TOUCH1 = 0
+const SCREEN_INPUT_TOUCH2 = 1
+const SCREEN_INPUT_TOUCH3 = 2
+const SCREEN_INPUT_TOUCH4 = 3
+const SCREEN_INPUT_TOUCH5 = 4
+const SCREEN_INPUT_TOUCH6 = 5
+const SCREEN_INPUT_TOUCH7 = 6
+const SCREEN_INPUT_TOUCH8 = 7
+const SCREEN_INPUT_MOUSE = 8
+const NUM_SCREEN_INPUTS = 9
+
 var __ActiveCanvas = null 
 var _isquare_size = 40
-var _default_mouse_cursor_texture = null
-var _default_mouse_cursor_hotspot = Vector2(0, 0)
 var _dangling_controls = {}
 
 func _notification(what):
@@ -90,22 +99,6 @@ func set_active_canvas(canvas):
 
 func get_active_canvas():
 	return __ActiveCanvas
-
-func get_default_mouse_cursor():
-	return [_default_mouse_cursor_texture, _default_mouse_cursor_hotspot]
-
-func set_default_mouse_cursor(tex, hotspot):
-	if tex == _default_mouse_cursor_texture && hotspot == _default_mouse_cursor_hotspot:
-		return
-	_default_mouse_cursor_texture = tex
-	_default_mouse_cursor_hotspot = hotspot
-	Input.set_custom_mouse_cursor(tex, Input.CURSOR_ARROW, hotspot)
-
-func change_mouse_cursor(tex, hotspot):
-	Input.set_custom_mouse_cursor(tex, Input.CURSOR_ARROW, hotspot)
-
-func reset_mouse_cursor():
-	Input.set_custom_mouse_cursor(_default_mouse_cursor_texture, Input.CURSOR_ARROW, _default_mouse_cursor_hotspot)
 
 func pick_up_control(control, index): # deprecated
 	set_dangling_control(index, control)

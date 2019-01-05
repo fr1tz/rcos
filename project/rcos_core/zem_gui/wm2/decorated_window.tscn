@@ -8,7 +8,7 @@
 [ext_resource path="res://rcos_core/fonts/font_awesome/Font Awesome 5 Free-Solid-900.otf" type="DynamicFontData" id=6]
 [ext_resource path="res://rcos_core/lib/window.tscn" type="PackedScene" id=7]
 
-[sub_resource type="DynamicFont" id=11]
+[sub_resource type="DynamicFont" id=1]
 
 font/size = 16
 extra_spacing/char = 1
@@ -16,14 +16,14 @@ font/use_mipmaps = false
 font/use_filter = false
 font/font = ExtResource( 4 )
 
-[sub_resource type="StyleBoxEmpty" id=1]
+[sub_resource type="StyleBoxEmpty" id=2]
 
 content_margin/left = -1.0
 content_margin/right = -1.0
 content_margin/top = -1.0
 content_margin/bottom = -1.0
 
-[sub_resource type="StyleBoxFlat" id=2]
+[sub_resource type="StyleBoxFlat" id=3]
 
 content_margin/left = -1.0
 content_margin/right = -1.0
@@ -35,13 +35,6 @@ dark_color = Color( 0.8, 0.8, 0.8, 1 )
 border_size = 0
 border_blend = true
 draw_bg = true
-
-[sub_resource type="StyleBoxEmpty" id=3]
-
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
 
 [sub_resource type="StyleBoxEmpty" id=4]
 
@@ -57,7 +50,14 @@ content_margin/right = -1.0
 content_margin/top = -1.0
 content_margin/bottom = -1.0
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="StyleBoxEmpty" id=6]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[sub_resource type="DynamicFont" id=7]
 
 font/size = 16
 extra_spacing/top = -5
@@ -67,13 +67,6 @@ extra_spacing/space = -5
 font/use_mipmaps = false
 font/use_filter = false
 font/font = ExtResource( 6 )
-
-[sub_resource type="StyleBoxEmpty" id=7]
-
-content_margin/left = -1.0
-content_margin/right = -1.0
-content_margin/top = -1.0
-content_margin/bottom = -1.0
 
 [sub_resource type="StyleBoxEmpty" id=8]
 
@@ -96,7 +89,14 @@ content_margin/right = -1.0
 content_margin/top = -1.0
 content_margin/bottom = -1.0
 
-[node name="decorated_window" type="ColorFrame"]
+[sub_resource type="StyleBoxEmpty" id=11]
+
+content_margin/left = -1.0
+content_margin/right = -1.0
+content_margin/top = -1.0
+content_margin/bottom = -1.0
+
+[node name="decorated_window" type="Panel"]
 
 focus/ignore_mouse = false
 focus/stop_mouse = true
@@ -107,20 +107,122 @@ margin/left = 0.0
 margin/top = 0.0
 margin/right = 437.0
 margin/bottom = 262.0
-color = Color( 1, 1, 1, 1 )
 script/script = ExtResource( 2 )
 
-[node name="Panel" type="Panel" parent="."]
+[node name="borders" type="Control" parent="."]
 
-visibility/blend_mode = 3
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = true
+focus/stop_mouse = false
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 0.0
+
+[node name="top" type="ReferenceFrame" parent="borders"]
+
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 10.0
+margin/top = 0.0
+margin/right = 10.0
+margin/bottom = 3.0
+
+[node name="bottom" type="ReferenceFrame" parent="borders"]
+
+anchor/top = 1
 anchor/right = 1
 anchor/bottom = 1
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
+margin/left = 10.0
+margin/top = 3.0
+margin/right = 10.0
+margin/bottom = 0.0
+
+[node name="left" type="ReferenceFrame" parent="borders"]
+
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 10.0
+margin/right = 3.0
+margin/bottom = 10.0
+
+[node name="right" type="ReferenceFrame" parent="borders"]
+
+anchor/left = 1
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 3.0
+margin/top = 10.0
+margin/right = 0.0
+margin/bottom = 10.0
+
+[node name="top_left" type="ReferenceFrame" parent="borders"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
+margin/right = 10.0
+margin/bottom = 10.0
+
+[node name="top_right" type="ReferenceFrame" parent="borders"]
+
+anchor/left = 1
+anchor/right = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 10.0
+margin/top = 0.0
+margin/right = 0.0
+margin/bottom = 10.0
+
+[node name="bottom_left" type="ReferenceFrame" parent="borders"]
+
+anchor/top = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 10.0
+margin/right = 10.0
+margin/bottom = 0.0
+
+[node name="bottom_right" type="ReferenceFrame" parent="borders"]
+
+anchor/left = 1
+anchor/top = 1
+anchor/right = 1
+anchor/bottom = 1
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 10.0
+margin/top = 10.0
 margin/right = 0.0
 margin/bottom = 0.0
 
@@ -238,7 +340,7 @@ margin/left = 0.0
 margin/top = 3.0
 margin/right = 0.0
 margin/bottom = 0.0
-custom_fonts/font = SubResource( 11 )
+custom_fonts/font = SubResource( 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = 1
 custom_constants/shadow_offset_y = 1
@@ -279,12 +381,12 @@ margin/left = 311.0
 margin/top = 0.0
 margin/right = 351.0
 margin/bottom = 40.0
-custom_styles/hover = SubResource( 1 )
-custom_styles/pressed = SubResource( 2 )
-custom_styles/focus = SubResource( 3 )
-custom_styles/disabled = SubResource( 4 )
-custom_styles/normal = SubResource( 5 )
-custom_fonts/font = SubResource( 6 )
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 3 )
+custom_styles/focus = SubResource( 4 )
+custom_styles/disabled = SubResource( 5 )
+custom_styles/normal = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -302,12 +404,12 @@ margin/left = 351.0
 margin/top = 0.0
 margin/right = 391.0
 margin/bottom = 40.0
-custom_styles/hover = SubResource( 1 )
-custom_styles/pressed = SubResource( 2 )
-custom_styles/focus = SubResource( 3 )
-custom_styles/disabled = SubResource( 4 )
-custom_styles/normal = SubResource( 5 )
-custom_fonts/font = SubResource( 6 )
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 3 )
+custom_styles/focus = SubResource( 4 )
+custom_styles/disabled = SubResource( 5 )
+custom_styles/normal = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
@@ -325,12 +427,12 @@ margin/left = 391.0
 margin/top = 0.0
 margin/right = 431.0
 margin/bottom = 40.0
-custom_styles/hover = SubResource( 7 )
-custom_styles/pressed = SubResource( 2 )
-custom_styles/focus = SubResource( 8 )
-custom_styles/disabled = SubResource( 9 )
-custom_styles/normal = SubResource( 10 )
-custom_fonts/font = SubResource( 6 )
+custom_styles/hover = SubResource( 8 )
+custom_styles/pressed = SubResource( 3 )
+custom_styles/focus = SubResource( 9 )
+custom_styles/disabled = SubResource( 10 )
+custom_styles/normal = SubResource( 11 )
+custom_fonts/font = SubResource( 7 )
 toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null

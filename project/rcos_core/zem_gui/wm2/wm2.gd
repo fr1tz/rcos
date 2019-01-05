@@ -15,16 +15,56 @@
 
 extends ReferenceFrame
 
+var CUR_ARROW = {
+	"texture": load("res://rcos_core/zem_gui/graphics/cursor_arrow.png"),
+	"hotspot": Vector2(15, 15)
+} 
+var CUR_RESHAPE = {
+	"texture": load("res://rcos_core/zem_gui/graphics/cursor_reshape.png"),
+	"hotspot": Vector2(15, 15)
+} 
+var CUR_MOVE = {
+	"texture": load("res://rcos_core/zem_gui/graphics/cursor_move.png"),
+	"hotspot": Vector2(15, 15)
+} 
+var CUR_RESIZE_H = {
+	"texture": load("res://rcos_core/zem_gui/graphics/cursor_resize_h.png"),
+	"hotspot": Vector2(15,15)
+}
+var CUR_RESIZE_V = {
+	"texture": load("res://rcos_core/zem_gui/graphics/cursor_resize_v.png"),
+	"hotspot": Vector2(15,15)
+}
+var CUR_RESIZE_D1 = {
+	"texture": load("res://rcos_core/zem_gui/graphics/cursor_resize_d1.png"),
+	"hotspot": Vector2(15,15)
+}
+var CUR_RESIZE_D2 = {
+	"texture": load("res://rcos_core/zem_gui/graphics/cursor_resize_d2.png"),
+	"hotspot": Vector2(15,15)
+}
+
+var _default_mouse_cursor = {
+	"texture": null,
+	"hotspot": Vector2(0, 0)
+}
+var _current_mouse_cursor = {
+	"texture": null,
+	"hotspot": Vector2(0, 0)
+}
+
 onready var _windows_group = "wm2_windows_"+str(get_instance_ID())
 onready var _windows = get_node("windows")
 onready var _reshape_hud = get_node("reshape_hud")
 
 var _zem = null
 var _windows_by_canvas = {}
+var _window_under_mouse = null
 var _index_to_control = []
 
 func _ready():
-	for i in range(0, 8):
+	_set_default_mouse_cursor(CUR_ARROW)
+	for i in range(0, rcos_gui.NUM_SCREEN_INPUTS):
 		_index_to_control.push_back(null)
 	rcos.connect("task_added", self, "_on_task_added")
 	rcos.connect("task_removed", self, "_on_task_removed")
@@ -39,31 +79,54 @@ func _canvas_input(event):
 	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)
 	if !touch && !drag:
 		return
-	var index = 0
+	var index = rcos_gui.SCREEN_INPUT_MOUSE
 	if touchscreen:
 		index = event.index
-	var input_control = null
-	if touch:
-		if event.pressed:
-			var n = _windows.get_child_count() - 1
-			while n >= 0:
-				var win = _windows.get_child(n)
-				if !win.is_hidden() && win.get_global_rect().has_point(event.pos):
-					rcos_gui.set_active_canvas(win._task.properties.canvas)
-					if win._canvas_display.get_global_rect().has_point(event.pos):
-						input_control = win._canvas_display
-					else:
-						input_control = win
-					_index_to_control[index] = input_control
-					break
-				n -= 1
+	if event.type == InputEvent.MOUSE_MOTION && _index_to_control[index] == null:
+		_window_under_mouse = null
+		var n = _windows.get_child_count() - 1
+		while n >= 0:
+			var win = _windows.get_child(n)
+			if !win.is_hidden() && win.get_global_rect().has_point(event.pos):
+				_window_under_mouse = win
+				break
+			n -= 1
+		if _window_under_mouse == null:
+			if _current_mouse_cursor != _default_mouse_cursor:
+				_change_mouse_cursor(_default_mouse_cursor)
+		else:
+			if _window_under_mouse._canvas_display.get_global_rect().has_point(event.pos):
+				var cursor = _default_mouse_cursor
+				if _window_under_mouse._task.properties.has("cursor"):
+					cursor = _window_under_mouse._task.properties.cursor
+				if cursor != _current_mouse_cursor:
+					_change_mouse_cursor(cursor)
+				_window_under_mouse._canvas_display._canvas_input(event)
+			else:
+				_window_under_mouse._canvas_input(event)
+	else:
+		var input_control = null
+		if touch:
+			if event.pressed:
+				var n = _windows.get_child_count() - 1
+				while n >= 0:
+					var win = _windows.get_child(n)
+					if !win.is_hidden() && win.get_global_rect().has_point(event.pos):
+						rcos_gui.set_active_canvas(win._task.properties.canvas)
+						if win._canvas_display.get_global_rect().has_point(event.pos):
+							input_control = win._canvas_display
+						else:
+							input_control = win
+						_index_to_control[index] = input_control
+						break
+					n -= 1
+			else:
+				input_control = _index_to_control[index]
+				_index_to_control[index] = null
 		else:
 			input_control = _index_to_control[index]
-			_index_to_control[index] = null
-	else:
-		input_control = _index_to_control[index]
-	if input_control:
-		input_control._canvas_input(event)
+		if input_control:
+			input_control._canvas_input(event)
 
 func _active_canvas_changed(canvas):
 	get_tree().call_group(SceneTree.GROUP_CALL_REALTIME, _windows_group, "__mark_inactive")
@@ -76,7 +139,7 @@ func _on_task_added(task):
 		var win = rlib.instance_scene("res://rcos_core/zem_gui/wm2/decorated_window.tscn")
 		get_node("windows").add_child(win)
 		win.add_to_group(_windows_group)
-		win.initialize(self, task)
+		win.initialize(_zem, self, task)
 		_windows_by_canvas[task.properties.canvas] = win
 
 func _on_task_removed(task):
@@ -86,9 +149,27 @@ func _on_task_removed(task):
 		_windows_by_canvas.erase(win)
 		win.free()
 
+func _set_default_mouse_cursor(cursor):
+	var tex = cursor.texture
+	var hotspot = cursor.hotspot
+	if tex == _default_mouse_cursor.texture && hotspot == _default_mouse_cursor.hotspot:
+		return
+	if _default_mouse_cursor.texture == null:
+		_change_mouse_cursor(cursor)
+	_default_mouse_cursor.texture = tex
+	_default_mouse_cursor.hotspot = hotspot
+
+func _change_mouse_cursor(cursor):
+	var tex = cursor.texture
+	var hotspot = cursor.hotspot
+	Input.set_custom_mouse_cursor(tex, Input.CURSOR_ARROW, hotspot)
+	_current_mouse_cursor = cursor
+
+func _reset_mouse_cursor():
+	_change_mouse_cursor(_default_mouse_cursor)
+
 func _reshape_window_begin(win):
-	var cursor = load("res://rcos_core/zem_gui/graphics/cursor_reshape.png")
-	rcos_gui.change_mouse_cursor(cursor, Vector2(14, 14))
+	_change_mouse_cursor(CUR_RESHAPE)
 	win.set_hidden(true)
 	var isquare_size = rcos.get_isquare_size()
 	var screen_size = get_size()
@@ -96,11 +177,12 @@ func _reshape_window_begin(win):
 	var num_rows = int(floor(screen_size.y/isquare_size))
 	_reshape_hud.set_grid(num_columns, num_rows)
 	_reshape_hud.clear_painted_rect()
+	_reshape_hud.set_old_rect(win.get_rect())
 	_reshape_hud.connect("finished", self, "_reshape_window_finish", [win])
 	_reshape_hud.set_hidden(false)
 
 func _reshape_window_finish(win):
-	rcos_gui.reset_mouse_cursor()
+	_reset_mouse_cursor()
 	_reshape_hud.disconnect("finished", self, "_reshape_window_finish")
 	_reshape_hud.set_hidden(true)
 	var rect = _reshape_hud.get_painted_rect()
@@ -114,3 +196,6 @@ func raise_window(win):
 
 func reshape_window(win):
 	_reshape_window_begin(win)
+
+func initialize(zem):
+	_zem = zem

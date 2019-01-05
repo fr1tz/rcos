@@ -15,14 +15,10 @@
 
 extends Panel
 
-var mScreenTouches = 0
-
-onready var mDesktop = get_node("hsplit/desktop")
-onready var mTaskbar = get_node("vsplit/hsplit2/taskbar")
+onready var _desktop = get_node("hsplit/desktop")
+onready var _taskbar = get_node("vsplit/hsplit2/taskbar")
 
 func _ready():
-	var arrow = load("res://rcos_core/zem_gui/graphics/cursor_arrow.png")
-	rcos_gui.set_default_mouse_cursor(arrow, Vector2(3, 3))
 	var isquare_size = rcos.get_isquare_size()
 	var isquare = Vector2(isquare_size, isquare_size)
 	get_node("hsplit/sidebar").set_custom_minimum_size(isquare)
@@ -40,7 +36,8 @@ func _ready():
 			wm = rlib.instance_scene("res://rcos_core/zem_gui/wm2/wm2.tscn")
 		else:
 			wm = rlib.instance_scene("res://rcos_core/zem_gui/wm1/wm1.tscn")
-	mDesktop.get_node("wm").add_child(wm)
+	_desktop.get_node("wm").add_child(wm)
+	wm.initialize(self)
 	rcos.enable_canvas_input(self)
 
 func _canvas_input(event):
@@ -56,5 +53,5 @@ func _canvas_input(event):
 	if dangling_control == null:
 		return
 	dangling_control.set_pos(event.pos - dangling_control.get_size()/2)
-	if mTaskbar.get_rect().has_point(event.pos):
-		mTaskbar.activate_task_by_pos(event.pos)
+	if _taskbar.get_rect().has_point(event.pos):
+		_taskbar.activate_task_by_pos(event.pos)

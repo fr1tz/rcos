@@ -13,24 +13,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extends ColorFrame
+extends Panel
 
 const MODE_NONE = -1
 const MODE_CHECK_MOVE = 1
 const MODE_MOVE = 2
 const MODE_RESHAPE = 3
 const MODE_TOGGLE_MAXIMIZED = 4
-const MODE_RESIZE = 5
+const MODE_MOUSE_RESIZE = 5
 const MODE_HIDE = 6
 
 const ICON_MAXIMIZE = "" # Unicode character #f31e between quotes
 const ICON_UNMAXIMIZE = "" # Unicode character #f78c between quotes
 
-var _cursor_move = load("res://rcos_core/zem_gui/graphics/cursor_move.png")
+const BORDER_TOP = 0
+const BORDER_BOTTOM = 1
+const BORDER_LEFT = 2
+const BORDER_RIGHT = 3
+const BORDER_TOP_LEFT = 4
+const BORDER_TOP_RIGHT = 5
+const BORDER_BOTTOM_LEFT = 6
+const BORDER_BOTTOM_RIGHT = 7
+const NUM_BORDERS = 8
 
+onready var _borders = get_node("borders")
 onready var _margins = get_node("margins")
-onready var _canvas_display = _margins.get_node("vbox/canvas_display")
-onready var _title_bar = _margins.get_node("vbox/titlebar")
+onready var _content = get_node("margins/vbox")
+onready var _title_bar = _content.get_node("titlebar")
+onready var _canvas_display = _content.get_node("canvas_display")
 onready var _icon = _title_bar.get_node("hbox/icon_box/icon")
 onready var _icon_frame = _title_bar.get_node("hbox/icon_box/frame")
 onready var _icon_label = _title_bar.get_node("hbox/icon_box/label")
@@ -39,6 +49,7 @@ onready var _reshape_button = _title_bar.get_node("hbox/reshape_button")
 onready var _resize_button = _title_bar.get_node("hbox/resize_button")
 onready var _hide_button = _title_bar.get_node("hbox/hide_button")
 
+var _zem = null
 var _wm = null
 var _task = null
 var _taskId = -1
@@ -49,8 +60,11 @@ var _unmaximized_size = null
 var _active_index = -1
 var _mode = MODE_NONE
 var _initial_touch_pos = null
+var _border_cursors = []
+var _mouse_resize_mode = -1
 
 func _init():
+	_border_cursors.resize(NUM_BORDERS)
 	add_user_signal("hide_button_pressed")
 	add_user_signal("reshape_button_pressed")
 	add_user_signal("close_button_pressed")
@@ -67,11 +81,20 @@ func _canvas_input(event):
 	var drag = (event.type == InputEvent.SCREEN_DRAG || event.type == InputEvent.MOUSE_MOTION)
 	if !touch && !drag:
 		return
-	var index = 0
+	var index = rcos_gui.SCREEN_INPUT_MOUSE
 	if touchscreen:
 		index = event.index
 	if _active_index == -1:
-		if touch && event.pressed:
+		if event.type == InputEvent.MOUSE_MOTION:
+			if _content.get_global_rect().has_point(event.pos):
+				_wm._reset_mouse_cursor()
+			else:
+				for i in range(0, NUM_BORDERS):
+					var rect = _borders.get_child(i).get_global_rect()
+					if rect.has_point(event.pos):
+						_wm._change_mouse_cursor(_border_cursors[i])
+						break
+		elif touch && event.pressed:
 			_active_index = index
 			_initial_touch_pos = event.pos
 			raise_window()
@@ -83,14 +106,19 @@ func _canvas_input(event):
 				_mode = MODE_HIDE
 			elif _title_bar.get_global_rect().has_point(event.pos):
 				_mode = MODE_CHECK_MOVE
-			else:
-				_mode = MODE_RESIZE
-	elif index == _active_index:
+			elif !_content.get_global_rect().has_point(event.pos):
+				for i in range(0, NUM_BORDERS):
+					var rect = _borders.get_child(i).get_global_rect()
+					if rect.has_point(event.pos):
+						_mode = MODE_MOUSE_RESIZE
+						_mouse_resize_mode = i
+						break
+	if index == _active_index:
 		if _mode == MODE_CHECK_MOVE:
 			if (event.pos - _initial_touch_pos).length() > 4:
 				_mode = MODE_MOVE
 				if index == 0:
-					rcos_gui.change_mouse_cursor(_cursor_move, Vector2(16, 16))
+					_wm.change_mouse_cursor(_wm.CUR_MOVE)
 		elif _mode == MODE_RESHAPE:
 			if _reshape_button.get_global_rect().has_point(event.pos):
 				if touch && !event.pressed:
@@ -99,10 +127,48 @@ func _canvas_input(event):
 			if _resize_button.get_global_rect().has_point(event.pos):
 				if touch && !event.pressed:
 					toggle_window_maximized()
+		elif _mode == MODE_MOUSE_RESIZE:
+			if touch && !event.pressed:
+				_wm._reset_mouse_cursor()
 			else:
-				_mode = MODE_RESIZE
-				if index == 0:
-					rcos_gui.change_mouse_cursor(_cursor_move, Vector2(16, 16))
+				var min_size = get_custom_minimum_size()
+				var min_size_x = min_size.x
+				var min_size_y = min_size.y
+				var rect = get_rect()
+				var start = rect.pos
+				var end = rect.end
+				if _mouse_resize_mode == BORDER_TOP:
+					start.y = event.pos.y
+				elif _mouse_resize_mode == BORDER_BOTTOM:
+					end.y = event.pos.y
+				elif _mouse_resize_mode == BORDER_LEFT:
+					start.x = event.pos.x
+				elif _mouse_resize_mode == BORDER_RIGHT:
+					end.x = event.pos.x
+				elif _mouse_resize_mode == BORDER_TOP_LEFT:
+					if end.x - event.pos.x >= min_size_x:
+						start.x = event.pos.x
+					if end.y - event.pos.y >= min_size_y:
+						start.y = event.pos.y
+				elif _mouse_resize_mode == BORDER_TOP_RIGHT:
+					if event.pos.x - start.x >= min_size_x:
+						end.x = event.pos.x
+					if end.y - event.pos.y >= min_size_y:
+						start.y = event.pos.y
+				elif _mouse_resize_mode == BORDER_BOTTOM_LEFT:
+					if end.x - event.pos.x >= min_size_x:
+						start.x = event.pos.x
+					if event.pos.y - start.y >= min_size_y:
+						end.y = event.pos.y
+				elif _mouse_resize_mode == BORDER_BOTTOM_RIGHT:
+					if event.pos.x - start.x >= min_size_x:
+						end.x = event.pos.x
+					if event.pos.y - start.y >= min_size_y:
+						end.y = event.pos.y
+				if end.x - start.x >= min_size_x \
+				&& end.y - start.y >= min_size_y:
+					set_pos(start)
+					set_size(end-start)
 		elif _mode == MODE_HIDE:
 			if _hide_button.get_global_rect().has_point(event.pos):
 				if touch && !event.pressed:
@@ -112,12 +178,11 @@ func _canvas_input(event):
 				set_pos(get_pos() + event.relative_pos)
 			elif touch && !event.pressed:
 				if index == 0:
-					rcos_gui.reset_mouse_cursor()
+					_wm._reset_mouse_cursor()
 		if touch && !event.pressed:
 			_active_index = -1
 
 func _update_decoration():
-	set_frame_color(Color(1, 1, 1))
 	_icon_frame.set_modulate(_task_color)
 	if _active:
 		_title_bar.set_frame_color(Color(0.0, 0.0, 0.0))
@@ -150,7 +215,12 @@ func _task_properties_changed(new_properties):
 	if new_properties.has("icon_label"):
 		_icon_label.set_text(new_properties.icon_label)
 	if new_properties.has("window_hidden"):
-		set_hidden(_task.properties.window_hidden)
+		if _task.properties.window_hidden:
+			_canvas_display.show_canvas(null)
+			set_hidden(true)
+		else:
+			_canvas_display.show_canvas(_task.properties.canvas)
+			set_hidden(false)
 	if new_properties.has("window_maximized"):
 		if new_properties.window_maximized:
 			set_pos(_wm.get_pos())
@@ -242,10 +312,19 @@ func focus_window():
 	_wm.raise_window(self)
 	rcos_gui.set_active_canvas(_task.properties.canvas)
 
-func initialize(wm, task):
+func initialize(zem, wm, task):
+	_zem = zem
 	_wm = wm
 	_task = task
 	_taskId = task.get_id()
+	_border_cursors[BORDER_TOP] = _wm.CUR_RESIZE_V
+	_border_cursors[BORDER_BOTTOM] = _wm.CUR_RESIZE_V
+	_border_cursors[BORDER_LEFT] = _wm.CUR_RESIZE_H
+	_border_cursors[BORDER_RIGHT] = _wm.CUR_RESIZE_H
+	_border_cursors[BORDER_TOP_LEFT] = _wm.CUR_RESIZE_D2
+	_border_cursors[BORDER_TOP_RIGHT] = _wm.CUR_RESIZE_D1
+	_border_cursors[BORDER_BOTTOM_LEFT] = _wm.CUR_RESIZE_D1
+	_border_cursors[BORDER_BOTTOM_RIGHT] = _wm.CUR_RESIZE_D2
 #	var color = Color(randf(), randf(), randf())
 #	set_frame_color(color)
 #	_title_label.set("custom_colors/font_color", color)
