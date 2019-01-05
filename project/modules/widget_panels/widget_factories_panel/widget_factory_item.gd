@@ -21,7 +21,7 @@ var mProductName = null
 var mConfigPreset = null
 
 func initialize(widget_factory_task_id, config_preset = null):
-	var properties = rcos.get_task_properties(widget_factory_task_id)
+	var properties = rcos_tasks.get_task_properties(widget_factory_task_id)
 	mWidgetFactoryTaskId = widget_factory_task_id
 	mProductId = properties.product_id
 	mProductName = properties.product_name

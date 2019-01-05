@@ -253,7 +253,7 @@ func _task_properties_changed(new_properties):
 		focus_window()
 
 func _canvas_display_resized():
-	var properties = rcos.get_task_properties(_taskId)
+	var properties = rcos_tasks.get_task_properties(_taskId)
 	var canvas = properties.canvas
 	if !canvas.resizable:
 		return

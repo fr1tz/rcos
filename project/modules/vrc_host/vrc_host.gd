@@ -61,7 +61,7 @@ func _ready():
 			"go_back": funcref(self, "go_back")
 		}
 	}
-	mTaskId = rcos.add_task(task_properties)
+	mTaskId = rcos_tasks.add_task(task_properties)
 	mNetInterface.connections = get_node("connections")
 	mNetInterface.connections_group = "vrc_host_"+str(get_instance_ID())+"connections_group"
 	mStatusScreen = get_node("status_canvas/status_screen")
@@ -282,7 +282,7 @@ func get_variables():
 
 func kill():
 	_log_debug(["kill()"])
-	rcos.remove_task(mTaskId)
+	rcos_tasks.remove_task(mTaskId)
 	queue_free()
 
 func parse_cmdline(input):
@@ -398,7 +398,7 @@ func send(data, to, from = null):
 
 func set_icon(texture):
 	_log_debug(["set_icon()", texture])
-	rcos.change_task(mTaskId, { "icon": texture })
+	rcos_tasks.change_task(mTaskId, { "icon": texture })
 	return ""
 
 func set_variable(name, value):
@@ -423,7 +423,7 @@ func show_region(rect, fullscreen = false):
 		"canvas_region": rect,
 		"fullscreen": fullscreen
 	}
-	rcos.change_task(mTaskId, new_task_properties)
+	rcos_tasks.change_task(mTaskId, new_task_properties)
 	return ""
 
 func show_vrc(instance_name, fullscreen):
@@ -446,12 +446,12 @@ func update_vrc_download_progress(value):
 func add_widget_factory(product_id, product_name, object, create_widget_method):
 	if mWidgetFactoryTaskIds.has(product_id):
 		var task_id = mWidgetFactoryTaskIds[product_id]
-		rcos.change_task(task_id, {
+		rcos_tasks.change_task(task_id, {
 			"product_name": product_name,
 			"create_widget_func": funcref(object, create_widget_method)
 		})
 	else:
-		var task_id = rcos.add_task({
+		var task_id = rcos_tasks.add_task({
 			"type": "widget_factory",
 			"product_id": product_id,
 			"product_name": product_name,
@@ -464,7 +464,7 @@ func remove_widget_factory(product_id):
 	if !mWidgetFactoryTaskIds.has(product_id):
 		return true
 	var task_id = mWidgetFactoryTaskIds[product_id]
-	rcos.remove_task(task_id)
+	rcos_tasks.remove_task(task_id)
 	mWidgetFactoryTaskIds.erase(product_id)
 	return true
 

@@ -15,33 +15,22 @@
 
 extends Node
 
-onready var content = get_node("canvas").get_child(0)
+var properties = {}
 
-var mModule = null
-var mTaskId = -1
+func _init():
+	add_user_signal("properties_changed")
 
-func _exit_tree():
-	hide()
+func get_id():
+	return int(get_name())
 
-func show():
-	if mTaskId != -1:
-		return
-	var task_properties = {
-		"name": "Widget Panels",
-		"icon": get_node("icon").get_texture(),
-		"canvas": get_node("canvas"),
-	}
-	mTaskId = rcos_tasks.add_task(task_properties)
+func get_parent_task_id():
+	var parent_task = get_parent()
+	if parent_task == rcos_tasks:
+		return 0
+	return parent_task.get_id()
 
-func hide():
-	if mTaskId == -1:
-		return
-	rcos_tasks.remove_task(mTaskId)
-	mTaskId = -1
-
-func get_task_id():
-	return mTaskId
-
-func initialize(module):
-	mModule = module
-	content.initialize(module, self)
+func change_properties(new_properties):
+	for key in new_properties.keys():
+		properties[key] = new_properties[key]
+	emit_signal("properties_changed", new_properties)
+	rcos_tasks.emit_signal("task_changed", self)

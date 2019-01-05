@@ -16,7 +16,7 @@
 extends Node
 
 func _ready():
-	rcos.add_task({
+	rcos_tasks.add_task({
 		"type": "widget_factory",
 		"product_name": "Gamepad Widget",
 		"product_id": "virtual_gamepads.emupad_widget",

@@ -29,7 +29,7 @@ func update_available_widgets(widget_factory_tasks):
 		mWidgetFactoryList.remove_child(item)
 		item.free()
 	for task_id in widget_factory_tasks:
-		var properties = rcos.get_task_properties(task_id)
+		var properties = rcos_tasks.get_task_properties(task_id)
 		if !properties.has("product_name") || !properties.has("product_id"):
 			continue
 		if properties.has("config_presets"):

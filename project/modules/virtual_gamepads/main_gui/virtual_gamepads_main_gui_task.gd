@@ -25,5 +25,5 @@ func _ready():
 		"icon": get_node("icon").get_texture(),
 		"canvas": get_node("canvas"),
 	}
-	mTaskId = rcos.add_task(task_properties)
+	mTaskId = rcos_tasks.add_task(task_properties)
 	main_gui = get_node("canvas/main_gui")

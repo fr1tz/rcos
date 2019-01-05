@@ -37,7 +37,7 @@ func _notification(what):
 func _escape():
 	if __ActiveCanvas == null:
 		return
-	var task = rcos.get_task_from_canvas(__ActiveCanvas)
+	var task = rcos_tasks.get_task_from_canvas(__ActiveCanvas)
 	if task == null:
 		return
 	if task.properties.has("ops") && task.properties.ops.has("go_back"):

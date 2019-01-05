@@ -21,8 +21,8 @@ var mTasksByCanvas = {}
 var mVisibleTask = null
 
 func _ready():
-	rcos.connect("task_added", self, "_task_added")
-	rcos.connect("task_removed", self, "_task_removed")
+	rcos_tasks.connect("task_added", self, "_task_added")
+	rcos_tasks.connect("task_removed", self, "_task_removed")
 	rcos_gui.connect("active_canvas_changed", self, "_active_canvas_changed")
 	connect("resized", self, "_resized")
 

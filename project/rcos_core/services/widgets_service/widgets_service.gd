@@ -20,9 +20,9 @@ func _init():
 	add_user_signal("widget_factory_tasks_changed")
 
 func _ready():
-	rcos.connect("task_added", self, "_on_task_added")
-	rcos.connect("task_removed", self, "_on_task_removed")
-	var task_list = rcos.get_task_list()
+	rcos_tasks.connect("task_added", self, "_on_task_added")
+	rcos_tasks.connect("task_removed", self, "_on_task_removed")
+	var task_list = rcos_tasks.get_task_list()
 	for task in task_list.values():
 		_on_task_added(task)
 
@@ -45,7 +45,7 @@ func get_widget_factory_tasks():
 
 func get_widget_factory_task_id(product_id):
 	for task_id in mWidgetFactoryTaskIDs:
-		var properties = rcos.get_task_properties(task_id)
+		var properties = rcos_tasks.get_task_properties(task_id)
 		if properties.product_id == product_id:
 			return task_id
 	return -1

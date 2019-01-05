@@ -45,7 +45,7 @@ func _ready():
 	mWidgetHostApi = preload("widget_host_api.gd").new(self)
 	for i in range(0, 8):
 		mIndexToWidgetContainer.push_back(null)
-	rcos.connect("task_added", self, "_on_task_added")
+	rcos_tasks.connect("task_added", self, "_on_task_added")
 	rcos.enable_canvas_input(self)
 
 func _resized():
@@ -242,7 +242,7 @@ func create_widget(widget_product_id, grid_rect, config_string = ""):
 	var widget_factory_tasks = widgets_service.get_widget_factory_tasks()
 	var properties = null
 	for task_id in widget_factory_tasks:
-		var p = rcos.get_task_properties(task_id)
+		var p = rcos_tasks.get_task_properties(task_id)
 		if p.has("product_id") && p.product_id == widget_product_id:
 			properties = p
 			break
@@ -363,7 +363,7 @@ func load_from_file(filename):
 	if config.parse_json(text) != OK || config.empty():
 		return false
 	mLoadingFromFile = true
-	var tasks_list = rcos.get_task_list()
+	var tasks_list = rcos_tasks.get_task_list()
 	if config.version == 0:
 		set_grid(config.num_columns, config.num_rows)
 		for c in config.widget_containers:

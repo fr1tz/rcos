@@ -72,7 +72,7 @@ func _config_task_go_back():
 				var went_back = config_gui.go_back()
 				if went_back:
 					return true
-	rcos.remove_task(mConfigTaskId)
+	rcos_tasks.remove_task(mConfigTaskId)
 	mConfigTaskId = -1
 	return true
 
@@ -190,4 +190,4 @@ func configure(config_task_parent_task_id):
 			},
 			"focus_wanted": true
 		}
-		mConfigTaskId = rcos.add_task(task_properties, config_task_parent_task_id)
+		mConfigTaskId = rcos_tasks.add_task(task_properties, config_task_parent_task_id)

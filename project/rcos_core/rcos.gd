@@ -36,9 +36,6 @@ var mTmpDirPath = ""
 var mInfoFiles = {}
 var mModuleInfo = {}
 var mNextAvailableModuleId = 1
-var mNextAvailableTaskId = 1
-var mTaskNodesByTaskId = {} # Task ID -> Task Node
-var mTaskNodesByCanvas = {} # Task canvas -> Task Node
 
 func _init():
 	add_user_signal("init_finished")
@@ -46,10 +43,6 @@ func _init():
 	add_user_signal("module_removed")
 	add_user_signal("url_handler_added")
 	add_user_signal("url_handler_removed")
-	add_user_signal("task_list_changed")
-	add_user_signal("task_added")
-	add_user_signal("task_changed")
-	add_user_signal("task_removed")
 	add_user_signal("new_log_entry3")
 
 func _init_routine(handle_init_msg_func, args = {}):
@@ -263,62 +256,6 @@ func get_modules():
 
 func get_tmp_dir():
 	return mTmpDirPath
-
-func add_task(properties, parent_task_id = -1):
-	var parent_node = get_node("tasks")
-	if parent_task_id >= 0:
-		if !mTaskNodesByTaskId.has(parent_task_id):
-			return -1
-		parent_node = mTaskNodesByTaskId[parent_task_id]
-	var task_id = mNextAvailableTaskId
-	mNextAvailableTaskId += 1
-	var task_node = rlib.instance_scene("res://rcos_core/task.tscn")
-	task_node.set_name(str(task_id)) 
-	task_node.properties = properties
-	parent_node.add_child(task_node)
-	mTaskNodesByTaskId[task_id] = task_node
-	if properties.has("canvas") && properties.canvas != null:
-		mTaskNodesByCanvas[properties.canvas] = task_node
-	emit_signal("task_added", task_node)
-	emit_signal("task_list_changed")
-	return task_id
-
-func change_task(task_id, properties):
-	if !mTaskNodesByTaskId.has(task_id):
-		return false
-	var task_node = mTaskNodesByTaskId[task_id]
-	task_node.change_properties(properties)
-	return true
-
-func remove_task(task_id):
-	if !mTaskNodesByTaskId.has(task_id):
-		return true
-	var task_node = mTaskNodesByTaskId[task_id]
-	emit_signal("task_removed", task_node)
-	mTaskNodesByTaskId.erase(task_id)
-	if task_node.properties.has("canvas") && task_node.properties.canvas != null:
-		mTaskNodesByCanvas.erase(task_node.properties.canvas)
-	task_node.get_parent().remove_child(task_node)
-	task_node.free()
-	emit_signal("task_list_changed")
-	return true
-
-func get_task_properties(task_id):
-	if !mTaskNodesByTaskId.has(task_id):
-		return null
-	var properties = {}
-	var task_node = mTaskNodesByTaskId[task_id]
-	for key in task_node.properties.keys():
-		properties[key] = task_node.properties[key]
-	return properties
-
-func get_task_from_canvas(canvas):
-	if mTaskNodesByCanvas.has(canvas):
-		return mTaskNodesByCanvas[canvas]
-	return null
-
-func get_task_list():
-	return mTaskNodesByTaskId
 
 func listen(object, port_type):
 	if !mNextPort.has(port_type):

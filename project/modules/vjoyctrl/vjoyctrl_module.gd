@@ -45,7 +45,7 @@ func _ready():
 		"icon": get_node("icon").get_texture(),
 		"canvas": get_node("canvas"),
 	}
-	mTaskId = rcos.add_task(task_properties)
+	mTaskId = rcos_tasks.add_task(task_properties)
 
 func _process_message(msg):
 	rcos.log_debug(self, ["vjoy_client: _process_message():", msg])

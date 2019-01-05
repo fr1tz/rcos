@@ -20,8 +20,8 @@ onready var mTaskbarItemsGroup = "taskbar_items_"+str(get_instance_ID())
 var mItemsByCanvas = {}
 
 func _ready():
-	rcos.connect("task_added", self, "_on_task_added")
-	rcos.connect("task_removed", self, "_on_task_removed")
+	rcos_tasks.connect("task_added", self, "_on_task_added")
+	rcos_tasks.connect("task_removed", self, "_on_task_removed")
 	rcos_gui.connect("active_canvas_changed", self, "_active_canvas_changed")
 	connect("resized", self, "_resized")
 	var items_scroller = get_node("scroller")

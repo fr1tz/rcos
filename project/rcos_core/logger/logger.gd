@@ -24,7 +24,7 @@ func _ready():
 		"icon": get_node("icon").get_texture(),
 		"canvas": get_node("canvas"),
 	}
-	mTaskId = rcos.add_task(task_properties)
+	mTaskId = rcos_tasks.add_task(task_properties)
 	rcos.connect("new_log_entry3", self, "_on_new_log_entry")
 
 func _on_new_log_entry(source_node, level, content):
@@ -46,7 +46,7 @@ func _on_new_log_entry(source_node, level, content):
 
 func kill():
 	rcos.log_debug(self, ["kill()"])
-	rcos.remove_task(mTaskId)
+	rcos_tasks.remove_task(mTaskId)
 	queue_free()
 
 func set_filter(expr):

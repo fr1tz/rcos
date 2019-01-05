@@ -33,7 +33,7 @@ func _ready():
 		"canvas": get_node("canvas"),
 		"icon": load("res://modules/quack_vnc/graphics/icon.png")
 	}
-	mTaskId = rcos.add_task(task_properties)
+	mTaskId = rcos_tasks.add_task(task_properties)
 	mConnection = get_node("connection")
 	mConnection.connect("connection_state_changed", self, "_connection_state_changed")
 	gui = get_node("canvas/rfb_client_gui")
@@ -41,7 +41,7 @@ func _ready():
 
 func _exit_tree():
 	if mTaskId != -1:
-		rcos.remove_task(mTaskId)
+		rcos_tasks.remove_task(mTaskId)
 
 func _connection_state_changed(new_state):
 	if new_state == mConnection.CS_ERROR:
@@ -49,19 +49,19 @@ func _connection_state_changed(new_state):
 			"icon": load("res://modules/quack_vnc/graphics/icon.png"),
 			"icon_spin_speed": 0
 		}
-		rcos.change_task(mTaskId, task_properties)
+		rcos_tasks.change_task(mTaskId, task_properties)
 	elif new_state == mConnection.CS_READY_TO_CONNECT:
 		var task_properties = {
 			"icon": load("res://modules/quack_vnc/graphics/icon.png"),
 			"icon_spin_speed": 0
 		}
-		rcos.change_task(mTaskId, task_properties)
+		rcos_tasks.change_task(mTaskId, task_properties)
 	elif new_state == mConnection.CS_CONNECTING:
 		var task_properties = {
 			"icon": load("res://modules/quack_vnc/graphics/spinner.png"),
 			"icon_spin_speed": 5
 		}
-		rcos.change_task(mTaskId, task_properties)
+		rcos_tasks.change_task(mTaskId, task_properties)
 	elif new_state == mConnection.CS_SERVER_INIT_MSG_RECEIVED:
 		var server_id
 		var server_port = mConnection.get_remote_port()
@@ -74,7 +74,7 @@ func _connection_state_changed(new_state):
 			"icon_label": server_id,
 			"icon_spin_speed": 0
 		}
-		rcos.change_task(mTaskId, task_properties)
+		rcos_tasks.change_task(mTaskId, task_properties)
 
 func connect_to_server(address, port):
 	rcos.log_notice(self, "Opening connection to "+address+":"+str(port))
@@ -88,7 +88,7 @@ func connect_to_server(address, port):
 			var task_properties = {
 				"task_color": color
 			}
-			rcos.change_task(mTaskId, task_properties)
+			rcos_tasks.change_task(mTaskId, task_properties)
 	mConnection.connect_to_server(address, port)
 
 func kill():

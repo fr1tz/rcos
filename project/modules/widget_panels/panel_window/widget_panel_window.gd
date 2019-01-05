@@ -24,7 +24,7 @@ var mMainWindowTaskId = -1
 var mWindowTitle = "Widget Panel"
 
 func _exit_tree():
-	rcos.remove_task(mTaskId)
+	rcos_tasks.remove_task(mTaskId)
 
 func show():
 	if mTaskId != -1:
@@ -39,12 +39,12 @@ func show():
 			"go_back": funcref(content, "go_back")
 		}
 	}
-	mTaskId = rcos.add_task(task_properties, mMainWindowTaskId)
+	mTaskId = rcos_tasks.add_task(task_properties, mMainWindowTaskId)
 
 func hide():
 	if mTaskId == -1:
 		return
-	rcos.remove_task(mTaskId)
+	rcos_tasks.remove_task(mTaskId)
 	mTaskId = -1
 
 func set_title(title):
@@ -53,7 +53,7 @@ func set_title(title):
 		var new_task_properties = {
 			"name": mWindowTitle
 		}
-		rcos.change_task(mTaskId, new_task_properties)
+		rcos_tasks.change_task(mTaskId, new_task_properties)
 
 func set_fullscreen(fullscreen):
 	if fullscreen:
@@ -61,16 +61,16 @@ func set_fullscreen(fullscreen):
 			#"canvas_region": get_node("grid_area").get_global_rect(),
 			"fullscreen": true
 		}
-		rcos.change_task(mTaskId, new_task_properties)
+		rcos_tasks.change_task(mTaskId, new_task_properties)
 		return true
 	else:
-		var properties = rcos.get_task_properties(mTaskId)
+		var properties = rcos_tasks.get_task_properties(mTaskId)
 		if properties.has("fullscreen") && properties.fullscreen:
 			var new_task_properties = {
 				"canvas_region": null,
 				"fullscreen": false
 			}
-			rcos.change_task(mTaskId, new_task_properties)
+			rcos_tasks.change_task(mTaskId, new_task_properties)
 			return true
 	return false
 

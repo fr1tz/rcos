@@ -13,6 +13,4 @@ __meta__ = {
 
 [node name="services" type="Node" parent="."]
 
-[node name="tasks" type="Node" parent="."]
-
 

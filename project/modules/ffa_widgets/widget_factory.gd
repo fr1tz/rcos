@@ -23,7 +23,7 @@ var mTaskId = -1
 
 func _exit_tree():
 	if mTaskId != -1:
-		rcos.remove_task(mTaskId)
+		rcos_tasks.remove_task(mTaskId)
 
 func initialize(product_name, product_id, widget_path):
 	if mTaskId != -1:
@@ -31,7 +31,7 @@ func initialize(product_name, product_id, widget_path):
 	mProductName = product_name
 	mProductId = product_id
 	mWidgetPath = widget_path
-	mTaskId = rcos.add_task({
+	mTaskId = rcos_tasks.add_task({
 			"type": "widget_factory",
 			"product_name": mProductName,
 			"product_id": mProductId,

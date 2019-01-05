@@ -32,12 +32,12 @@ func show():
 			"icon": get_node("icon").get_texture(),
 			"canvas": get_node("canvas"),
 		}
-		mTaskId = rcos.add_task(task_properties)
+		mTaskId = rcos_tasks.add_task(task_properties)
 
 func hide():
 	if mTaskId == -1:
 		return
-	rcos.remove_task(mTaskId)
+	rcos_tasks.remove_task(mTaskId)
 	mTaskId = -1
 
 func request_focus():
@@ -46,7 +46,7 @@ func request_focus():
 	var task_properties = {
 		"/focus_window": null
 	}
-	rcos.change_task(mTaskId, task_properties)
+	rcos_tasks.change_task(mTaskId, task_properties)
 
 func get_task_id():
 	return mTaskId

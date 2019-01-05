@@ -66,8 +66,8 @@ func _ready():
 	_set_default_mouse_cursor(CUR_ARROW)
 	for i in range(0, rcos_gui.NUM_SCREEN_INPUTS):
 		_index_to_control.push_back(null)
-	rcos.connect("task_added", self, "_on_task_added")
-	rcos.connect("task_removed", self, "_on_task_removed")
+	rcos_tasks.connect("task_added", self, "_on_task_added")
+	rcos_tasks.connect("task_removed", self, "_on_task_removed")
 	rcos_gui.connect("active_canvas_changed", self, "_active_canvas_changed")
 	rcos.enable_canvas_input(self)
 
